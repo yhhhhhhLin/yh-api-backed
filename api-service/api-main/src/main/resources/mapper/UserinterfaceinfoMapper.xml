@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.linyh.yhapi.mapper.UserinterfaceinfoMapper">
+
+    <resultMap id="BaseResultMap" type="xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="interfaceId" column="interfaceId" jdbcType="BIGINT"/>
+            <result property="remNum" column="remNum" jdbcType="INTEGER"/>
+            <result property="allNum" column="allNum" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,interfaceId,
+        remNum,allNum,status,
+        createTime,updateTime,isDelete
+    </sql>
+    <select id="getInterfaceCount" resultType="xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo">
+        select interfaceId,sum(allNum) as allNum from userInterfaceinfo  group by interfaceId  order by allNum desc limit #{limit}    </select>
+
+    <select id="getSelfInterfaceCount" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
+--         找出这个某个用户的所有接口
+    select tt.id,tt.name,tt.method,tt.requestParams,tt.getRequestParams,tt.description,tt.uri,tt.host,tt.userId,t.allNum
+    from (select interfaceId,sum(allNum) as allNum from userInterfaceinfo where isDelete = 0 group by  interfaceId)  t join
+             (select * from interfaceInfo  where userId = #{id} and isDelete = 0)  tt
+    where t.interfaceId = tt.id order by t.allNum desc limit #{limit}
+        </select>
+
+    <select id="getInterfaceCountByInterfaceId" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
+        select i.*,(select SUM(allNum) from userInterfaceinfo WHERE interfaceId = #{interfaceId} GROUP BY interfaceId) as allNum
+        from interfaceInfo i
+        where i.id = #{interfaceId};
+    </select>
+
+    <select id="getInterfaceCountByInterfaceIdAndUserId"
+            resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
+        select i.*,ui.remNum from interfaceInfo i userInterfaceInfo ui where i.id=#{interfaceId} and ui.interfaceId=#{interfaceId} and ui.userId=#{userId}
+    </select>
+
+</mapper>
