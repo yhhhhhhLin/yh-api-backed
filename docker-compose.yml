@@ -1,22 +1,116 @@
-version: '3'
 services:
-  service-1:
-    build:
-      context: ./path/to/service-1
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+  nacos:
+    image: nacos/nacos-server
     networks:
-      - my-network
+      - api-net
+    ports:
+      - 28848:8848
+    environment:
+      - MODE=standalone
+    volumes:
+      - ./data/nacos/data:/home/nacos/data
+      - ./data/nacos/logs:/home/nacos/logs
+      - ./script/init_nacos.sh:/init_nacos.sh
+      - ./config/nacos_default_config.zip:/nacos_default_config.zip
+    command: "sh /init_nacos.sh"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
-  service-2:
-    build:
-      context: ./path/to/service-2
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
+  mysql:
+    image: mysql:latest
     networks:
-      - my-network
+      - api-net
+    ports:
+      - 23306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: yhapimysql
+      MYSQL_DATABASE: yhapi
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+      - ./data/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+#    容器启动前执行的操作
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--skip-character-set-client-handshake"
+      ]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent localhost:3306 >/dev/null || exit 1"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+  redis:
+    image: redis:latest
+    networks:
+      - api-net
+    ports:
+      - 26379:6379
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  main:
+   image: 1583427850/yhapi-main:latest
+   networks:
+     - api-net
+#   volumes:
+#     - ./config:/etc/api/config
+#    docker执行前执行的命令
+#   command: ["/app/script/init_nacos.sh", "/etc/api/config/nacos_default_config.zip"]
+   depends_on:
+     nacos:
+       condition: service_healthy
+
+  gateway:
+    image: 1583427850/yhapi-gateway:latest
+    networks:
+      - api-net
+    ports:
+      - 28080:8080
+#    volumes:
+#      - ./data:/etc/api/data
+#      - ./config:/etc/api/config
+#    command: ["/app/service-gateway", "--cp=/etc/api/config/config.production.yaml"]
+    depends_on:
+      nacos:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  weather-interface:
+    image: 1583427850/yhapi-interface-weather:latest
+    networks:
+      - api-net
+    volumes:
+      - ./data:/etc/api/data
+      - ./config:/etc/api/config
+    command: ["/app/service-weather", "--cp=/etc/api/config/config.production.yaml"]
+#    depends_on:
+#      nacos:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+#      rabbitmq:
+#        condition: service_healthy
+#      init:
+#        condition: service_started
 
 networks:
-  my-network:
+  api-net:

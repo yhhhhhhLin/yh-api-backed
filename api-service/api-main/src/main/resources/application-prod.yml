@@ -1,7 +1,7 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yhapi
-    username: yhapi
-    password: abcDe8909389.
-
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/yhapi
+#    username: yhapi
+#    password: abcDe8909389.
+#
