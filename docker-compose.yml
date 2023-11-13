@@ -1,4 +1,5 @@
 services:
+#  ok
   nacos:
     image: nacos/nacos-server
     networks:
@@ -10,9 +11,6 @@ services:
     volumes:
       - ./data/nacos/data:/home/nacos/data
       - ./data/nacos/logs:/home/nacos/logs
-      - ./script/init_nacos.sh:/init_nacos.sh
-      - ./config/nacos_default_config.zip:/nacos_default_config.zip
-    command: "sh /init_nacos.sh"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
       interval: 10s
@@ -21,6 +19,7 @@ services:
 
   mysql:
     image: mysql:latest
+    restart: always
     networks:
       - api-net
     ports:
@@ -30,16 +29,14 @@ services:
       MYSQL_DATABASE: yhapi
       TZ: Asia/Shanghai
     volumes:
-      - ./data/mysql/data:/var/lib/mysql
-      - ./data/mysql/my.cnf:/etc/mysql/my.cnf
+      - /root/docker-compose/mysql/data:/var/lib/mysql
+      - /root/docker-compose/mysql/config/my.cnf:/etc/mysql/my.cnf
       - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
-#    容器启动前执行的操作
     command:
-      [
-        "--character-set-server=utf8mb4",
-        "--collation-server=utf8mb4_unicode_ci",
-        "--skip-character-set-client-handshake"
-      ]
+      - "--max_connections=1000"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_general_ci"
+      - "--default-authentication-plugin=mysql_native_password"
     healthcheck:
       test:
         [
@@ -49,6 +46,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+#  ok
   redis:
     image: redis:latest
     networks:
@@ -57,60 +55,67 @@ services:
       - 26379:6379
     volumes:
       - ./data/redis:/data
+#    depends_on:
+#     nacos:
+#       condition: service_healthy
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 10s
       retries: 5
 
-  main:
-   image: 1583427850/yhapi-main:latest
-   networks:
-     - api-net
-#   volumes:
-#     - ./config:/etc/api/config
-#    docker执行前执行的命令
-#   command: ["/app/script/init_nacos.sh", "/etc/api/config/nacos_default_config.zip"]
-   depends_on:
-     nacos:
-       condition: service_healthy
 
-  gateway:
-    image: 1583427850/yhapi-gateway:latest
+  main:
+    image: yhapi-main:latest
+    ports:
+      - 7529:7529
     networks:
       - api-net
-    ports:
-      - 28080:8080
-#    volumes:
-#      - ./data:/etc/api/data
-#      - ./config:/etc/api/config
-#    command: ["/app/service-gateway", "--cp=/etc/api/config/config.production.yaml"]
     depends_on:
       nacos:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/ping"]
+      test: ["CMD", "curl", "-f", "http://localhost:7529/api"]
       interval: 5s
       timeout: 5s
       retries: 5
+#
+  gateway:
+    image: yhapi-gateway:latest
+    networks:
+      - api-net
+    ports:
+      - 8081:8081
+    depends_on:
+      nacos:
+        condition: service_healthy
+      main:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ping", "127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+#
 
+#  ok
   weather-interface:
-    image: 1583427850/yhapi-interface-weather:latest
+    image: interface-weather:latest
+    ports:
+      - 8085:8085
     networks:
       - api-net
     volumes:
       - ./data:/etc/api/data
       - ./config:/etc/api/config
-    command: ["/app/service-weather", "--cp=/etc/api/config/config.production.yaml"]
-#    depends_on:
-#      nacos:
-#        condition: service_healthy
-#      redis:
-#        condition: service_healthy
-#      rabbitmq:
-#        condition: service_healthy
-#      init:
-#        condition: service_started
+    depends_on:
+      nacos:
+        condition: service_healthy
+
 
 networks:
   api-net:

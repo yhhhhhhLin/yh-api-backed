@@ -1,4 +1,4 @@
-create database yhapi;
+create database if not exists yhapi;
 use yhapi;
 
 -- 用户表
