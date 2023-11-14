@@ -5,11 +5,14 @@ import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
+import jdk.jpackage.internal.Log;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.requestParms.InterfaceParams;
+import xyz.linyh.yapiclientsdk.client.ApiClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +21,10 @@ import java.util.Map;
 //@Slf4j
 public class ApiServiceImpl implements ApiService{
 
-    public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.GATEWAY_INTERFACE_PATH;
+//    @Value("${gateway.url}")
+//    public static String GATEWAY_PRE_PATH = "http://yhapi-gateway:8081/interface";
+
+    public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.url;
 
     /**
      * 添加api签名认证材料和发送请求到网关
@@ -95,6 +101,7 @@ public class ApiServiceImpl implements ApiService{
     public String request(String uri,String method, String accessKey, String sign) {
         HashMap<String, String> headers = addHeader(sign, accessKey,uri);
 
+        System.out.println("------网关地址为---------"+ GATEWAY_PRE_PATH);;
         String body = null;
         try {
             if("GET".equals(method.toUpperCase())){

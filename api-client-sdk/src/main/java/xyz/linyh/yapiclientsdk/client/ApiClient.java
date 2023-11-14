@@ -3,6 +3,7 @@ package xyz.linyh.yapiclientsdk.client;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.linyh.ducommon.common.ErrorCode;
@@ -15,7 +16,11 @@ import xyz.linyh.yapiclientsdk.utils.MyDigestUtils;
  * @author lin
  */
 @Component
+@Data
 public class ApiClient {
+
+
+
 
     private String accessKey;
 

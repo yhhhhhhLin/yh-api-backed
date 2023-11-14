@@ -6,12 +6,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
+import xyz.linyh.yapiclientsdk.config.ApiClientConfig;
+import xyz.linyh.yapiclientsdk.service.ApiServiceImpl;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 
@@ -24,6 +27,9 @@ import xyz.linyh.yhapi.service.InterfaceinfoService;
 @Slf4j
 public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, Interfaceinfo>
     implements InterfaceinfoService{
+
+    @Autowired
+    private ApiClientConfig apiClientConfig;
 
     /**
      * 对接口信息进行校验
@@ -84,7 +90,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     @Override
     public Boolean updateGatewayCache() {
         try {
-            HttpResponse execute = HttpRequest.get(InterfaceInfoConstant.GATEWAY_PATH).execute();
+            HttpResponse execute = HttpRequest.get(apiClientConfig.getUrl()).execute();
         } catch (Exception e) {
             log.error("刷新路由接口数据失败....");
             throw new RuntimeException(e);

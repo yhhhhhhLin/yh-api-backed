@@ -1,10 +1,22 @@
 package xyz.linyh.ducommon.constant;
 
-public interface InterfaceInfoConstant {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-//    interfaceInfo可用的状态
-    String STATIC_USE = "1";
-    String STATIC_NOT_USE = "0";
-    String GATEWAY_PATH = "http://localhost:8081/yhapi/routes";
-    String GATEWAY_INTERFACE_PATH = "http://localhost:8081/interface";
+@Component
+@Configuration
+@ConfigurationProperties(prefix = "gateway")
+public class  InterfaceInfoConstant{
+
+    public static String STATIC_USE = "1";
+    public static String STATIC_NOT_USE = "0";
+    public static String GATEWAY_PATH = "http://localhost:8081/yhapi/routes";
+
+//    @Value("${gateway.url}")
+//    public static String GATEWAY_INTERFACE_PATH;
+
+    public static String url = "http://yhapi-gateway:8081/interface";
+
 }

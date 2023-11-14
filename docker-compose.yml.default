@@ -66,7 +66,7 @@ services:
 
 
   main:
-    image: 1583427850/yhapi-main:latest
+    image: yhapi-main:latest
     ports:
       - 7529:7529
     networks:
@@ -80,12 +80,12 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7529/api"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
+      interval: 5s
+      timeout: 5s
+      retries: 5
 #
   gateway:
-    image: 1583427850/yhapi-gateway:latest
+    image: yhapi-gateway:latest
     networks:
       - api-net
     ports:
@@ -97,14 +97,14 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "ping", "127.0.0.1"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
+      interval: 5s
+      timeout: 5s
+      retries: 5
 #
 
 #  ok
   weather-interface:
-    image: 1583427850/yhapi-interface-weather:latest
+    image: interface-weather:latest
     ports:
       - 8085:8085
     networks:
@@ -117,16 +117,5 @@ services:
         condition: service_healthy
 
 
-
-
-  front:
-    image: 1583427850/api-front:latest
-    ports:
-      - 8080:80
-    networks:
-      - api-net
-    depends_on:
-      main:
-        condition: service_healthy
 networks:
   api-net:

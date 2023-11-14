@@ -17,6 +17,8 @@ public class ApiClientConfig {
 
     private String secretKey;
 
+    private String url;
+
     @Bean
     public ApiClient apiClient(){
         return new ApiClient(accessKey, secretKey);
