@@ -5,24 +5,23 @@ import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
-import jdk.jpackage.internal.Log;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.requestParms.InterfaceParams;
-import xyz.linyh.yapiclientsdk.client.ApiClient;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 //@Slf4j
+@Slf4j
 public class ApiServiceImpl implements ApiService{
 
 //    @Value("${gateway.url}")
-//    public static String GATEWAY_PRE_PATH = "http://yhapi-gateway:8081/interface";
+//    public static String GATEWAY_PRE_PATH = "http://gateway:8081/interface";
 
     public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.url;
 
@@ -83,7 +82,7 @@ public class ApiServiceImpl implements ApiService{
             }
             return body;
         } catch (HttpException e) {
-//            log.info("网关发送请求出现异常");
+            log.info("网关发送请求出现异常,网关地址为:{},发送接口地址为{}",GATEWAY_PRE_PATH,uri);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
 
@@ -119,7 +118,7 @@ public class ApiServiceImpl implements ApiService{
             return body;
 
         } catch (Exception e) {
-//            log.info("网关发送请求出现异常");
+            log.info("网关发送请求出现异常,网关地址为:{},发送接口地址为{}",GATEWAY_PRE_PATH,uri);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
 

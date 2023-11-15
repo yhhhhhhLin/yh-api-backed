@@ -81,3 +81,6 @@ create table yhapi.sdkfile
     comment 'sdk版本管理表';
 
 
+INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey, createTime, updateTime, isDelete) VALUES (1, 'root', 'root', 'https://cn.bing.com/images/search?view=detailV2&ccid=qziNmxyw&id=1E81246A717B63ACACD809FAA09D269FF34BBF84&thid=OIP.qziNmxywXqaT7lHXOgLJqgAAAA&mediaurl=https%3a%2f%2fp.qqan.com%2fup%2f2020-7%2f2020072017382224891.jpg&exph=400&expw=400&q=%e5%a4%b4%e5%83%8f&simid=607995953255237553&FORM=IRPRST&ck=9091D49B62444EACC536D2505651DB08&selectedIndex=15', 0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'testak', 'testsk', '2023-09-04 19:03:38', '2023-09-25 20:22:30', 0);
+
+

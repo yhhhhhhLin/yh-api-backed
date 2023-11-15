@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
-@Configuration
-@ConfigurationProperties(prefix = "gateway")
 public class  InterfaceInfoConstant{
 
     public static String STATIC_USE = "1";
@@ -17,6 +15,6 @@ public class  InterfaceInfoConstant{
 //    @Value("${gateway.url}")
 //    public static String GATEWAY_INTERFACE_PATH;
 
-    public static String url = "http://yhapi-gateway:8081/interface";
+    public static String url = "http://gateway:8081/interface";
 
 }

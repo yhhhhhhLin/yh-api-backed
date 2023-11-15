@@ -33,7 +33,9 @@
         </dependency>
 
 
-<!--        自己配置-->
+
+
+        <!--        自己配置-->
         <dependency>
             <groupId>xyz.linyh</groupId>
             <artifactId>api-common</artifactId>
@@ -50,8 +52,7 @@
         </dependency>
 
 
-
-<!--        hutool-->
+        <!--        hutool-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>

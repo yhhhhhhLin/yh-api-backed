@@ -277,7 +277,12 @@ public class InterceptorInfoController {
 //        如果没有请求参数，那么直接用简单的方式发送请求
         if((getRequestParams==null && requestParams==null) ||(requestParams==null && getRequestParams.size()==0)){
 
-           response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
+            try {
+                response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
+            } catch (Exception e) {
+                log.error("发送请求失败");
+                log.error(e.getMessage());
+            }
         }else{
 
             InterfaceParams interfaceParams = new InterfaceParams();
@@ -296,7 +301,13 @@ public class InterceptorInfoController {
             }
             interfaceParams.setRequestMethod(interfaceInfo.getMethod());
 //            发送请求 添加请求头 todo
-            response = apiClient.request(interfaceInfo.getUri(),interfaceParams);
+            try {
+                log.info("请求接口参数为:{}",interfaceParams);
+                response = apiClient.request(interfaceInfo.getUri(),interfaceParams);
+            } catch (Exception e) {
+                log.error("发送请求失败");
+                log.error(e.getMessage());
+            }
         }
 
 //        对响应进行处理
