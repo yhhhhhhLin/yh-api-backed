@@ -1,7 +1,6 @@
 package xyz.linyh.yapiclientsdk.service;
 
-
-import xyz.linyh.ducommon.requestParms.InterfaceParams;
+import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 
 public interface ApiService {
 
@@ -12,7 +11,7 @@ public interface ApiService {
      * @param sign
      * @return
      */
-    String request(String uri, String accessKey, String sign, InterfaceParams interfaceParams);
+    String request(String baseUrl,String uri, String accessKey, String sign, InterfaceParams interfaceParams);
 
     /**
      * 发送没有携带请求参数的请求
@@ -22,5 +21,5 @@ public interface ApiService {
      * @param sign
      * @return
      */
-    String request(String uri,String method, String accessKey, String sign);
+    String request(String baseUrl,String uri,String method, String accessKey, String sign);
 }

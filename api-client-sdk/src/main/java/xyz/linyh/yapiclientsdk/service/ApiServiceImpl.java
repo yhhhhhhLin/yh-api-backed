@@ -1,39 +1,41 @@
 package xyz.linyh.yapiclientsdk.service;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.ErrorCode;
-import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
-import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.ducommon.requestParms.InterfaceParams;
+import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
+import xyz.linyh.yapiclientsdk.exception.ClientErrorCode;
+import xyz.linyh.yapiclientsdk.exception.ClientException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-//@Slf4j
 @Slf4j
 public class ApiServiceImpl implements ApiService{
 
-//    @Value("${gateway.url}")
-//    public static String GATEWAY_PRE_PATH = "http://gateway:8081/interface";
-
-    public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.url;
+//    public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.GATEWAY_PATH;
 
     /**
      * 添加api签名认证材料和发送请求到网关
      *
-     * @param uri
+     * @param
      * @return
      */
-    public String request(String uri, String accessKey, String sign, InterfaceParams interfaceParams) {
+    public String request(String baseUrl,String uri, String accessKey, String sign, InterfaceParams interfaceParams) {
+
+        if(StrUtil.isBlank(baseUrl)) {
+            throw new ClientException(ClientErrorCode.PARAMS_ERROR, "baseUrl不能为空");
+        }
+
+
         if(interfaceParams==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"interfaceParams不能为空");
+            throw new ClientException(ClientErrorCode.PARAMS_ERROR,"interfaceParams不能为空");
         }
 
         HashMap<String, String> headers = addHeader(sign, accessKey,uri);
@@ -61,16 +63,16 @@ public class ApiServiceImpl implements ApiService{
             if("GET".equals(interfaceParams.getRequestMethod().toUpperCase())){
                 if(hasParams){
 //                    String res = HttpUtil.get(GATEWAY_PRE_PATH + uri, requestParams);
-                    HttpResponse response = HttpRequest.get(GATEWAY_PRE_PATH+uri).form(requestParams)
+                    HttpResponse response = HttpRequest.get(baseUrl+uri).form(requestParams)
                             .addHeaders(headers).execute();
                     body = response.body();
                 }else{
-                    HttpResponse response = HttpRequest.get(GATEWAY_PRE_PATH+uri)
+                    HttpResponse response = HttpRequest.get(baseUrl+uri)
                             .addHeaders(headers).execute();
                     body = response.body();
                 }
             }else if("POST".equals(interfaceParams.getRequestMethod().toUpperCase())){
-                HttpRequest req = HttpRequest.post(GATEWAY_PRE_PATH + uri);
+                HttpRequest req = HttpRequest.post(baseUrl + uri);
                 if(hasParams){
                     req = req.form(requestParams);
                 }
@@ -82,8 +84,8 @@ public class ApiServiceImpl implements ApiService{
             }
             return body;
         } catch (HttpException e) {
-            log.info("网关发送请求出现异常,网关地址为:{},发送接口地址为{}",GATEWAY_PRE_PATH,uri);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            log.info("网关发送请求出现异常");
+            throw new ClientException(ClientErrorCode.SYSTEM_ERROR);
         }
 
     }
@@ -97,29 +99,32 @@ public class ApiServiceImpl implements ApiService{
      * @param sign
      * @return
      */
-    public String request(String uri,String method, String accessKey, String sign) {
+    public String request(String baseUrl,String uri,String method, String accessKey, String sign) {
+        if(StrUtil.isBlank(baseUrl)) {
+            throw new ClientException(ClientErrorCode.PARAMS_ERROR,"baseUrl不能为空");
+        }
+
         HashMap<String, String> headers = addHeader(sign, accessKey,uri);
 
-        System.out.println("------网关地址为---------"+ GATEWAY_PRE_PATH);;
         String body = null;
         try {
             if("GET".equals(method.toUpperCase())){
-                HttpResponse response = HttpRequest.get(GATEWAY_PRE_PATH+uri)
+                HttpResponse response = HttpRequest.get(baseUrl+uri)
                         .addHeaders(headers).execute();
                 body = response.body();
 
             }else if("POST".equals(method.toUpperCase())){
-                HttpResponse response = HttpRequest.post(GATEWAY_PRE_PATH + uri).addHeaders(headers).execute();
+                HttpResponse response = HttpRequest.post(baseUrl+ uri).addHeaders(headers).execute();
                 body = response.body();
 
             }else{
-                throw new BusinessException(ErrorCode.PARAMS_ERROR,"不能支持post和get意外的请求方法");
+                throw new ClientException(ClientErrorCode.PARAMS_ERROR,"不能支持post和get意外的请求方法");
             }
             return body;
 
         } catch (Exception e) {
-            log.info("网关发送请求出现异常,网关地址为:{},发送接口地址为{}",GATEWAY_PRE_PATH,uri);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            log.info("网关发送请求出现异常");
+            throw new ClientException(ClientErrorCode.SYSTEM_ERROR);
         }
 
     }

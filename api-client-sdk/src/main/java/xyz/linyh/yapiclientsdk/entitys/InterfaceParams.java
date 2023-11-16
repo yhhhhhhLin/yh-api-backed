@@ -1,4 +1,4 @@
-package xyz.linyh.ducommon.requestParms;
+package xyz.linyh.yapiclientsdk.entitys;
 
 import lombok.Data;
 

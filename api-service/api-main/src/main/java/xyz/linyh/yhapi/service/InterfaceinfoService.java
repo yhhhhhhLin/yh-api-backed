@@ -25,5 +25,5 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @param
      * @return
      */
-    Boolean updateGatewayCache();
+//    Boolean updateGatewayCache();
 }

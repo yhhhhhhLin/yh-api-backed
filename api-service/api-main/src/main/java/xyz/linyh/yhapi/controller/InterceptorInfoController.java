@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
@@ -17,11 +18,11 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.ducommon.requestParms.InterfaceParams;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
+import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yhapi.annotation.AuthCheck;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserService;
@@ -52,6 +53,7 @@ public class InterceptorInfoController {
     @Resource
     private UserService userService;
 
+
     // region 增删改查
 
     /**
@@ -80,7 +82,8 @@ public class InterceptorInfoController {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         long newInterfaceInfoId = interfaceInfo.getId();
-        Boolean aBoolean = interfaceinfoService.updateGatewayCache();
+//        todo
+//        Boolean aBoolean = interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(newInterfaceInfoId);
     }
 
@@ -114,8 +117,8 @@ public class InterceptorInfoController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = interfaceinfoService.updateById(interfaceInfo);
-//        刷新网关接口数据
-        interfaceinfoService.updateGatewayCache();
+//        刷新网关接口数据 todo
+//        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -143,8 +146,8 @@ public class InterceptorInfoController {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = interfaceinfoService.removeById(id);
-
-        interfaceinfoService.updateGatewayCache();
+//        todo
+//        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(b);
     }
 
@@ -176,8 +179,8 @@ public class InterceptorInfoController {
         wrapper.eq(Interfaceinfo::getId,id)
                 .set(Interfaceinfo::getStatus,1);
         boolean result = interfaceinfoService.update(wrapper);
-
-        interfaceinfoService.updateGatewayCache();
+//        todo
+//        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -210,7 +213,8 @@ public class InterceptorInfoController {
                 .set(Interfaceinfo::getStatus,0);
         boolean result = interfaceinfoService.update(wrapper);
 
-        interfaceinfoService.updateGatewayCache();
+//        todo
+//        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -230,6 +234,11 @@ public class InterceptorInfoController {
         interfaceInfo.setHost("");
         return ResultUtils.success(interfaceInfo);
     }
+
+
+
+    @Autowired
+    private ApiClient apiClient;
 
 //    先全部用管理员ak和sk发送，后面改为根据每一个用户发送
     /**
@@ -266,8 +275,12 @@ public class InterceptorInfoController {
         String secretKey = user.getSecretKey();
 
 
+
+
 //        添加请求参数 并发送请求到网关
-        ApiClient apiClient = new ApiClient(accessKey, secretKey);
+//        ApiClient apiClient2 = new ApiClient(accessKey, secretKey);
+        apiClient.setAccessKey(accessKey);
+        apiClient.setSecretKey(secretKey);
         String response =null;
 
 //        请求参数
@@ -423,8 +436,8 @@ public class InterceptorInfoController {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         long newInterfaceInfoId = interfaceInfo.getId();
-
-        interfaceinfoService.updateGatewayCache();
+//        todo
+//        interfaceinfoService.updateGatewayCache();
 
         return ResultUtils.success(newInterfaceInfoId);
     }

@@ -17,12 +17,13 @@ public class ApiClientConfig {
 
     private String secretKey;
 
-    private String url;
+    private String baseUrl;
 
     @Bean
     public ApiClient apiClient(){
-        return new ApiClient(accessKey, secretKey);
+        return new ApiClient(accessKey, secretKey,baseUrl);
     }
+
 
 
 }

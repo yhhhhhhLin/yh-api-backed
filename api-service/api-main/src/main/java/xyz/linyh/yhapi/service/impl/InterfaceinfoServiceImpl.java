@@ -28,8 +28,8 @@ import xyz.linyh.yhapi.service.InterfaceinfoService;
 public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, Interfaceinfo>
     implements InterfaceinfoService{
 
-    @Autowired
-    private ApiClientConfig apiClientConfig;
+//    @Autowired
+//    private ApiClientConfig apiClientConfig;
 
     /**
      * 对接口信息进行校验
@@ -79,25 +79,26 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         return interfaceinfo;
     }
 
-    /**
-     * 刷新gateway中缓存的接口数据
-     *
-     * @param
-     * @param
-     * @return
-     */
-    @Async
-    @Override
-    public Boolean updateGatewayCache() {
-        try {
-            HttpResponse execute = HttpRequest.get(apiClientConfig.getUrl()).execute();
-        } catch (Exception e) {
-            log.error("刷新路由接口数据失败....");
-            throw new RuntimeException(e);
-        }
-        log.info("刷新路由接口数据成功....");
-        return true;
-    }
+//    /**
+//     * 刷新gateway中缓存的接口数据
+//     *
+//     * @param
+//     * @param
+//     * @return
+//     */
+//    @Async
+//    @Override
+//    public Boolean updateGatewayCache() {
+//        try {
+//            HttpResponse execute = HttpRequest.get(apiClientConfig.getUrl()).execute();
+//        } catch (Exception e) {
+//            log.error("刷新路由接口数据失败....");
+//            throw new RuntimeException(e);
+//        }
+//        log.info("刷新路由接口数据成功....");
+//        return true;
+//    }
+
 }
 
 

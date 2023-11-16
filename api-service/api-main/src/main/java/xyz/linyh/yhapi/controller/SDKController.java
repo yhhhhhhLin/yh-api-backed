@@ -36,13 +36,14 @@ public class SDKController {
     /**
      * 上传file格式
      * {
-     *     uid: 'uid',      // 文件唯一标识，建议设置为负数，防止和内部产生的 id 冲突
-     *     name: 'xx.png',   // 文件名
-     *     status: 'done', // 状态有：uploading done error removed
-     *     response: '{"status": "success"}', // 服务端响应内容
-     *     linkProps: '{"download": "image"}', // 下载链接额外的 HTML 属性
-     *     xhr: 'XMLHttpRequest{ ... }', // XMLHttpRequest Header
+     * uid: 'uid',      // 文件唯一标识，建议设置为负数，防止和内部产生的 id 冲突
+     * name: 'xx.png',   // 文件名
+     * status: 'done', // 状态有：uploading done error removed
+     * response: '{"status": "success"}', // 服务端响应内容
+     * linkProps: '{"download": "image"}', // 下载链接额外的 HTML 属性
+     * xhr: 'XMLHttpRequest{ ... }', // XMLHttpRequest Header
      * }
+     *
      * @param file
      * @return
      */
@@ -54,36 +55,63 @@ public class SDKController {
     private UserService userService;
 
     private String SDK_DIR_PRE = "/usr/share/apiProject/";
+
+    /**
+     * 上传文件
+     *
+     * @param file
+     * @param request
+     * @return
+     */
+//    @PostMapping("/upload")
+//    @AuthCheck(mustRole = "admin")
+//    @ResponseBody
+//    public BaseResponse<String> sdkUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+//
+//        if (file == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件内容不能为空");
+//        }
+//
+//        User user = userService.getLoginUser(request);
+////        将文件保存到服务器中
+//        try {
+//            Boolean isSave = sdkfileService.saveSDK(file, user);
+//            return ResultUtils.success("保存成功");
+//        } catch (Exception e) {
+//            log.info("文件保存出现错误");
+//            e.printStackTrace();
+//            return ResultUtils.error(ErrorCode.PARAMS_ERROR, e.getMessage());
+//        }
+//
+//    }
+
+//TODO 保存文件到磁盘，然后保存路径到数据库
     @PostMapping("/upload")
-    @AuthCheck(mustRole="admin")
-    @ResponseBody
-    public BaseResponse<String> sdkUpload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse handleFileUpload(HttpServletRequest request,@RequestParam("file") MultipartFile file) {
 
-        if(file==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"文件内容不能为空");
-        }
-
-        User user = userService.getLoginUser(request);
-//        将文件保存到服务器中
         try {
-            Boolean isSave = sdkfileService.saveSDK(file,user);
-            return ResultUtils.success("保存成功");
-        }catch(Exception e){
-            log.info("文件保存出现错误");
-            e.printStackTrace();
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,e.getMessage());
+//            获取用户的id
+            User loginUser = userService.getLoginUser(request);
+            if(loginUser==null){
+                return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+            }
+            // 保存文件并获取保存的路径
+           return null;
+        } catch (Exception e) {
+            return ResultUtils.error(ErrorCode.OPERATION_ERROR);
         }
-
     }
 
     /**
      * 下载对应名称的sdk
+     *
      * @param name
      * @param response
      * @return
      */
     @GetMapping("/install")
-    public ResponseEntity<Resource> installSdk(@RequestParam("name") String name, HttpServletResponse response){
+    public ResponseEntity<Resource> installSdk(@RequestParam("name") String name, HttpServletResponse response) {
         Resource resource = sdkfileService.getSdkById(name);
 
         HttpHeaders headers = new HttpHeaders();
@@ -92,7 +120,7 @@ public class SDKController {
 
 //        下载次数加1 锁不锁无所谓
         LambdaUpdateWrapper<Sdkfile> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(Sdkfile::getName,name);
+        wrapper.eq(Sdkfile::getName, name);
         wrapper.setSql("num = num+1");
         sdkfileService.update(wrapper);
 
@@ -103,11 +131,12 @@ public class SDKController {
 
     /**
      * 获取最近5个版本的sdk
+     *
      * @return
      */
     @GetMapping("/get")
     @ResponseBody
-    public BaseResponse<List<Sdkfile>> getAllSdk(){
+    public BaseResponse<List<Sdkfile>> getAllSdk() {
         List<Sdkfile> list = sdkfileService.list(Wrappers.<Sdkfile>lambdaQuery().orderByDesc(Sdkfile::getUpdateTime));
         return ResultUtils.success(list);
     }
