@@ -29,7 +29,7 @@ public class RouteServiceImpl implements RouteService {
     private DubboInterfaceinfoService dubboInterfaceinfoService;
 
     /**
-     * 本地缓存，获取到的路由信息会保存到这个hashmap中
+     * 本地缓存，获取到的路由信息会保存到这个hashmap中,todo 后面可以改为存到redis
      * key为路由id（对应接口id）value为路由的详细
      */
     private final Map<String, Interfaceinfo> routes = new ConcurrentHashMap<>(256);
@@ -41,6 +41,7 @@ public class RouteServiceImpl implements RouteService {
      */
     @Override
     public Map<String,Interfaceinfo> getRouteDefinitions() {
+//        判断缓存里面是否有信息，如果有就直接返回
         if(routes.size()>0){
             return routes;
 

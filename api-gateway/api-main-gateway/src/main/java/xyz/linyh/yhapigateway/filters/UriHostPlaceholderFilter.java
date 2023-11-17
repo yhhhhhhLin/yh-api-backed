@@ -69,7 +69,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
 
             System.out.println(exchange.getRequest().getQueryParams());
 
-
+//            todo 可能还需要对地址格式进行判断
             URI newUrl = null;
             String modUrl = host+uri;
             try {

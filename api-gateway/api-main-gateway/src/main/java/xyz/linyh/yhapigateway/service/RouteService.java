@@ -26,7 +26,7 @@ public interface RouteService {
 
 
     /**
-     * 新增新的路由
+     * 刷新缓存的路由信息
      * @param serverRequest
      * @return
      */
