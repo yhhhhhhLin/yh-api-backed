@@ -117,19 +117,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getLoginUser(HttpServletRequest request) {
 
-        // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
+//        // 先判断是否已登录
+//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+//        User currentUser = (User) userObj;
+//        if (currentUser == null || currentUser.getId() == null) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
+//        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+//        long userId = currentUser.getId();
+//        currentUser = this.getById(userId);
+//        if (currentUser == null) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
+//        return currentUser;
+
+//        可以直接在请求头获取userId
+        Long userId = (Long) request.getAttribute("userId");
+//        查询数据库获取对应用户
+        User user = this.getById(userId);
+        if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        currentUser = this.getById(userId);
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
-        return currentUser;
+
+        return user;
     }
 
     /**

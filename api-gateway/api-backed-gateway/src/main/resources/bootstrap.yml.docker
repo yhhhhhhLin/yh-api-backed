@@ -1,0 +1,13 @@
+server:
+  port: 9529
+spring:
+  application:
+    name: yhapiapi-backed-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+      config:
+        server-addr: nacos:8848
+        file-extension: yml
+        namespace: yhapi-default

@@ -13,6 +13,7 @@ import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.model.user.dto.*;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserVO;
@@ -70,7 +71,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -81,8 +82,9 @@ public class UserController {
         }
         User user = userService.userLogin(userAccount, userPassword, request);
 //        todo 生成token 返回前端
-//        String token = JwtUtils.generateToken(String.valueOf(user.getId()));
-        return ResultUtils.success(user);
+        String token = JwtUtils.generateToken(String.valueOf(user.getId()));
+        return ResultUtils.success(token);
+//        return ResultUtils.success(user);
     }
 
     /**

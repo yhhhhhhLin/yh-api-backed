@@ -30,6 +30,12 @@ public class FlowLimitingFilter implements Ordered, GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 1. 获取用户ip地址
         String ipAddress = getClientIpAddress(exchange.getRequest());
+//        如果不是通过nginx转发的，直接不能访问
+        if(ipAddress==null){
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+            return response.setComplete();
+        }
 //        log.info("{} ip请求请求了网站",ipAddress);
 
         // 2. 如果有这个对应的ip就直接获取，如果没有就初始化
@@ -37,12 +43,13 @@ public class FlowLimitingFilter implements Ordered, GlobalFilter {
 
         // 每一个ip一秒只能请求10次
         if (visitInfo.incrementAndCheckLimit()) {
-//            log.info("{}请求次数超过了限制--------",ipAddress);
+            log.info("{}请求次数超过了限制--------",ipAddress);
             System.out.println("有超出次数的"+ipAddress);
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
             return response.setComplete();
         }
+        log.info("{}请求次数没有超过限制",ipAddress);
 //        log.info("{}请求了网站",ipAddress);
         System.out.println("有网站请求了"+ipAddress);
 
