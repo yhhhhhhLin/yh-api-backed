@@ -26,8 +26,8 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         ServerHttpResponse response = exchange.getResponse();
 //        判断是否是登录页面，如果是登录页面，那么不用鉴权
         String path = exchange.getRequest().getURI().getPath();
-        if(path!=null && path.contains("login")){
-            chain.filter(exchange);
+        if(path!=null && path.contains("login") && !path.contains("get")){
+            return chain.filter(exchange);
         }
 
 //        获取传递的token，然后解析出来保存到session中

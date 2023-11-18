@@ -132,7 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //        return currentUser;
 
 //        可以直接在请求头获取userId
-        Long userId = (Long) request.getAttribute("userId");
+        Long userId = Long.valueOf(request.getHeader("userId"));
 //        查询数据库获取对应用户
         User user = this.getById(userId);
         if (user == null) {
