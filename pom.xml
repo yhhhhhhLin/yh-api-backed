@@ -70,7 +70,7 @@
     <knife4j.version>3.0.3</knife4j.version>
     <com.alibaba.cloud>2021.0.5.0</com.alibaba.cloud>
     <xxl.job.version>2.2.0-SNAPSHOT</xxl.job.version>
-    <dubbo.version>3.0.9</dubbo.version>
+    <dubbo.version>3.2.8</dubbo.version>
     <hutool.version>5.8.16</hutool.version>
   </properties>
 
@@ -111,7 +111,6 @@
       <dependency>
         <groupId>org.apache.dubbo</groupId>
         <artifactId>dubbo</artifactId>
-        <version>${dubbo.version}</version>
       </dependency>
       <!--内部依赖工程-->
       <dependency>

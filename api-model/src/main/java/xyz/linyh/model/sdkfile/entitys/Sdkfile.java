@@ -30,7 +30,12 @@ public class Sdkfile implements Serializable {
     private String name;
 
     /**
-     * 更新介绍
+     * sdk对应文件路径
+     */
+    private String filePath;
+
+    /**
+     * 文件介绍
      */
     private String description;
 

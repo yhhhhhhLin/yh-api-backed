@@ -112,6 +112,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
             return response.setComplete();
         }
 
+
 //        获取所有接口
         Map<String, Interfaceinfo> URIAndInterface = routeServiceImpl.getRoutes();
 
@@ -122,12 +123,17 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 //        6. 判断请求接口是否存在
         Interfaceinfo mapInterface = URIAndInterface.get(uri);
 
+
         if(mapInterface==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"无法获取接口");
         }
 
 
-//         todo 判断是否还有调用次数 因为可以直接通过sdk调用方法，可以绕过前面的backed
+//         TODO 判断是否还有调用次数 因为可以直接通过sdk调用方法，可以绕过前面的backed
+        Boolean invoke = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId());
+        if(!invoke){
+            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR);
+        }
 
 
 //        7. 转发到对应的接口

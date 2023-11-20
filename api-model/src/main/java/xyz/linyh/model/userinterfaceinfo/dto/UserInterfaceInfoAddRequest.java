@@ -1,6 +1,7 @@
 package xyz.linyh.model.userinterfaceinfo.dto;
 
 import lombok.Data;
+import xyz.linyh.model.user.entitys.User;
 
 import java.io.Serializable;
 
@@ -35,6 +36,8 @@ public class UserInterfaceInfoAddRequest implements Serializable {
      * 用户是否能调用这个接口 0为可用 1为不可用
      */
     private Integer status;
+
+    User user;
 
 
 

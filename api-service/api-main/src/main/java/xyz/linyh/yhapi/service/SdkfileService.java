@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.model.sdkfile.entitys.Sdkfile;
 import xyz.linyh.model.user.entitys.User;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
 * @author lin
@@ -30,4 +30,20 @@ public interface SdkfileService extends IService<Sdkfile> {
      * @return
      */
     Resource getSdkById(String name);
+
+    /**
+     * 生成一个随机的名字，将文件保存到磁盘中，然后将路径保存到数据库中
+     * @param inputStream
+     * @param originalFilename
+     * @return
+     */
+    Boolean saveFile(InputStream inputStream, String originalFilename,Long userId,String description);
+
+    /**
+     * 根据文件名字去数据库里面查询对应文件保存磁盘文章，返回输出流
+     * @param name
+     * @param id
+     * @return
+     */
+    File installSdk(String name, Long id);
 }

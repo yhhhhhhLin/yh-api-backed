@@ -8,6 +8,7 @@
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="filePath" column="filePath" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
             <result property="num" column="num" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="TINYINT"/>
@@ -17,7 +18,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,name,description,
+        id,userId,name,description,filePath,
         num,status,createTime,
         updateTime,isDelete
     </sql>

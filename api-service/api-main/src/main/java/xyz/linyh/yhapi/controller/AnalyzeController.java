@@ -1,5 +1,6 @@
 package xyz.linyh.yhapi.controller;
 
+import org.apache.commons.codec.language.Caverphone1;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
@@ -49,6 +50,7 @@ public class AnalyzeController {
         if(user==null){
             return ResultUtils.error(ErrorCode.NO_AUTH_ERROR);
         }
+
         return userinterfaceinfoService.analyzeSelfInterfaceInfo(user.getId());
     }
 

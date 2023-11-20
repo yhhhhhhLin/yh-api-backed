@@ -59,6 +59,7 @@ public class UserInterceptorInfoController {
         }
         UserInterfaceinfo userInterfaceInfo = new UserInterfaceinfo();
         userInterfaceInfo.setStatus(0);
+
         BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
         // 校验参数是否正确
         userInterfaceinfoService.validInterfaceInfo(userInterfaceInfo, true);
