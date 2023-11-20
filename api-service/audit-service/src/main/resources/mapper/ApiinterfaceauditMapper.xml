@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.linyh.audit.mapper.ApiinterfaceauditMapper">
+
+    <resultMap id="BaseResultMap" type="xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="apiId" column="api_id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="apiDescription" column="api_description" jdbcType="VARCHAR"/>
+            <result property="uri" column="uri" jdbcType="VARCHAR"/>
+            <result property="host" column="host" jdbcType="VARCHAR"/>
+            <result property="method" column="method" jdbcType="VARCHAR"/>
+            <result property="requestheader" column="requestHeader" jdbcType="VARCHAR"/>
+            <result property="responseheader" column="responseHeader" jdbcType="VARCHAR"/>
+            <result property="requestparams" column="requestParams" jdbcType="VARCHAR"/>
+            <result property="getrequestparams" column="getRequestParams" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isdelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,api_id,name,
+        api_description,uri,host,
+        method,requestHeader,responseHeader,
+        requestParams,getRequestParams,user_id,
+        status,description,createTime,
+        updateTime,isDelete
+    </sql>
+</mapper>
