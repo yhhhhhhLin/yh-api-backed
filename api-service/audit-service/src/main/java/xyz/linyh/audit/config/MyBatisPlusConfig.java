@@ -1,4 +1,4 @@
-package xyz.linyh.yhapi.config;
+package xyz.linyh.audit.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * MyBatis Plus 配置
+ * MyBatis Plus 分页配置
  *
  *
  */
 @Configuration
-@MapperScan("xyz.linyh.yhapi.mapper")
+@MapperScan("xyz.linyh.audit.mapper")
 public class MyBatisPlusConfig {
 
     /**

@@ -82,3 +82,40 @@ create table yhapi.sdkfile
     comment 'sdk版本管理表';
 
 
+-- 审核模块数据库表结构
+-- 创建对应数据库
+create database if not exists api_audit;
+
+-- 使用相关数据库
+use api_audit;
+
+-- 创建对应需要的表结构
+
+-- api接口审核表
+create table if not exists ApiInterfaceAudit
+(
+    id          bigint auto_increment comment 'id'
+        primary key,
+    api_id      bigint                                      comment '接口id',
+    name    varchar(255)                            not null comment '接口名称',
+    api_description varchar(255)                            comment '接口描述',
+    uri     varchar(255)                       not null comment '接口uri',
+    host    varchar(255)                       not null comment '接口host',
+    method  varchar(255)                       not null comment '接口请求方法',
+    requestHeader text                            null comment '接口请求头',
+    responseHeader text                           null comment '接口响应头',
+    requestParams text                            null comment '接口post请求参数',
+    getRequestParams text                        null comment '接口请求体参数',
+    user_id     bigint                             not null comment '用户id',
+    status      tinyint  default 0                 not null comment '审核状态 1 提交（还没审核） 2 审核失败 3 人工审核 4 人工审核通过 8 审核通过（待发布） 9 已经发布',
+    description varchar(255)                       null comment '审核描述',
+    createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete    tinyint  default 0                 not null comment '是否删除',
+    constraint id
+        unique (id)
+)
+    comment 'api接口审核表';
+
+
+

@@ -17,6 +17,7 @@
         <module>api-weather-interface</module>
         <module>api-test-interface</module>
         <module>test</module>
+        <module>audit-service</module>
     </modules>
 
     <properties>
