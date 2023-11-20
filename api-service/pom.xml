@@ -18,6 +18,7 @@
         <module>api-test-interface</module>
         <module>test</module>
         <module>audit-service</module>
+        <module>gpt-service</module>
     </modules>
 
     <properties>
