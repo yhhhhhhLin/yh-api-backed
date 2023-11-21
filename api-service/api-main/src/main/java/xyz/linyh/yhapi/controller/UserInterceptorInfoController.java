@@ -57,6 +57,7 @@ public class UserInterceptorInfoController {
         if (userInterfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         UserInterfaceinfo userInterfaceInfo = new UserInterfaceinfo();
         userInterfaceInfo.setStatus(0);
 
@@ -69,8 +70,10 @@ public class UserInterceptorInfoController {
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
+
         long newInterfaceInfoId = userInterfaceInfo.getId();
         return ResultUtils.success(newInterfaceInfoId);
+
     }
 
     /**

@@ -35,6 +35,9 @@ public class ApiInterfaceAudit implements Serializable {
 
     private Long userId;
 
+    /**
+     * 审核状态 1 提交（还没审核） 2 gpt审核失败 3 gpt审核成功 4 人工审核中 5 人工审核通过 6 审核不通过 9 已经发布';
+     */
     private Integer status;
 
     private String description;

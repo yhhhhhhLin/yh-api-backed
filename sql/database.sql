@@ -107,7 +107,7 @@ create table if not exists ApiInterfaceAudit
     requestParams text                            null comment '接口post请求参数',
     getRequestParams text                        null comment '接口请求体参数',
     user_id     bigint                             not null comment '用户id',
-    status      tinyint  default 0                 not null comment '审核状态 1 提交（还没审核） 2 审核失败 3 人工审核 4 人工审核通过 8 审核通过（待发布） 9 已经发布',
+    status      tinyint  default 0                 not null comment ' 审核状态 1 提交（还没审核） 2 gpt审核失败 3 gpt审核成功 4 人工审核中 5 人工审核通过 6 审核不通过 9 已经发布',
     description varchar(255)                       null comment '审核描述',
     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',

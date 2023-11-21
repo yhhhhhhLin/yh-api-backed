@@ -1,18 +1,19 @@
-package xyz.linyh.model.apiaudit.eneitys;
+package xyz.linyh.model.gpt.eneitys;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
+/**
+ * gpt请求message单个实体类
+ * @author lin
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MsgRoleAndContent implements Serializable {
+public class GPTMessage {
 
     private String role;
 
-    private String content;
-
+    private Object content;
 }

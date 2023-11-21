@@ -10,5 +10,17 @@ import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 * @createDate 2023-11-20 09:33:12
 */
 public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
-//    public
+
+    /**
+     * 发送一个审核请求到gpt
+     * @param audit
+     */
+    public void sendAuditInterfaceMsgToGpt(ApiInterfaceAudit audit);
+
+    /**
+     * 更新审核的接口的code和msg
+     * @param
+     */
+    public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg);
 }
+

@@ -45,5 +45,6 @@ public class TestController {
         apiInterfaceAudit.setUpdatetime(new Date());
         apiInterfaceAudit.setCreatetime(new Date());
         apiInterfaceAuditService.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
+//        apiInterfaceAuditService.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
     }
 }
