@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 //不加载数据库
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-//@EnableDubbo(scanBasePackages = "xyz.linyh.yhapi")
 @EnableDubbo
 public class YhapiGatewayApplication {
 

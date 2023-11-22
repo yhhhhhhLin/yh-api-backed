@@ -97,7 +97,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
             }
 
         }catch (InterruptedException e){
-            log.info("接口处理异常{}",e);
+            log.info("接口处理异常{}",e.getMessage());
         }finally {
             semaphore.release();
         }

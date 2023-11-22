@@ -1,5 +1,7 @@
 # api平台微服务版本
 
+> 语雀日志: [开发日志](https://www.yuque.com/u28887180/qlq65u/gvdo85496tegubcr?singleDoc#)
+
 ## 部署
 利用docker进行部署前端和后端
 部署直接将仓库根路径下的docker-compose.yml和init目录下的所有文件复制到自己电脑
