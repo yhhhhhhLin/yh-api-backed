@@ -98,8 +98,8 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数错误");
         }
 //        还需要校验uri只能唯一目前
-        ApiInterfaceAudit one = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getName, audit.getName()));
-        if(one!=null){
+        List<ApiInterfaceAudit> list = this.list(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getUri, audit.getUri()));
+        if(list.size()>1){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口名称已经存在");
         }
         audit.setCreatetime(new Date());
