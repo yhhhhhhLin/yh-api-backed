@@ -47,7 +47,8 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
 //        将用户id保存到请求头中
         ServerHttpRequest newRequest = exchange.getRequest().mutate().header("userId", userId.toString()).build();
-//        log.info("{} id通过了请求token认证",userId);
+        log.info("{} id通过了请求token认证",userId);
+
         exchange.mutate().request(newRequest);
 //        验证成功，执行下一个filter
         return chain.filter(exchange);

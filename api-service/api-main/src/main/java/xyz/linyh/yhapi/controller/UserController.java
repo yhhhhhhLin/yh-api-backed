@@ -17,14 +17,12 @@ import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.model.user.dto.*;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserVO;
-import xyz.linyh.yhapi.annotation.AuthCheck;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.yhapi.service.UserService;
-import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,8 +36,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
-    // region 登录相关
 
     /**
      * 用户注册
@@ -81,10 +77,11 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.userLogin(userAccount, userPassword, request);
-//        todo 生成token 返回前端
         String token = JwtUtils.generateToken(String.valueOf(user.getId()));
+
+//        保存用户信息到redis中
+        userService.saveUserToRedis(user, String.valueOf(user.getId()));
         return ResultUtils.success(token);
-//        return ResultUtils.success(user);
     }
 
     /**
@@ -153,7 +150,8 @@ public class UserController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean b = userService.removeById(deleteRequest.getId());
+        Boolean b = userService.removeUserById(deleteRequest.getId());
+
         return ResultUtils.success(b);
     }
 
@@ -172,7 +170,8 @@ public class UserController {
         }
         User user = new User();
         BeanUtils.copyProperties(userUpdateRequest, user);
-        boolean result = userService.updateById(user);
+        Boolean result = userService.updateUserById(user);
+
         return ResultUtils.success(result);
     }
 
@@ -185,14 +184,8 @@ public class UserController {
         if (anyUserUpdateRequest == null || anyUserUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = new User();
-        BeanUtils.copyProperties(anyUserUpdateRequest, user);
-        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(User::getId,anyUserUpdateRequest.getId())
-                .set(User::getUserName,anyUserUpdateRequest.getUserName())
-                .set(User::getGender,anyUserUpdateRequest.getGender())
-                .set(User::getUserAvatar,anyUserUpdateRequest.getUserAvatar());
-        boolean result = userService.update(wrapper);
+        User user = userService.getLoginUser(request);
+        Boolean result = userService.updateUserBySelf(user.getId(),anyUserUpdateRequest);
         return ResultUtils.success(result);
     }
 
@@ -228,18 +221,8 @@ public class UserController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        try {
-            Map map = NonCollidingAccessKeyGenerator.generAkAndSk();
-            LambdaUpdateWrapper<User> setWrpper = wrapper.eq(User::getId, id)
-                    .set(User::getAccessKey, map.get("accessKey"))
-                    .set(User::getSecretKey, map.get("secretKey"));
-            userService.update(setWrpper);
-            return ResultUtils.success("true");
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
-        }
-
-
+        Boolean result = userService.updateUserAkSk(id);
+        return ResultUtils.success(result);
     }
 
     /**

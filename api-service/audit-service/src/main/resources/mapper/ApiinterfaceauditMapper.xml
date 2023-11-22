@@ -6,9 +6,9 @@
 
     <resultMap id="BaseResultMap" type="xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="apiId" column="api_id" jdbcType="BIGINT"/>
+            <result property="apiId" column="apiId" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="apiDescription" column="api_description" jdbcType="VARCHAR"/>
+            <result property="apiDescription" column="apiDescription" jdbcType="VARCHAR"/>
             <result property="uri" column="uri" jdbcType="VARCHAR"/>
             <result property="host" column="host" jdbcType="VARCHAR"/>
             <result property="method" column="method" jdbcType="VARCHAR"/>

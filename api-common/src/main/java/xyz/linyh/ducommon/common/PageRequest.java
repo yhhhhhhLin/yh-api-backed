@@ -30,4 +30,17 @@ public class PageRequest {
      * 排序顺序（默认升序）
      */
     private String sortOrder = CommonConstant.SORT_ORDER_ASC;
+
+
+    /**
+     * 用来校验传入的请求参数是否合法
+     */
+    public void check(){
+        if (current < 1) {
+            current = 1;
+        }
+        if (pageSize < 1) {
+            pageSize = 10;
+        }
+    }
 }

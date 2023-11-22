@@ -3,6 +3,7 @@ package xyz.linyh.audit.service.impl;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -77,9 +78,34 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         LambdaUpdateWrapper<ApiInterfaceAudit> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(ApiInterfaceAudit::getId,auditId);
         wrapper.set(ApiInterfaceAudit::getDescription,msg);
-        wrapper.set(ApiInterfaceAudit::getStatus,code,code==200? AuditConstant.AUDIT_STATUS_GPT_SUCCESS:AuditConstant.AUDIT_STATUS_GPT_FAIL);
+        code = Integer.valueOf((code==200? AuditConstant.AUDIT_STATUS_GPT_SUCCESS:AuditConstant.AUDIT_STATUS_GPT_FAIL));
+        wrapper.set(ApiInterfaceAudit::getStatus,code);
         wrapper.set(ApiInterfaceAudit::getUpdatetime,new Date());
         this.update(wrapper);
+//        this.update(wrapper);
+    }
+
+    /**
+     * 保存对应接口审核的数据到数据库
+     *
+     * @param audit
+     * @return
+     */
+    @Override
+    public ApiInterfaceAudit saveAuditInterface(ApiInterfaceAudit audit) {
+//        参数校验
+        if(audit==null ){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数错误");
+        }
+//        还需要校验uri只能唯一目前
+        ApiInterfaceAudit one = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getName, audit.getName()));
+        if(one!=null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口名称已经存在");
+        }
+        audit.setCreatetime(new Date());
+        audit.setStatus(Integer.valueOf(AuditConstant.AUDIT_STATUS_SUMMIT));
+        this.save(audit);
+        return audit;
     }
 
     /**

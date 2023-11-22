@@ -1,4 +1,4 @@
-package xyz.linyh.yhapi.service.impl;
+package xyz.linyh.yhapi.service.impl.dubbo;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.dubbo.config.annotation.DubboService;

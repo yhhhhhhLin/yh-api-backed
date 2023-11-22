@@ -1,23 +1,33 @@
 package xyz.linyh.yhapi.service.impl;
 
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.mapper.UserMapper;
+import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
+import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import static xyz.linyh.ducommon.constant.UserConstant.ADMIN_ROLE;
-import static xyz.linyh.ducommon.constant.UserConstant.USER_LOGIN_STATE;
+import java.util.Map;
+
+import static xyz.linyh.ducommon.constant.RedisConstant.USER_ID_PREFIX;
+import static xyz.linyh.ducommon.constant.UserConstant.*;
 
 
 /**
@@ -33,6 +43,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
+    @Autowired
+    private RedisService redisService;
     /**
      * 盐值，混淆密码
      */
@@ -117,29 +129,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getLoginUser(HttpServletRequest request) {
 
-//        // 先判断是否已登录
-//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-//        User currentUser = (User) userObj;
-//        if (currentUser == null || currentUser.getId() == null) {
-//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-//        }
-//        // 从数据库查询（追求性能的话可以注释，直接走缓存）
-//        long userId = currentUser.getId();
-//        currentUser = this.getById(userId);
-//        if (currentUser == null) {
-//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-//        }
-//        return currentUser;
-
-//        可以直接在请求头获取userId
-        Long userId = Long.valueOf(request.getHeader("userId"));
+        String userId = request.getHeader(USER_Id);
+        if(userId==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
 //        查询数据库获取对应用户
-        User user = this.getById(userId);
+        User user = getUserByToken(USER_ID_PREFIX+userId);
         if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
 
         return user;
+    }
+
+    /**
+     * 根据用户id获取当前登录用户
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public User getLoginUser(Long userId) {
+        if(userId==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+
+        String json = redisService.get(USER_ID_PREFIX + userId);
+        return JSONUtil.toBean(json,User.class);
     }
 
     /**
@@ -168,8 +184,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
+//        删除对应用户redis中的信息
+        String userId = request.getHeader(USER_Id);
+        redisService.delete(userId);
         return true;
     }
+
 
     /**
      * 根据用户ak获取用户信息
@@ -184,6 +204,130 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccessKey, accessKey));
         return user;
+    }
+
+    /**
+     * 把用户信息保存到redis中
+     *
+     * @param user
+     * @param userId
+     */
+    @Override
+    public void saveUserToRedis(User user, String userId) {
+        if(user==null || userId==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        //        保存到redis中
+        redisService.saveStringToRedis(USER_ID_PREFIX+userId, JSONUtil.toJsonStr(user));
+    }
+
+    /**
+     * 根据用户token获取对应token信息
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public User getUserByToken(String token) {
+        if(token==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        String json = redisService.get(token);
+        User user = JSONUtil.toBean(json, User.class);
+        if(user==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return user;
+    }
+
+    @Override
+    public Boolean removeUserById(Long id) {
+
+        boolean b = this.removeById(id);
+//        删除对应redis数据
+        redisService.delete(USER_ID_PREFIX+id);
+        return b;
+    }
+
+    /**
+     * 管理员修改用户信息
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public Boolean updateUserById(User user) {
+        boolean result =this.updateById(user);
+
+        if(result){
+            redisService.update(String.valueOf(user.getId()),JSONUtil.toJsonStr(user));
+        }
+        return result;
+    }
+
+    /**
+     * 用户自己更新个人信息
+     *
+     * @param anyUserUpdateRequest
+     * @return
+     */
+    @Override
+    public Boolean updateUserBySelf(Long userId,AnyUserUpdateRequest anyUserUpdateRequest) {
+        if(userId==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(User::getId,userId)
+                .set(User::getUserName,anyUserUpdateRequest.getUserName())
+                .set(User::getGender,anyUserUpdateRequest.getGender())
+                .set(User::getUserAvatar,anyUserUpdateRequest.getUserAvatar());
+        boolean result = this.update(wrapper);
+
+       if(!result){
+           return false;
+       }
+        User user = this.getById(userId);
+
+       redisService.update(String.valueOf(anyUserUpdateRequest.getId()),JSONUtil.toJsonStr(user));
+
+        return true;
+    }
+
+    /**
+     * 更新用户ak和sk
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Boolean updateUserAkSk(Long id) {
+        if(id==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        Map map = null;
+        try {
+            map = NonCollidingAccessKeyGenerator.generAkAndSk();
+        } catch (Exception e) {
+            log.error("生成随机ak和sk失败");
+            return false;
+
+        }
+
+        boolean update = this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, id)
+                .set(User::getAccessKey, map.get("accessKey"))
+                .set(User::getSecretKey, map.get("secretKey")));
+
+
+        User user = this.getById(id);
+        if(user==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        redisService.update(USER_ID_PREFIX+id,JSONUtil.toJsonStr(user));
+        return update;
+
     }
 
 }

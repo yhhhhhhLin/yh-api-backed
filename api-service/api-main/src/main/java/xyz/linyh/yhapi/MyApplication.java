@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableAsync
 @MapperScan("xyz.linyh.yhapi.mapper")
-//@EnableDubbo(scanBasePackages = "xyz.linyh.dubbo")
 @EnableDubbo
 public class MyApplication {
 

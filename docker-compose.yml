@@ -64,7 +64,6 @@ services:
       timeout: 10s
       retries: 5
 
-
   main:
     image: 1583427850/yhapi-main
     ports:

@@ -1,6 +1,8 @@
-package xyz.linyh.dubboapi.service.audit;
+package xyz.linyh.dubboapi.service;
 
-
+/**
+ * @author lin
+ */
 public interface DubboAuditInterfaceService {
 
     /**
@@ -9,6 +11,6 @@ public interface DubboAuditInterfaceService {
      * @param code
      * @param msg
      */
-    public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg);
+    void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg);
 
 }

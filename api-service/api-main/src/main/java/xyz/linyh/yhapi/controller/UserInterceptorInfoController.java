@@ -17,7 +17,7 @@ import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
-import xyz.linyh.yhapi.annotation.AuthCheck;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoUpdateRequest;
 import xyz.linyh.model.userinterfaceinfo.dto.UserInterfaceInfoAddRequest;

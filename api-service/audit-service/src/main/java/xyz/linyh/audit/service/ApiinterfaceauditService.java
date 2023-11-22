@@ -22,5 +22,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @param
      */
     public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg);
+
+    /**
+     * 保存对应接口审核的数据到数据库
+     * @param audit
+     * @return
+     */
+    ApiInterfaceAudit saveAuditInterface(ApiInterfaceAudit audit);
 }
 

@@ -47,6 +47,8 @@ public interface AuditConstant {
      */
     String AUDIT_STATUS_PUBLISH = "9";
 
+    String audit_type_interface = null;
+
 
 
 

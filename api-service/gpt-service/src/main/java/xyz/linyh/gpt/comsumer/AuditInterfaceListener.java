@@ -8,17 +8,13 @@ import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xyz.linyh.dubboapi.service.audit.DubboAuditInterfaceService;
+import xyz.linyh.dubboapi.service.DubboAuditInterfaceService;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.gpt.service.GptSendService;
 import xyz.linyh.model.gpt.dtos.InterfaceResult;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
 
-import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -61,9 +57,11 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 
     public void processMessage(List<GPTMessage> messages) {
 
+
         try {
 
             semaphore.acquire();
+            Thread.sleep(1000);
             log.info("获取一个信号量，开始处理消息..................");
             int maxTry = 5;
             int nowTry = 0;
@@ -91,7 +89,11 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 //            todo 刷新对应数据库信息
                 log.info("审核完成，开始去调用audit模块的相关服务..................");
                 System.out.println(interfaceResult);
-                dubboAuditInterfaceService.updateAuditInterfaceCodeAndMsg(interfaceResult.getId(), Integer.valueOf(interfaceResult.getCode()), interfaceResult.getMsg());
+                try {
+                    dubboAuditInterfaceService.updateAuditInterfaceCodeAndMsg(interfaceResult.getId(), Integer.valueOf(interfaceResult.getCode()), interfaceResult.getMsg());
+                } catch (NumberFormatException e) {
+                    log.info("更新审核接口的code和msg出现异常: {}", e.getMessage());
+                }
             }
 
         }catch (InterruptedException e){

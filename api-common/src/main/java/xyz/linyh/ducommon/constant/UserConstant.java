@@ -12,6 +12,8 @@ public interface UserConstant {
      */
     String USER_LOGIN_STATE = "userLoginState";
 
+    String USER_Id = "userId";
+
     /**
      * 系统用户 id（虚拟用户）
      */

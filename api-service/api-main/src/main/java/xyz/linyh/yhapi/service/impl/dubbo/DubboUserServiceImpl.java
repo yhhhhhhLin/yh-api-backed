@@ -1,4 +1,4 @@
-package xyz.linyh.yhapi.service.impl;
+package xyz.linyh.yhapi.service.impl.dubbo;
 
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,4 +16,17 @@ public class DubboUserServiceImpl implements DubboUserService {
     public User getUserByAk(String accessKey) {
         return userService.getUserByAk(accessKey);
     }
+
+    /**
+     * 根据id获取当前登录用户
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public User getLoginUser(String userId) {
+        return userService.getLoginUser(Long.valueOf(userId));
+    }
+
+
 }

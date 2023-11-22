@@ -23,7 +23,7 @@ import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
-import xyz.linyh.yhapi.annotation.AuthCheck;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;

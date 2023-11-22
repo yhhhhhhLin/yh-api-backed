@@ -5,8 +5,7 @@ import xyz.linyh.model.user.entitys.User;
 
 /**
  * 用户服务
- *
- *
+ * @author lin
  */
 public interface DubboUserService{
 
@@ -18,4 +17,10 @@ public interface DubboUserService{
      */
     User getUserByAk(String accessKey);
 
+    /**
+     * 根据id获取当前登录用户
+     * @param userId
+     * @return
+     */
+    User getLoginUser(String userId);
 }

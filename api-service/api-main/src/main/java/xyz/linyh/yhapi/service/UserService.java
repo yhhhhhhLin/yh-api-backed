@@ -2,6 +2,7 @@ package xyz.linyh.yhapi.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,14 @@ public interface UserService extends IService<User> {
      */
     User getLoginUser(HttpServletRequest request);
 
+
+    /**
+     * 根据用户id获取当前登录用户
+     * @param userId
+     * @return
+     */
+    User getLoginUser(Long userId);
+
     /**
      * 是否为管理员
      *
@@ -63,4 +72,41 @@ public interface UserService extends IService<User> {
      * @return
      */
     User getUserByAk(String accessKey);
+
+    /**
+     * 把用户信息保存到redis中
+     * @param user
+     * @param token
+     */
+    void saveUserToRedis(User user, String token);
+
+    /**
+     *根据用户token获取对应token信息
+     * @param token
+     * @return
+     */
+    User getUserByToken(String token);
+
+    Boolean removeUserById(Long id);
+
+    /**
+     * 管理员修改用户信息
+     * @param user
+     * @return
+     */
+    Boolean updateUserById(User user);
+
+    /**
+     * 用户自己更新个人信息
+     * @param anyUserUpdateRequest
+     * @return
+     */
+    Boolean updateUserBySelf(Long userId,AnyUserUpdateRequest anyUserUpdateRequest);
+
+    /**
+     * 更新用户ak和sk
+     * @param id
+     * @return
+     */
+    Boolean updateUserAkSk(Long id);
 }
