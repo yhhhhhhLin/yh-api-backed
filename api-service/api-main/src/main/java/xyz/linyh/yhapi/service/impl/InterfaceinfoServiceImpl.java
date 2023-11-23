@@ -28,8 +28,9 @@ import xyz.linyh.yhapi.service.InterfaceinfoService;
 public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, Interfaceinfo>
     implements InterfaceinfoService{
 
-//    @Autowired
-//    private ApiClientConfig apiClientConfig;
+
+
+
 
     /**
      * 对接口信息进行校验
@@ -39,6 +40,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
      */
     @Override
     public void validInterfaceInfo(Interfaceinfo interfaceInfo, boolean add) {
+
         if (interfaceInfo == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -50,7 +52,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         String uri = interfaceInfo.getUri();
         String requestHeader = interfaceInfo.getRequestHeader();
         String responseHeader = interfaceInfo.getResponseHeader();
-        Integer status = interfaceInfo.getStatus();
 
         // 创建时，所有参数必须非空
         if (add) {
@@ -61,9 +62,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (StringUtils.isNotBlank(name) && name.length() > 255) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
         }
-//        if ((status!=0 && status!=1)) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
 
     }
 

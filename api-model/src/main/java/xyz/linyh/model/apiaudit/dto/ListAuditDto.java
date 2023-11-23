@@ -13,7 +13,7 @@ public class ListAuditDto extends PageRequest {
     /**
      * 待审核的接口名称
      */
-    private String auditName;
+    private String name;
 
     /**
      * 审核的内容类型
@@ -23,7 +23,7 @@ public class ListAuditDto extends PageRequest {
     /**
      * 审核状态
      */
-    private String auditStatus;
+    private String status;
 
 
 

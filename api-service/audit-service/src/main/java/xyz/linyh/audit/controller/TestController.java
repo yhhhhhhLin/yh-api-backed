@@ -28,23 +28,23 @@ public class TestController {
 
     @GetMapping("/send2")
     public void testSendToGpt() {
-        ApiInterfaceAudit apiInterfaceAudit = new ApiInterfaceAudit();
-        apiInterfaceAudit.setId(1L);
-        apiInterfaceAudit.setApiDescription("全网搜索并获取暴力视频");
-        apiInterfaceAudit.setName("获取暴力视频");
-        apiInterfaceAudit.setUri("/get");
-        apiInterfaceAudit.setHost("localhost:8090");
-        apiInterfaceAudit.setMethod("POST");
-        apiInterfaceAudit.setResponseheader("无");
-        apiInterfaceAudit.setRequestheader("无");
-        apiInterfaceAudit.setRequestparams("无");
-        apiInterfaceAudit.setGetrequestparams("无");
-        apiInterfaceAudit.setUserId(1L);
-        apiInterfaceAudit.setStatus(1);
-        apiInterfaceAudit.setDescription("");
-        apiInterfaceAudit.setUpdatetime(new Date());
-        apiInterfaceAudit.setCreatetime(new Date());
-        apiInterfaceAuditService.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
+//        ApiInterfaceAudit apiInterfaceAudit = new ApiInterfaceAudit();
+//        apiInterfaceAudit.setId(1L);
+//        apiInterfaceAudit.setApiDescription("全网搜索并获取暴力视频");
+//        apiInterfaceAudit.setName("获取暴力视频");
+//        apiInterfaceAudit.setUri("/get");
+//        apiInterfaceAudit.setHost("localhost:8090");
+//        apiInterfaceAudit.setMethod("POST");
+//        apiInterfaceAudit.setResponseheader("无");
+//        apiInterfaceAudit.setRequestheader("无");
+//        apiInterfaceAudit.setRequestparams("无");
+//        apiInterfaceAudit.setGetrequestparams("无");
+//        apiInterfaceAudit.setUserId(1L);
+//        apiInterfaceAudit.setStatus(1);
+//        apiInterfaceAudit.setDescription("");
+//        apiInterfaceAudit.setUpdatetime(new Date());
+//        apiInterfaceAudit.setCreatetime(new Date());
 //        apiInterfaceAuditService.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
+////        apiInterfaceAuditService.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
     }
 }

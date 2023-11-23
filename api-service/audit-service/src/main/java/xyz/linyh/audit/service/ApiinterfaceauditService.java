@@ -2,6 +2,7 @@ package xyz.linyh.audit.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 
 /**
@@ -29,5 +30,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @return
      */
     ApiInterfaceAudit saveAuditInterface(ApiInterfaceAudit audit);
+
+    /**
+     * 修改审核的状态和审核建议
+     * @param dto
+     * @return
+     */
+    Boolean updateStatusAndDescription(AuditStatusDto dto);
 }
 

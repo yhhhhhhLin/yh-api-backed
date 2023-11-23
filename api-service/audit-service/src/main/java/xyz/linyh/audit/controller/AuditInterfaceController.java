@@ -10,6 +10,7 @@ import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.dto.ListAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author lin
  */
 @RestController
-@RequestMapping("/interface/audit")
+@RequestMapping("/audit/interface")
 @Slf4j
 public class AuditInterfaceController {
 
@@ -31,7 +32,7 @@ public class AuditInterfaceController {
      * 新增新的审核
      * @return 返回是否成功
      */
-    @PostMapping("/")
+    @PostMapping
     public BaseResponse addAudit(@RequestBody ApiInterfaceAudit audit, HttpServletRequest request){
         if(audit==null){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"audit参数不能为空");
@@ -57,7 +58,7 @@ public class AuditInterfaceController {
      * @return 返回所有审核的接口
      */
     @AuthCheck(mustRole = "admin")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public BaseResponse<Page<ApiInterfaceAudit>> listAudit(@RequestBody ListAuditDto dto,HttpServletRequest request){
 //        参数校验
         if(dto==null){
@@ -67,8 +68,8 @@ public class AuditInterfaceController {
         dto.check();
         Page<ApiInterfaceAudit> page = new Page<>(dto.getCurrent(), dto.getPageSize());
         Page<ApiInterfaceAudit> pageList = apiinterfaceauditService.page(page, Wrappers.<ApiInterfaceAudit>lambdaQuery()
-                .like(dto.getAuditName()!=null,ApiInterfaceAudit::getName, dto.getAuditName())
-                .eq(dto.getAuditStatus() != null, ApiInterfaceAudit::getStatus, dto.getAuditStatus()));
+                .like(dto.getName()!=null,ApiInterfaceAudit::getName, dto.getName())
+                .eq(dto.getStatus() != null, ApiInterfaceAudit::getStatus, dto.getStatus()).orderByDesc(ApiInterfaceAudit::getCreateTime));
         return ResultUtils.success(pageList);
     }
 
@@ -87,6 +88,21 @@ public class AuditInterfaceController {
      */
     @DeleteMapping("/{id}")
     public BaseResponse<Object> deleteAudit(@PathVariable Long id){
+        return null;
+    }
+
+    /**
+     * 修改某一个接口的状态
+     *
+     * @return
+     */
+    @PostMapping("/status")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> passInterface(@RequestBody AuditStatusDto dto){
+        if(dto==null ||dto.getStatus()==null || dto.getAuditId() == null){
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"status或auditId参数不能为空");
+        }
+        Boolean result = apiinterfaceauditService.updateStatusAndDescription(dto);
         return null;
     }
 

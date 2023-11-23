@@ -33,9 +33,9 @@ public class AuthInterceptor {
     /**
      * 执行拦截，用来判断是否是管理员或是否被封号 aop
      *
-     * @param joinPoint
-     * @param authCheck
-     * @return
+     * @param joinPoint 切入点
+     * @param authCheck 认证校验
+     * @return 是否通过
      */
     @Around("@annotation(authCheck)")
     public Object doInterceptor(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {

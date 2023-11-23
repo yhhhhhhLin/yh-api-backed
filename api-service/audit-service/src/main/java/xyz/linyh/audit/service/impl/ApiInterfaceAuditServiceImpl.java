@@ -16,6 +16,7 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 import xyz.linyh.model.apiaudit.eneitys.AuditCommon;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
@@ -80,7 +81,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         wrapper.set(ApiInterfaceAudit::getDescription,msg);
         code = Integer.valueOf((code==200? AuditConstant.AUDIT_STATUS_GPT_SUCCESS:AuditConstant.AUDIT_STATUS_GPT_FAIL));
         wrapper.set(ApiInterfaceAudit::getStatus,code);
-        wrapper.set(ApiInterfaceAudit::getUpdatetime,new Date());
+        wrapper.set(ApiInterfaceAudit::getUpdateTime,new Date());
         this.update(wrapper);
 //        this.update(wrapper);
     }
@@ -102,10 +103,22 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         if(!list.isEmpty()){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口名称已经存在");
         }
-        audit.setCreatetime(new Date());
+        audit.setCreateTime(new Date());
         audit.setStatus(Integer.valueOf(AuditConstant.AUDIT_STATUS_SUMMIT));
         this.save(audit);
         return audit;
+    }
+
+    /**
+     * TODO 修改审核的状态和审核建议
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public Boolean updateStatusAndDescription(AuditStatusDto dto) {
+
+        return null;
     }
 
     /**

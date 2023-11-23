@@ -25,6 +25,7 @@ public class UserInterfaceinfo implements Serializable {
     /**
      * 用户id
      */
+    
     private Long userId;
 
     /**
