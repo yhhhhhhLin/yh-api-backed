@@ -10,7 +10,7 @@
 sudo docker-compose up
 ```
 
-如果需要初始化数据，可以在init在init目录下添加对应sql语句
+如果需要初始化数据，可以在init目录下添加对应sql语句
 ```sql
 
 ```
