@@ -59,7 +59,6 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 
 
         try {
-
             semaphore.acquire();
             Thread.sleep(1000);
             log.info("获取一个信号量，开始处理消息..................");
@@ -75,6 +74,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 
                 if (interfaceResult == null) {
                     log.info("重试次数为:{}", nowTry);
+
                     nowTry++;
 //                    限制发送的速度
                     Thread.sleep(5000);

@@ -83,7 +83,6 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         wrapper.set(ApiInterfaceAudit::getStatus,code);
         wrapper.set(ApiInterfaceAudit::getUpdateTime,new Date());
         this.update(wrapper);
-//        this.update(wrapper);
     }
 
     /**
@@ -110,13 +109,14 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     }
 
     /**
-     * TODO 修改审核的状态和审核建议
      *
-     * @param dto
+     * @param auditId 要修改的审核id
+     * @param status 修改后的状态
+     * @param description 修改建议
      * @return
      */
     @Override
-    public Boolean updateStatusAndDescription(AuditStatusDto dto) {
+    public Boolean updateStatusAndDescription(Long auditId,Integer status,String description) {
 
         return null;
     }

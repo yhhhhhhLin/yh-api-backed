@@ -98,12 +98,13 @@ public class AuditInterfaceController {
      */
     @PostMapping("/status")
     @AuthCheck(mustRole = "admin")
-    public BaseResponse<Boolean> passInterface(@RequestBody AuditStatusDto dto){
+    public BaseResponse<Boolean> auditInterface(@RequestBody AuditStatusDto dto){
         if(dto==null ||dto.getStatus()==null || dto.getAuditId() == null){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"status或auditId参数不能为空");
         }
-        Boolean result = apiinterfaceauditService.updateStatusAndDescription(dto);
-        return null;
+        apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(dto.getAuditId(),dto.getStatus(),dto.getDescription());
+
+        return ResultUtils.success(true);
     }
 
     /**

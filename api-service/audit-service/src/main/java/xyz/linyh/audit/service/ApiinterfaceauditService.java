@@ -33,9 +33,11 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
 
     /**
      * 修改审核的状态和审核建议
-     * @param dto
-     * @return
+     * @param auditId 要修改的审核data的id
+     * @param status 修改后的状态
+     * @param description 修改建议
+     * @return 返回是否修改成功
      */
-    Boolean updateStatusAndDescription(AuditStatusDto dto);
+    Boolean updateStatusAndDescription(Long auditId,Integer status,String description);
 }
 
