@@ -4,6 +4,7 @@ package xyz.linyh.ducommon.constant;
  * 审核相关的常量
  *
  *
+ * @author lin
  */
 public interface AuditConstant {
 

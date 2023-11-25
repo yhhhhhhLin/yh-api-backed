@@ -7,6 +7,7 @@ import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
+import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 import java.util.List;
 
@@ -29,5 +30,17 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
     public List<Interfaceinfo> getAllInterface() {
         List<Interfaceinfo> interfaceInfos = interfaceinfoService.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getStatus, InterfaceInfoConstant.STATIC_USE));
         return interfaceInfos;
+    }
+
+    /**
+     * 添加新的接口到数据库中
+     *
+     * @param interfaceinfo
+     * @return 添加后的接口id
+     */
+    @Override
+    public Long addInterface(Interfaceinfo interfaceinfo) {
+        interfaceinfoService.save(interfaceinfo);
+        return interfaceinfo.getId();
     }
 }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
@@ -36,10 +37,10 @@ import java.util.stream.Collectors;
 public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoMapper, UserInterfaceinfo>
     implements UserinterfaceinfoService {
 
-    @Resource
+    @Autowired
     private UserinterfaceinfoMapper userinterfaceinfoMapper;
 
-    @Resource
+    @Autowired
     private InterfaceinfoService interfaceinfoService;
 
 

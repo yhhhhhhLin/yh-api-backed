@@ -39,5 +39,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @return 返回是否修改成功
      */
     Boolean updateStatusAndDescription(Long auditId,Integer status,String description);
+
+    /**
+     * 接口审核通过
+     * @param auditId
+     * @param status
+     */
+    void passInterfaceAudit(Long auditId, Integer status);
 }
 

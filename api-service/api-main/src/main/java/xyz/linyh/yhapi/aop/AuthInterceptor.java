@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,6 +14,7 @@ import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.enums.UserRoleEnum;
 import xyz.linyh.ducommon.annotation.AuthCheck;
+import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yhapi.service.UserService;
 
 import javax.annotation.Resource;
@@ -27,8 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class AuthInterceptor {
 
-    @Resource
+    @Autowired
     private UserService userService;
+
 
     /**
      * 执行拦截，用来判断是否是管理员或是否被封号 aop

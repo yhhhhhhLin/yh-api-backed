@@ -27,6 +27,13 @@ public interface DubboInterfaceinfoService{
      */
     List<Interfaceinfo> getAllInterface();
 
+    /**
+     * 添加新的接口到数据库中
+     * @param interfaceinfo
+     * @return 添加后的接口id
+     */
+    Long addInterface(Interfaceinfo interfaceinfo);
+
 
 
 }

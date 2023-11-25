@@ -11,7 +11,7 @@ RUN apk --no-cache add curl
 # 复制项目 JAR 文件到镜像中
 COPY ./api-service/api-weather-interface/target/api-weather-interface-1.0-SNAPSHOT.jar /app/api-weather-interface-1.0-SNAPSHOT.jar
 
-COPY ./config/nacos_config.zip /app/nacos_config.zip
+COPY config/nacos_config.zip /app/nacos_config.zip
 
 COPY ./script/init_nacos.sh /app/init_nacos.sh
 

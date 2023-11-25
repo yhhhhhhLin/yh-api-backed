@@ -1,13 +1,3 @@
-server:
-  port: 9529
 spring:
-  application:
-    name: yhapi-backed-gateway
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
-      config:
-        server-addr: localhost:8848
-        file-extension: yml
-#        namespace: yhapi-default
+  profiles:
+    active: dev

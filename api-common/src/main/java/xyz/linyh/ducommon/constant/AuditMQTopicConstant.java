@@ -12,5 +12,7 @@ public interface AuditMQTopicConstant {
      */
     String API_INTERFACE_AUDIT_TOPIC = "api-interface-audit_topic";
 
+    String API_INTERFACE_ADD_TOPIC = "api-interface-add_topic";
+
 
 }

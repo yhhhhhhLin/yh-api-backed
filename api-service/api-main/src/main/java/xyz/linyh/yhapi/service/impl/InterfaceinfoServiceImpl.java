@@ -13,6 +13,7 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
+import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.config.ApiClientConfig;
 import xyz.linyh.yapiclientsdk.service.ApiServiceImpl;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
@@ -29,9 +30,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     implements InterfaceinfoService{
 
 
-
-
-
     /**
      * 对接口信息进行校验
      *
@@ -45,7 +43,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        Long id = interfaceInfo.getId();
         String name = interfaceInfo.getName();
         String method = interfaceInfo.getMethod();
         String description = interfaceInfo.getDescription();
@@ -75,6 +72,28 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 .eq(Interfaceinfo::getMethod,method)
         );
         return interfaceinfo;
+    }
+
+    /**
+     * 刷新网关的接口缓存数据
+     *
+     * @return
+     */
+    @Autowired
+    private ApiClient apiClient;
+    @Override
+    public Boolean updateGatewayCache() {
+        String baseUrl = apiClient.getBaseUrl();
+        if(baseUrl==null){
+            return false;
+        }
+//        将最后的地址后面的/interface去掉
+        if(baseUrl.endsWith("/interface")){
+            baseUrl = baseUrl.replace("/interface","");
+        }
+//      TODO  后面改为常量
+        HttpRequest.get(baseUrl+"/yhapi/routes");
+        return true;
     }
 
 //    /**

@@ -1,25 +1,26 @@
 package xyz.linyh.audit.service.impl;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessagingException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.audit.mapper.ApiinterfaceauditMapper;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
-import org.springframework.stereotype.Service;
+import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
-import xyz.linyh.model.apiaudit.eneitys.AuditCommon;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
+import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,8 +40,8 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     @Autowired
     private RocketMQTemplate rocketMqTemplate;
 
-
-
+    @DubboReference
+    private DubboInterfaceinfoService dubboInterfaceinfoService;
 
 
     /**
@@ -79,7 +80,8 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         LambdaUpdateWrapper<ApiInterfaceAudit> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(ApiInterfaceAudit::getId,auditId);
         wrapper.set(ApiInterfaceAudit::getDescription,msg);
-        code = Integer.valueOf((code==200? AuditConstant.AUDIT_STATUS_GPT_SUCCESS:AuditConstant.AUDIT_STATUS_GPT_FAIL));
+//        code = Integer.valueOf((code==200? AuditConstant.AUDIT_STATUS_GPT_SUCCESS:AuditConstant.AUDIT_STATUS_GPT_FAIL));
+//        TODO 可能还需要判断对应的code是否符合规范
         wrapper.set(ApiInterfaceAudit::getStatus,code);
         wrapper.set(ApiInterfaceAudit::getUpdateTime,new Date());
         this.update(wrapper);
@@ -122,6 +124,52 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     }
 
     /**
+     * 接口审核通过
+     *
+     * @param auditId
+     * @param status
+     */
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void passInterfaceAudit(Long auditId, Integer status) {
+        this.updateAuditInterfaceCodeAndMsg(auditId,status,"审核通过");
+
+        ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
+//        将数据保存到真正的api文档里面
+        Interfaceinfo interfaceinfo = new Interfaceinfo();
+
+        interfaceinfo.setName(apiInterfaceAudit.getName());
+        interfaceinfo.setMethod(apiInterfaceAudit.getMethod());
+        interfaceinfo.setRequestParams(apiInterfaceAudit.getRequestParams());
+        interfaceinfo.setGetRequestParams(apiInterfaceAudit.getGetRequestParams());
+        interfaceinfo.setDescription(apiInterfaceAudit.getApiDescription());
+        interfaceinfo.setUri(apiInterfaceAudit.getUri());
+        interfaceinfo.setHost(apiInterfaceAudit.getHost());
+        interfaceinfo.setRequestHeader(apiInterfaceAudit.getRequestHeader());
+        interfaceinfo.setResponseHeader(apiInterfaceAudit.getResponseHeader());
+        interfaceinfo.setStatus(1);
+        interfaceinfo.setUserId(apiInterfaceAudit.getUserId());
+        interfaceinfo.setCreateTime(apiInterfaceAudit.getCreateTime());
+        interfaceinfo.setUpdateTime(new Date());
+
+        Long apiId = dubboInterfaceinfoService.addInterface(interfaceinfo);
+
+        if(apiId==null){
+//            抛出异常，事务管理
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"审核通过后，保存到真正的api文档里面失败");
+        }
+
+//        保存id到数据库，更新审核状态
+        LambdaUpdateWrapper<ApiInterfaceAudit> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(ApiInterfaceAudit::getId,auditId)
+                .set(ApiInterfaceAudit::getStatus,AuditConstant.AUDIT_STATUS_PUBLISH)
+                .set(ApiInterfaceAudit::getApiId,apiId);
+        this.update(wrapper);
+
+    }
+
+    /**
      * 封装好发送到gpt的list<> messages数据类型
      * @return
      */
@@ -130,7 +178,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         GPTMessage gptMessage = new GPTMessage();
 //       添加请求条件
        gptMessage.setRole("system");
-       gptMessage.setContent("lease review the interface information entered by the user and ask that the content should meet the core socialist values and comply with some domestic legal requirements. You should return a status code 200 (for success) or 0 (for failure) to indicate whether the review was passed, and you should also return a msg to indicate the review recommendation.n input example: {'auditId':1,'auditDescription':'全网搜索并获取暴力视频'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' 获取暴力视频 ','apiDescription':' Search and obtain violent videos ','uri':' /get','host':'localhost:8090','method':'POST','requestheader':' null','responseheader':' None ','requestparams':' None ','getrequestpa rams':' None ','userId':1,'status':1,'description':'','createtime':1700536839419,'updatetime':1700536839419},'auditCreateTime ':1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'name must not contain violence information '}");
+       gptMessage.setContent("lease review the interface information entered by the user and ask that the content should meet the core socialist values and comply with some domestic legal requirements. You should return a status code 3 (for success) or 2 (for failure) to indicate whether the review was passed, and you should also return a msg to indicate the review recommendation.n input example: {'auditId':1,'auditDescription':'全网搜索并获取暴力视频'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' 获取暴力视频 ','apiDescription':' Search and obtain violent videos ','uri':' /get','host':'localhost:8090','method':'POST','requestheader':' null','responseheader':' None ','requestparams':' None ','getrequestpa rams':' None ','userId':1,'status':1,'description':'','createtime':1700536839419,'updatetime':1700536839419},'auditCreateTime ':1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'name must not contain violence information '}");
        messages.add(0,gptMessage);
 
 //       添加要审核的内容
@@ -154,6 +202,8 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 //       auditCommon.setAuditId(audit.getId());
 //       return JSONUtil.toJsonStr(auditCommon);
 //   }
+
+
 
 
 }

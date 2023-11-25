@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
 import xyz.linyh.ducommon.annotation.AuthCheck;
@@ -103,6 +104,10 @@ public class AuditInterfaceController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"status或auditId参数不能为空");
         }
         apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(dto.getAuditId(),dto.getStatus(),dto.getDescription());
+        apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(),dto.getStatus());
+
+//        将数据保存到api接口的数据库中
+
 
         return ResultUtils.success(true);
     }

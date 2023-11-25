@@ -44,14 +44,17 @@ import java.util.Map;
 @Slf4j
 public class InterceptorInfoController {
 
-    @Resource
+    @Autowired
     private InterfaceinfoService interfaceinfoService;
 
-    @Resource
+    @Autowired
     private UserinterfaceinfoService userinterfaceinfoService;
 
-    @Resource
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private ApiClient apiClient;
 
 
     // region 增删改查
@@ -83,7 +86,7 @@ public class InterceptorInfoController {
         }
         long newInterfaceInfoId = interfaceInfo.getId();
 //        todo
-//        Boolean aBoolean = interfaceinfoService.updateGatewayCache();
+        Boolean aBoolean = interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(newInterfaceInfoId);
     }
 
@@ -237,8 +240,7 @@ public class InterceptorInfoController {
 
 
 
-    @Autowired
-    private ApiClient apiClient;
+
 
 //    先全部用管理员ak和sk发送，后面改为根据每一个用户发送
     /**
@@ -275,8 +277,6 @@ public class InterceptorInfoController {
         String secretKey = user.getSecretKey();
 
 
-
-
 //        添加请求参数 并发送请求到网关
 //        ApiClient apiClient2 = new ApiClient(accessKey, secretKey);
         apiClient.setAccessKey(accessKey);
@@ -288,7 +288,7 @@ public class InterceptorInfoController {
 //        请求体参数
         String requestParams = interfaceInfoInvokeRequest.getRequestParams();
 //        如果没有请求参数，那么直接用简单的方式发送请求
-        if((getRequestParams==null && requestParams==null) ||(requestParams==null && getRequestParams.size()==0)){
+        if((getRequestParams==null && requestParams==null) ||(requestParams==null && getRequestParams.isEmpty())){
 
             try {
                 response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());

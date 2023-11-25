@@ -30,7 +30,7 @@ import java.util.Date;
  * @createDate 2023-10-03 13:51:46
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 @Slf4j
 public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
         implements SdkfileService {

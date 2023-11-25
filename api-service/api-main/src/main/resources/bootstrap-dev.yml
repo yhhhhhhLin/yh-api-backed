@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: yhapi-backed
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 172.27.144.1:8848
+      config:
+        server-addr: 172.27.144.1:8848
+        file-extension: yml

@@ -41,9 +41,6 @@ public class Interfaceinfo implements Serializable {
      */
     private String getRequestParams;
 
-
-
-
     /**
      * 接口描述
      */

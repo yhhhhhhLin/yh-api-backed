@@ -1,6 +1,7 @@
 package xyz.linyh.yhapi.controller;
 
 import org.apache.commons.codec.language.Caverphone1;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
@@ -10,6 +11,7 @@ import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
+import xyz.linyh.yhapi.service.impl.UserinterfaceinfoServiceImpl;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,10 +24,10 @@ import java.util.List;
 @RequestMapping("/analyze")
 public class AnalyzeController {
 
-    @Resource
+    @Autowired
     private UserinterfaceinfoService userinterfaceinfoService;
 
-    @Resource
+    @Autowired
     private UserService userService;
 
 

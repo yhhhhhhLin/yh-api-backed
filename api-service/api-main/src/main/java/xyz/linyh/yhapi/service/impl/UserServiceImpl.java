@@ -40,7 +40,7 @@ import static xyz.linyh.ducommon.constant.UserConstant.*;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
 
-    @Resource
+    @Autowired
     private UserMapper userMapper;
 
     @Autowired

@@ -47,22 +47,22 @@ services:
       timeout: 10s
       retries: 5
   #  ok
-  redis:
-    image: redis:latest
-    networks:
-      - api-net
-    ports:
-      - 26379:6379
-    volumes:
-      - ./data/redis:/data
-    #    depends_on:
-    #     nacos:
-    #       condition: service_healthy
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
+#  redis:
+#    image: redis:latest
+#    networks:
+#      - api-net
+#    ports:
+#      - 26379:6379
+#    volumes:
+#      - ./data/redis:/data
+#    #    depends_on:
+#    #     nacos:
+#    #       condition: service_healthy
+#    healthcheck:
+#      test: ["CMD", "redis-cli", "ping"]
+#      interval: 10s
+#      timeout: 10s
+#      retries: 5
 
   main:
     image: 1583427850/yhapi-main
@@ -75,8 +75,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+#      redis:
+#        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7529/api"]
       interval: 10s
@@ -99,7 +99,57 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-  #
+
+  audit:
+    image: 1583427850/yhapi-audit
+    networks:
+      - api-net
+    ports:
+      - 7530:7530
+    depends_on:
+      nacos:
+        condition: service_healthy
+      main:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ping", "127.0.0.1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  gpt:
+    image: 1583427850/yhapi-gpt
+    networks:
+      - api-net
+    ports:
+      - 7531:7531
+    depends_on:
+      nacos:
+        condition: service_healthy
+      main:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ping", "127.0.0.1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  api-backed-gateway:
+    image: 1583427850/yhapi-backed-gateway
+    networks:
+      - api-net
+    ports:
+      - 9529:9529
+    depends_on:
+      nacos:
+        condition: service_healthy
+#      main:
+#        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ping", "127.0.0.1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
   #  ok
   weather-interface:
@@ -134,4 +184,3 @@ services:
         condition: service_healthy
 networks:
   api-net:
-#todo 改配置文件命名空间 docker

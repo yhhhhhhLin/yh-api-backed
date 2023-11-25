@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
@@ -37,10 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class UserInterceptorInfoController {
 
-    @Resource
+
+    @Autowired
     private UserinterfaceinfoService userInterfaceinfoService;
 
-    @Resource
+    @Autowired
     private UserService userService;
 
     // region 增删改查
