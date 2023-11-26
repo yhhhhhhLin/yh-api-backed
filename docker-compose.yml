@@ -65,7 +65,7 @@ services:
 #      retries: 5
 
   main:
-    image: 1583427850/yhapi-main
+    image: 1583427850/yhapi-main:latest
     ports:
       - 7529:7529
     networks:
@@ -78,13 +78,13 @@ services:
 #      redis:
 #        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7529/api"]
+      test: ["CMD", "curl", "-f", "http://localhost:7529"]
       interval: 10s
       timeout: 10s
       retries: 10
   #
   gateway:
-    image: 1583427850/yhapi-gateway
+    image: 1583427850/yhapi-gateway:latest
     networks:
       - api-net
     ports:
@@ -101,7 +101,7 @@ services:
       retries: 10
 
   audit:
-    image: 1583427850/yhapi-audit
+    image: 1583427850/yhapi-audit:latest
     networks:
       - api-net
     ports:
@@ -118,7 +118,7 @@ services:
       retries: 10
 
   gpt:
-    image: 1583427850/yhapi-gpt
+    image: 1583427850/yhapi-gpt:latest
     networks:
       - api-net
     ports:
@@ -135,7 +135,7 @@ services:
       retries: 10
 
   api-backed-gateway:
-    image: 1583427850/yhapi-backed-gateway
+    image: 1583427850/yhapi-backed-gateway:latest
     networks:
       - api-net
     ports:
@@ -150,10 +150,10 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-
-  #  ok
+#
+#  #  ok
   weather-interface:
-    image: 1583427850/yhapi-interface-weather
+    image: 1583427850/yhapi-interface-weather:latest
     ports:
       - 8085:8085
     networks:
@@ -167,7 +167,7 @@ services:
 
   #  用来测试是否可以调用接口
   test-interface:
-    image: 1583427850/yhapi-interface-test
+    image: 1583427850/yhapi-interface-test:latest
     ports:
       - 7601:7601
     networks:

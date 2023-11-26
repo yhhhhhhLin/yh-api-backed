@@ -1,6 +1,9 @@
 package xyz.linyh.yhapi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 
 /**
@@ -10,6 +13,7 @@ import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 * @Entity xyz.linyh.yhapi.model.entity.Interfaceinfo
 */
 public interface InterfaceinfoMapper extends BaseMapper<Interfaceinfo> {
+
 
 }
 

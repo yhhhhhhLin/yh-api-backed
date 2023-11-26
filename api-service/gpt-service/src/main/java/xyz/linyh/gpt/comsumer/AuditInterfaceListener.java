@@ -15,6 +15,7 @@ import xyz.linyh.model.gpt.dtos.InterfaceResult;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
