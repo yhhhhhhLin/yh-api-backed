@@ -67,6 +67,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
        }
    }
 
+
     /**
      * 更新审核的接口的code和msg
      *
@@ -85,6 +86,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         wrapper.set(ApiInterfaceAudit::getStatus,code);
         wrapper.set(ApiInterfaceAudit::getUpdateTime,new Date());
         this.update(wrapper);
+
     }
 
     /**
@@ -100,9 +102,9 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数错误");
         }
 //        还需要校验uri只能唯一目前
-        List<ApiInterfaceAudit> list = this.list(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getUri, audit.getUri()));
-        if(!list.isEmpty()){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口名称已经存在");
+        Interfaceinfo interfaceByUri = dubboInterfaceinfoService.getInterfaceByURI(audit.getUri(), audit.getMethod());
+        if(interfaceByUri!=null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
         }
         audit.setCreateTime(new Date());
         audit.setStatus(Integer.valueOf(AuditConstant.AUDIT_STATUS_SUMMIT));
@@ -154,7 +156,6 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         interfaceinfo.setUpdateTime(new Date());
 
         Long apiId = dubboInterfaceinfoService.addInterface(interfaceinfo);
-
         if(apiId==null){
 //            抛出异常，事务管理
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,"审核通过后，保存到真正的api文档里面失败");

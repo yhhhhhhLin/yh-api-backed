@@ -143,10 +143,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 //        7. 转发到对应的接口
         Mono<Void> filter = chain.filter(exchange);
 
+
         return handleResponse(exchange, chain, mapInterface, user);
 //        这个是异步的方法，需要全部过滤都结束才会转发到对应的服务上 所以无法通过filter来获取响应结果
-
-
     }
 
 

@@ -35,5 +35,12 @@ public interface DubboInterfaceinfoService{
     Long addInterface(Interfaceinfo interfaceinfo);
 
 
+    /**
+     * 刷新网关的接口缓存数据
+     * @return
+     */
+    Boolean updateGatewayCache();
+
+
 
 }

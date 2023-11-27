@@ -9,6 +9,8 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 
+import java.util.HashMap;
+
 /**
  * 全局异常处理器
  *
@@ -21,6 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public BaseResponse<?> businessExceptionHandler(BusinessException e) {
         log.error("businessException: " + e.getMessage(), e);
+        HashMap<String, String> map = new HashMap<>();
         return ResultUtils.error(e.getCode(), e.getMessage());
     }
 

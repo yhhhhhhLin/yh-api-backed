@@ -41,6 +41,18 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
     @Override
     public Long addInterface(Interfaceinfo interfaceinfo) {
         interfaceinfoService.save(interfaceinfo);
+        interfaceinfoService.updateGatewayCache();
         return interfaceinfo.getId();
+    }
+
+    /**
+     * 刷新网关的接口缓存数据
+     *
+     * @return
+     */
+    @Override
+    public Boolean updateGatewayCache() {
+        interfaceinfoService.updateGatewayCache();
+        return true;
     }
 }

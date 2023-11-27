@@ -1,5 +1,6 @@
 package xyz.linyh.yhapi.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
@@ -169,8 +170,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             if (requestParams != null) {
                 Gson gson = new Gson();
                 Map<String, Object> bodyParams = gson.fromJson(interfaceInfoInvokeRequest.getRequestParams(), Map.class);
-//                Gson gson = new Gson();
-//                Map<String, Object> bodyParams = gson.fromJson(interfaceInfoInvokeRequest.getRequestParams(), Map.class);
                 interfaceParams.setRequestBody(bodyParams);
             }
             interfaceParams.setRequestMethod(interfaceInfo.getMethod());
@@ -178,6 +177,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             try {
                 log.info("请求接口参数为:{}", interfaceParams);
                 response = apiClient.request(interfaceInfo.getUri(), interfaceParams);
+
             } catch (Exception e) {
                 log.error("发送请求失败");
                 log.error(e.getMessage());
@@ -191,9 +191,10 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     private Boolean haveParamsOrBody(List<GRequestParamsDto> getRequestParams, String requestParams) {
+
 //        如果全是为空的，那么就直接返回false。如果返回true，那么就是有其中一个
+
         return (requestParams!=null || (getRequestParams!=null && !getRequestParams.isEmpty()));
-//        return !(getRequestParams == null && requestParams == null) || (requestParams == null && getRequestParams.isEmpty());
     }
 
 }
