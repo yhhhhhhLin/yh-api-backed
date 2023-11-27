@@ -35,7 +35,6 @@ public class RouteServiceImpl implements RouteService {
     private final Map<String, Interfaceinfo> routes = new ConcurrentHashMap<>(256);
 
 
-
     /**
      * 获取数据库里面的所有路由信息
      */

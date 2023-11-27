@@ -5,9 +5,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yapiclientsdk.exception.ClientErrorCode;
 import xyz.linyh.yapiclientsdk.exception.ClientException;
@@ -60,14 +63,16 @@ public class ApiServiceImpl implements ApiService{
         Map<String, Object> requestParams = interfaceParams.getRequestParams();
 
         try {
+
+            HttpResponse response = null;
             if("GET".equals(interfaceParams.getRequestMethod().toUpperCase())){
                 if(hasParams){
 //                    String res = HttpUtil.get(GATEWAY_PRE_PATH + uri, requestParams);
-                    HttpResponse response = HttpRequest.get(baseUrl+uri).form(requestParams)
+                    response = HttpRequest.get(baseUrl+uri).form(requestParams)
                             .addHeaders(headers).execute();
                     body = response.body();
                 }else{
-                    HttpResponse response = HttpRequest.get(baseUrl+uri)
+                    response = HttpRequest.get(baseUrl+uri)
                             .addHeaders(headers).execute();
                     body = response.body();
                 }
@@ -79,15 +84,43 @@ public class ApiServiceImpl implements ApiService{
                 if(hasBody){
                     req = req.body(JSONUtil.toJsonStr(interfaceParams.getRequestBody()));
                 }
-                HttpResponse response = req.addHeaders(headers).execute();
+                response = req.addHeaders(headers).execute();
                 body=response.body();
             }
-            return body;
+            return getReturnMsg(response);
+
         } catch (HttpException e) {
             log.info("网关发送请求出现异常");
             throw new ClientException(ClientErrorCode.SYSTEM_ERROR);
         }
 
+    }
+
+    private String getReturnMsg(HttpResponse response) {
+        if(response==null){
+            return "系统异常";
+        }
+
+        BaseResponse baseResponse = JSONUtil.toBean(response.body(), BaseResponse.class);
+
+        if(response.getStatus()!= HttpStatus.HTTP_OK){
+            return "系统出错(可能是提供服务的服务器失联):"+response.body();
+        }
+
+        try {
+
+            if(baseResponse.getCode()== ErrorCode.SUCCESS.getCode()){
+                return JSONUtil.toJsonStr(baseResponse.getData());
+            }else{
+                return baseResponse.getMessage();
+            }
+
+        } catch (HttpException e) {
+            log.info("发送请求到接口相应值转为实体类出错:{}",e.getMessage());
+        }
+
+
+        return null;
     }
 
     /**
@@ -105,22 +138,22 @@ public class ApiServiceImpl implements ApiService{
         }
 
         HashMap<String, String> headers = addHeader(sign, accessKey,uri);
-
+        HttpResponse response = null;
         String body = null;
         try {
             if("GET".equals(method.toUpperCase())){
-                HttpResponse response = HttpRequest.get(baseUrl+uri)
+                response = HttpRequest.get(baseUrl+uri)
                         .addHeaders(headers).execute();
                 body = response.body();
 
             }else if("POST".equals(method.toUpperCase())){
-                HttpResponse response = HttpRequest.post(baseUrl+ uri).addHeaders(headers).execute();
+                response = HttpRequest.post(baseUrl+ uri).addHeaders(headers).execute();
                 body = response.body();
 
             }else{
                 throw new ClientException(ClientErrorCode.PARAMS_ERROR,"不能支持post和get意外的请求方法");
             }
-            return body;
+            return getReturnMsg(response);
 
         } catch (Exception e) {
             log.info("网关发送请求出现异常");

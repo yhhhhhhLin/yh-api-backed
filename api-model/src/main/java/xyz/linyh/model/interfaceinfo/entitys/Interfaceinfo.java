@@ -92,6 +92,7 @@ public class Interfaceinfo implements Serializable {
      */
     @TableLogic//逻辑删除
     private Integer isDelete;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

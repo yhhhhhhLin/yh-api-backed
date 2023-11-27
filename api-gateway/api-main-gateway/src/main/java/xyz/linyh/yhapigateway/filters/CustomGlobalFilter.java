@@ -2,6 +2,7 @@ package xyz.linyh.yhapigateway.filters;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.nacos.shaded.com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -14,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -21,12 +23,14 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.dubboapi.service.DubboUserService;
 import xyz.linyh.dubboapi.service.DubboUserinterfaceinfoService;
 import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -74,11 +78,11 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String path = request.getPath().value();
         String method = request.getMethod().toString();
 
-        log.info("请求地址:{}",path);
-        log.info("请求参数:{}",request.getQueryParams());
-        log.info("请求方法:{}",request.getMethod());
-        log.info("请求用户地址:{}",request.getRemoteAddress());
-        log.info("请求体:{}",request.getBody());
+        log.info("请求地址:{}", path);
+        log.info("请求参数:{}", request.getQueryParams());
+        log.info("请求方法:{}", request.getMethod());
+        log.info("请求用户地址:{}", request.getRemoteAddress());
+        log.info("请求体:{}", request.getBody());
 
 
 //        4. todo 设置请求黑白名单
@@ -88,7 +92,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String timeS = headers.getFirst("timeS");
         String accessKey = headers.getFirst("accessKey");
         String randomNum = headers.getFirst("randomNum");
-        if(StrUtil.hasBlank(sign,timeS,accessKey,randomNum)){
+        if (StrUtil.hasBlank(sign, timeS, accessKey, randomNum)) {
             log.info("缺少认证参数");
             response.setStatusCode(HttpStatus.FORBIDDEN);
             return response.setComplete();
@@ -100,12 +104,12 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         } catch (Exception e) {
             throw new RuntimeException("gateway获取用户失败");
         }
-        if(user == null){
+        if (user == null) {
             throw new RuntimeException("gateway获取用户失败");
         }
         try {
 //            api签名认证
-            signAuth(sign,timeS,user);
+            signAuth(sign, timeS, user);
         } catch (Exception e) {
             response.setStatusCode(HttpStatus.FORBIDDEN);
             log.info("签名认证失败");
@@ -116,43 +120,49 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 //        获取所有接口
         Map<String, Interfaceinfo> URIAndInterface = routeServiceImpl.getRoutes();
 
-        if(URIAndInterface==null || URIAndInterface.size()<=0) {
+        if (URIAndInterface == null || URIAndInterface.size() <= 0) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
 
 //        6. 判断请求接口是否存在
         Interfaceinfo mapInterface = URIAndInterface.get(uri);
 
-
-        if(mapInterface==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"无法获取接口");
+        if (mapInterface == null) {
+            log.info("无法获取接口（没有此接口或已经下线）");
+            return setErrorResponse(response, ErrorCode.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
         }
 
 
-//         TODO 判断是否还有调用次数 因为可以直接通过sdk调用方法，可以绕过前面的backed
+//       判断用户是否有调用次数调用某一个接口
         Boolean invoke = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId());
-        if(!invoke){
-            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR);
+        if (!invoke) {
+            return setErrorResponse(response, ErrorCode.NOT_INVOKE_NUM_ERROR, ErrorCode.NOT_INVOKE_NUM_ERROR.getMessage());
         }
 
 
 //        7. 转发到对应的接口
         Mono<Void> filter = chain.filter(exchange);
 
-        return handleResponse(exchange,chain,mapInterface,user);
+        return handleResponse(exchange, chain, mapInterface, user);
 //        这个是异步的方法，需要全部过滤都结束才会转发到对应的服务上 所以无法通过filter来获取响应结果
 
 
     }
 
 
+    private Mono<Void> setErrorResponse(ServerHttpResponse response, ErrorCode errorCode, String msg) {
+        return response.writeWith(Mono.just(JSONUtil.toJsonStr(ResultUtils.error(errorCode.getCode(), msg)))
+                .map(str -> response.bufferFactory().wrap(str.getBytes())));
+    }
 
 
     @Autowired
     private RedissonLockUtil redissonLockUtil;
     private static Joiner joiner = Joiner.on("");
+
     /**
      * 处理异步发送请求无法获取响应值
+     *
      * @param exchange
      * @param chain
      * @return
@@ -169,7 +179,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                 if (getStatusCode().equals(HttpStatus.OK) && body instanceof Flux) {
                     // 获取ContentType，判断是否返回JSON格式数据
                     String originalResponseContentType = exchange.getAttribute(ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR);
-                    if (StrUtil.isNotBlank(originalResponseContentType) ) {
+                    if (StrUtil.isNotBlank(originalResponseContentType)) {
                         Flux<? extends DataBuffer> fluxBody = Flux.from(body);
                         //（返回数据内如果字符串过大，默认会切割）解决返回体分段传输
                         // 往返回值里面写数据
@@ -191,7 +201,6 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 //                            8. 响应日志
                             log.info("调用成功次数加1");
 
-//                            9. 次数++(加锁)
                             try {
 //                                redis分布式锁上锁
                                 redissonLockUtil.redissonDistributedLocks(("gateway_" + user.getUserAccount()).intern(), () -> {
@@ -201,53 +210,79 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             } catch (Exception e) {
                                 throw new RuntimeException("gateway调用次数修改失败");
                             }
-
-                            System.out.println("responseData："+responseData);
-
+                            log.info("responseData:{}", responseData);
+                            responseData = JSONUtil.toJsonStr(ResultUtils.success(responseData));
 
                             byte[] uppedContent = new String(responseData.getBytes(), Charset.forName("UTF-8")).getBytes();
                             originalResponse.getHeaders().setContentLength(uppedContent.length);
                             return bufferFactory.wrap(uppedContent);
                         }));
                     }
-                }
-                return super.writeWith(body);
+                } else {
+                    System.out.println(body);
+                    Flux<? extends DataBuffer> dataBufferFlux = Flux.from(body);
+                    Flux<String> contentFlux = dataBufferFlux
+                            .map(dataBuffer -> {
+                                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                dataBuffer.read(bytes);
+                                // 这里假设内容是字符串，你可以根据实际情况进行转换
+                                return new String(bytes);
+                            });
+
+                    // 使用 subscribe 输出每个 DataBuffer 的内容
+                    contentFlux.subscribe(content -> log.info("错误信息为:{}",content));
+
+                DefaultDataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
+                String json = JSONUtil.toJsonStr(ResultUtils.error(ErrorCode.SYSTEM_ERROR.getCode(), "接口调用服务出错(可能参数错误)"));
+                DataBuffer dataBuffer = dataBufferFactory.wrap(json.getBytes());
+                Flux<DataBuffer> just = Flux.just(dataBuffer);
+                return super.writeWith(just);
             }
 
-            @Override
-            public Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
-                return writeWith(Flux.from(body).flatMapSequential(p -> p));
-            }
-        };
-        return chain.filter(exchange.mutate().response(response).build());
+                return super.writeWith(body);
+        }
+
+        @Override
+        public Mono<Void> writeAndFlushWith (Publisher < ? extends Publisher<? extends DataBuffer>>body){
+            return writeWith(Flux.from(body).flatMapSequential(p -> p));
+        }
     }
+
+    ;
+        return chain.filter(exchange.mutate().
+
+    response(response).
+
+    build());
+}
 
     @DubboReference
     private DubboUserService dubboUserService;
 
     /**
      * api签名认证
+     *
      * @param sign
      * @param timeS
      * @param user
      * @return
      */
-    Boolean signAuth(String sign,String timeS,User user){
+    Boolean signAuth(String sign, String timeS, User user) {
 
-        if(user==null){
+        if (user == null) {
             throw new RuntimeException(ErrorCode.NO_AUTH_ERROR.getMessage());
         }
         String secretKey = user.getSecretKey();
 //        通过加密算法加密生成然后和sign比较
 //        认证生成签名
-        if(!sign.equals(MyDigestUtils.getDigest(secretKey))){
+        if (!sign.equals(MyDigestUtils.getDigest(secretKey))) {
             throw new RuntimeException("签名认证不通过");
         }
 
 //        判断时间是否超出 获取5分钟后的时间戳
-        Long nowTime = DateUtil.date().toTimestamp().getTime()/1000;
+        Long nowTime = DateUtil.date().toTimestamp().getTime() / 1000;
         Long time = Long.valueOf(timeS);
-        if((nowTime-time)>5*30){
+        if ((nowTime - time) > 5 * 30) {
             throw new RuntimeException("超出时间");
         }
         return true;

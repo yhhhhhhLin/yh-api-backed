@@ -7,7 +7,7 @@ spring:
     nacos:
       discovery:
         server-addr: nacos:8848
-        namespace: yhapi-default
       config:
         server-addr: nacos:8848
         file-extension: yml
+        namespace: yhapi-default

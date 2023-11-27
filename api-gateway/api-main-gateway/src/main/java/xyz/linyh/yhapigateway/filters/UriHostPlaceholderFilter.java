@@ -66,6 +66,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
 
 //            获取真正要跳转的地址
             String host = interfaceinfo.getHost();
+            log.info("真正要跳转的地址为:{}",host);;
 
             System.out.println(exchange.getRequest().getQueryParams());
 
@@ -84,7 +85,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
                 throw new RuntimeException(e);
             }
 
-
+            log.info("转换后的要请求地址为:{}",newUrl);
             exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newUrl);
 
             System.out.println(exchange.getRequest().getQueryParams());

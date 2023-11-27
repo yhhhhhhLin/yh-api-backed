@@ -1,7 +1,9 @@
 package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
+import xyz.linyh.model.user.entitys.User;
 
 /**
 * @author lin
@@ -24,6 +26,22 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     Boolean updateGatewayCache();
+
+    /**
+     * 判断某一个接口是否上线
+     * @param interfaceId
+     * @return
+     */
+    Boolean isOnline(Long interfaceId);
+
+    /**
+     * 执行某一个接口
+     * @param interfaceInfo
+     * @param interfaceInfoInvokeRequest
+     * @return
+     */
+    String invokeInterface(User user, Interfaceinfo interfaceInfo, InterfaceInfoInvokeRequest interfaceInfoInvokeRequest);
+
 
     /**
      * 刷新gateway中缓存的接口数据

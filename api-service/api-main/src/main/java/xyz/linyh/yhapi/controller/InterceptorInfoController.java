@@ -121,7 +121,7 @@ public class InterceptorInfoController {
         }
         boolean result = interfaceinfoService.updateById(interfaceInfo);
 //        刷新网关接口数据 todo
-//        interfaceinfoService.updateGatewayCache();
+        Boolean aBoolean = interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -150,7 +150,7 @@ public class InterceptorInfoController {
         }
         boolean b = interfaceinfoService.removeById(id);
 //        todo
-//        interfaceinfoService.updateGatewayCache();
+        Boolean result = interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(b);
     }
 
@@ -183,7 +183,7 @@ public class InterceptorInfoController {
                 .set(Interfaceinfo::getStatus,1);
         boolean result = interfaceinfoService.update(wrapper);
 //        todo
-//        interfaceinfoService.updateGatewayCache();
+        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -217,7 +217,7 @@ public class InterceptorInfoController {
         boolean result = interfaceinfoService.update(wrapper);
 
 //        todo
-//        interfaceinfoService.updateGatewayCache();
+        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
@@ -279,54 +279,60 @@ public class InterceptorInfoController {
 
 //        添加请求参数 并发送请求到网关
 //        ApiClient apiClient2 = new ApiClient(accessKey, secretKey);
-        apiClient.setAccessKey(accessKey);
-        apiClient.setSecretKey(secretKey);
-        String response =null;
+        return interfaceinfoService.invokeInterface(user,interfaceInfo,interfaceInfoInvokeRequest);
 
-//        请求参数
-        List<GRequestParamsDto> getRequestParams = interfaceInfoInvokeRequest.getGetRequestParams();
-//        请求体参数
-        String requestParams = interfaceInfoInvokeRequest.getRequestParams();
-//        如果没有请求参数，那么直接用简单的方式发送请求
-        if((getRequestParams==null && requestParams==null) ||(requestParams==null && getRequestParams.isEmpty())){
+//        apiClient.setAccessKey(accessKey);
+////        TODO
+//        apiClient.setSecretKey(secretKey);
+////        todo
+//        String response =null;
+////        请求参数
+//        List<GRequestParamsDto> getRequestParams = interfaceInfoInvokeRequest.getGetRequestParams();
+////        请求体参数
+//        String  requestParams = interfaceInfoInvokeRequest.getRequestParams();
 
-            try {
-                response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
-            } catch (Exception e) {
-                log.error("发送请求失败");
-                log.error(e.getMessage());
-            }
-        }else{
+//        return result;
+//        todo
+////        如果没有请求参数，那么直接用简单的方式发送请求
+//        if((getRequestParams==null && requestParams==null) ||(requestParams==null && getRequestParams.isEmpty())){
+//
+//            try {
+//                response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
+//            } catch (Exception e) {
+//                log.error("发送请求失败");
+//                log.error(e.getMessage());
+//            }
+//        }else{
+//
+//            InterfaceParams interfaceParams = new InterfaceParams();
+//            if(getRequestParams!=null && getRequestParams.size()>0){
+//                HashMap<String, Object> params = new HashMap<>();
+//                for(GRequestParamsDto dto:getRequestParams){
+//                    params.put(dto.getRequestParmK(),dto.getRequestParmV());
+//                }
+//                interfaceParams.setRequestParams(params);
+//            }
+//
+//            if(requestParams!=null){
+//                Gson gson = new Gson();
+//                Map<String, Object> bodyParams = gson.fromJson(interfaceInfoInvokeRequest.getRequestParams(), Map.class);
+//                interfaceParams.setRequestBody(bodyParams);
+//            }
+//            interfaceParams.setRequestMethod(interfaceInfo.getMethod());
+////            发送请求 添加请求头 todo
+//            try {
+//                log.info("请求接口参数为:{}",interfaceParams);
+//                response = apiClient.request(interfaceInfo.getUri(),interfaceParams);
+//            } catch (Exception e) {
+//                log.error("发送请求失败");
+//                log.error(e.getMessage());
+//            }
+//        }
+//
+////        对响应进行处理
+//        System.out.println(response);
 
-            InterfaceParams interfaceParams = new InterfaceParams();
-            if(getRequestParams!=null && getRequestParams.size()>0){
-                HashMap<String, Object> params = new HashMap<>();
-                for(GRequestParamsDto dto:getRequestParams){
-                    params.put(dto.getRequestParmK(),dto.getRequestParmV());
-                }
-                interfaceParams.setRequestParams(params);
-            }
-
-            if(requestParams!=null){
-                Gson gson = new Gson();
-                Map<String, Object> bodyParams = gson.fromJson(interfaceInfoInvokeRequest.getRequestParams(), Map.class);
-                interfaceParams.setRequestBody(bodyParams);
-            }
-            interfaceParams.setRequestMethod(interfaceInfo.getMethod());
-//            发送请求 添加请求头 todo
-            try {
-                log.info("请求接口参数为:{}",interfaceParams);
-                response = apiClient.request(interfaceInfo.getUri(),interfaceParams);
-            } catch (Exception e) {
-                log.error("发送请求失败");
-                log.error(e.getMessage());
-            }
-        }
-
-//        对响应进行处理
-        System.out.println(response);
-
-        return response;
+//        return response;
     }
 
     /**

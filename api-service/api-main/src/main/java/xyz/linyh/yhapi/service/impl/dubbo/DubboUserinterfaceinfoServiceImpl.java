@@ -5,6 +5,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import xyz.linyh.dubboapi.service.DubboUserinterfaceinfoService;
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 @DubboService
@@ -13,6 +14,9 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
 
     @Autowired
     private UserinterfaceinfoService userinterfaceinfoService;
+
+    @Autowired
+    private InterfaceinfoService interfaceinfoService;
 
 
     @Override
@@ -35,5 +39,22 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
     @Override
     public Boolean isInvoke(Long interfaceInfoId, Long userId) {
         return userinterfaceinfoService.isInvoke(interfaceInfoId,userId);
+    }
+
+    /**
+     * 判断接口是否可以调用和用户是否有调用次数调用某一个接口
+     *
+     * @param interfaceId
+     * @param userId
+     * @return
+     */
+    @Override
+    public Boolean canInvoke(Long interfaceId, Long userId) {
+        Boolean invoke = userinterfaceinfoService.isInvoke(interfaceId, userId);
+        Boolean isOnline = interfaceinfoService.isOnline(interfaceId);
+        if(invoke &&isOnline){
+            return true;
+        }
+        return false;
     }
 }

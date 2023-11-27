@@ -28,4 +28,12 @@ public interface DubboUserinterfaceinfoService {
      */
     public Boolean isInvoke(Long interfaceInfoId, Long userId);
 
+    /**
+     * 判断接口是否可以调用和用户是否有调用次数调用某一个接口
+     * @param interfaceId
+     * @param userId
+     * @return
+     */
+    public Boolean canInvoke(Long interfaceId,Long userId);
+
 }
