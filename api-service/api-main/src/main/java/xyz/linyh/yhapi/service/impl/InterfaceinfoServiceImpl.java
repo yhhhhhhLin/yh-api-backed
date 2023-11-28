@@ -91,6 +91,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Override
     public Boolean updateGatewayCache() {
+
         String baseUrl = apiClient.getBaseUrl();
         if (baseUrl == null) {
             return false;

@@ -3,6 +3,7 @@ package xyz.linyh.model.interfaceinfo.dto;
 import lombok.Data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -31,11 +32,12 @@ public class DebugParamsDto {
   }
 ]
      */
-    private Map<String,String> getRequestParams;
+    private List<GRequestParamsDto> getRequestParams;
     /**
      * 请求头参数
      */
-    private Map<String,String> headerRequestParams;
+    private List<RequestHeaderParamsDto> headerRequestParams;
+
     /**
      * 请求体参数
      */

@@ -10,4 +10,5 @@ public class GRequestParamsDto {
     private String requestParmK;
 
     private String requestParmV;
+
 }
