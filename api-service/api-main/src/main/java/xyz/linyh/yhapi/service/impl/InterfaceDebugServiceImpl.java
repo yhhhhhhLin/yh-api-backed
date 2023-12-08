@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.tomcat.util.http.RequestUtil;
 import org.springframework.stereotype.Service;
+import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
@@ -42,6 +43,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"需要url前缀和请求方式");
         }
 
+
         HttpRequest httpRequest = null;
         if ("GET".equalsIgnoreCase(method)) {
             httpRequest = HttpRequest.get(preUrl + suffUrl);
@@ -71,6 +73,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
         }
 
         HttpResponse response = httpRequest.execute();
+        log.info("返回结果为:{}",response.body());
 
         int status = response.getStatus();
         if(status != 200){

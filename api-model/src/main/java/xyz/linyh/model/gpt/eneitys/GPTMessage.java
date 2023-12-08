@@ -15,5 +15,5 @@ public class GPTMessage {
 
     private String role;
 
-    private Object content;
+    private String content;
 }

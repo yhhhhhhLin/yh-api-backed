@@ -32,8 +32,6 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
     @DubboReference
     private DubboAuditInterfaceService dubboAuditInterfaceService;
 
-    //限制一次只能处理消息队列里面2个
-    private final Semaphore semaphore = new Semaphore(1);
 
     @Override
     public void onMessage(String message) {
@@ -60,7 +58,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 
 
         try {
-            semaphore.acquire();
+//            semaphore.acquire();
             Thread.sleep(1000);
             log.info("获取一个信号量，开始处理消息..................");
             int maxTry = 5;
@@ -100,7 +98,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
         }catch (InterruptedException e){
             log.info("接口处理异常{}",e.getMessage());
         }finally {
-            semaphore.release();
+//            semaphore.release();
         }
     }
 

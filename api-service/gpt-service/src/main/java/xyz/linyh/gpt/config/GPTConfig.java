@@ -40,7 +40,7 @@ public class GPTConfig {
         restTemplate.setRequestFactory(requestFactory);
 //        添加拦截器，每次用这个restTemplate发送请求都会携带上这些请求头
         restTemplate.getInterceptors().add((request, body, execution) -> {
-            request.getHeaders().add("Authorization",  gptProperties.getApiKey());
+//            request.getHeaders().add("Authorization",  gptProperties.getApiKey());
             request.getHeaders().remove("Content-Type");
             request.getHeaders().add("Content-Type","application/json");
             return execution.execute(request, body);

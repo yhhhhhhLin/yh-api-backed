@@ -58,6 +58,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
        List<GPTMessage> messages = getMessageList(audit);
 
        try {
+           log.info("生产者发送消息：{}",messages);
            rocketMqTemplate.convertAndSend(AuditMQTopicConstant.API_INTERFACE_AUDIT_TOPIC, JSONUtil.toJsonStr(messages));
        } catch (MessagingException e) {
 //           如果实在发送不过去，就先不管了

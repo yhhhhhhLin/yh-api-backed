@@ -30,6 +30,10 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             return chain.filter(exchange);
         }
 
+        if(path!=null && (path.contains("gpt/connect") )){
+            return chain.filter(exchange);
+        }
+
 
 //        获取传递的token，然后解析出来保存到session中
         String token = exchange.getRequest().getHeaders().getFirst("token");

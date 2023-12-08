@@ -11,6 +11,7 @@ import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.dto.ListAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
@@ -104,9 +105,11 @@ public class AuditInterfaceController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"status或auditId参数不能为空");
         }
         apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(dto.getAuditId(),dto.getStatus(),dto.getDescription());
-        apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(),dto.getStatus());
-
-
+//        判断状态，如果是通过，那么才通过审核
+        if(dto.getStatus().equals(Integer.valueOf(AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS))){
+            apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(),dto.getStatus());
+        }
+//        TODO 如果是不通过，可能还需要去修改对应主服务的状态
 
 //        将数据保存到api接口的数据库中
 
