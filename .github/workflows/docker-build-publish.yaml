@@ -31,7 +31,6 @@ jobs:
 
       - name: Install token-pool
         run: |
-          cd token-pool
           mvn clean install
 
       - name: Checkout code2
