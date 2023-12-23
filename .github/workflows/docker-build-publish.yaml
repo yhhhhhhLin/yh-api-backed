@@ -21,7 +21,7 @@ jobs:
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
-
+      
       # 将仓库的代码打包成为jar包
       - name: Install token-pool
         run: |
@@ -29,14 +29,14 @@ jobs:
           mvn clean install
 
       # 获取本个仓库的代码
-      - name: Checkout code
+      - name: Checkout code2
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-
+      
       # 打包所有的项目
       - name: Build with Maven
         run: |
