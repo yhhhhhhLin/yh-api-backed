@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 public class MyTest {
 
-    @Test
-    public void test1(){
+//    获取控制台输出的内容
 
-    }
 }

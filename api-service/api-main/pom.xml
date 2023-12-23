@@ -29,6 +29,8 @@
             <artifactId>dubbo</artifactId>
         </dependency>
 
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -50,12 +52,12 @@
             <artifactId>knife4j-spring-boot-starter</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-devtools</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-devtools</artifactId>-->
+        <!--            <scope>runtime</scope>-->
+        <!--            <optional>true</optional>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -70,11 +72,11 @@
 
 
         <!--        自定义调用-->
-<!--        <dependency>-->
-<!--            <groupId>xyz.linyh</groupId>-->
-<!--            <artifactId>Y-api-client-sdk</artifactId>-->
-<!--            <version>0.0.1</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>xyz.linyh</groupId>-->
+        <!--            <artifactId>Y-api-client-sdk</artifactId>-->
+        <!--            <version>0.0.1</version>-->
+        <!--        </dependency>-->
 
     </dependencies>
 
