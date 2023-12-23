@@ -1,6 +1,5 @@
 name: Package Project And Push to Docker
 
-# push到仓库的时候执行
 on:
   push:
     branches: [ "master" ]
@@ -13,38 +12,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 获取其他仓库的代码
       - name: Checkout token-pool
         uses: actions/checkout@v3
         with:
           repository: yhhhhhhLin/token-pool
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 for token-pool
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: '指定版本'
+          distribution: 'adopt'
           cache: maven
 
-      # 将仓库的代码打包成为jar包
       - name: Install token-pool
         run: |
-          cd token-pool  # 进入仓库目录
+          cd token-pool
           mvn clean install
 
-      # 获取本个仓库的代码
       - name: Checkout code2
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 for current repository
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: '指定版本'
+          distribution: 'adopt'
           cache: maven
 
-      # 打包所有的项目
       - name: Build with Maven
         run: |
           mvn clean install
-
