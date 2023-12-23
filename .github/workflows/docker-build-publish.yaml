@@ -18,9 +18,7 @@ jobs:
           repository: yhhhhhhLin/token-pool
           ref: master
 
-      - name: List contents of current directory
-        run: |
-          ls -la
+
 
       - name: Set up JDK 17 for token-pool
         uses: actions/setup-java@v3
@@ -32,6 +30,11 @@ jobs:
       - name: Install token-pool
         run: |
           mvn clean install
+
+      - name: List contents of current directory
+        run: |
+          cd target
+          ls -la
 
       - name: Checkout code2
         uses: actions/checkout@v3
@@ -45,4 +48,4 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean install
+          mvn -B package --file pom.xml
