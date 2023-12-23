@@ -18,10 +18,6 @@ jobs:
           repository: yhhhhhhLin/token-pool
           ref: master
 
-      - name: List contents of token-pool directory
-        run: |
-          cd token-pool
-          ls -la
 
       - name: Set up JDK 17 for token-pool
         uses: actions/setup-java@v3
