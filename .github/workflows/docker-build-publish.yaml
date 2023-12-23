@@ -18,7 +18,10 @@ jobs:
           repository: yhhhhhhLin/token-pool
           ref: master
 
-
+      - name: List contents of token-pool directory
+        run: |
+          cd token-pool
+          ls -la
 
       - name: Set up JDK 17 for token-pool
         uses: actions/setup-java@v3
@@ -33,8 +36,12 @@ jobs:
 
       - name: List contents of current directory
         run: |
-          cd target
+          cd ../
           ls -la
+
+      - name: Manually download HikariCP-4.0.3.jar
+        run: |
+          wget https://repo.maven.apache.org/maven2/com/zaxxer/HikariCP/4.0.3/HikariCP-4.0.3.jar -P ~/.m2/repository/com/zaxxer/HikariCP/4.0.3/
 
       - name: Checkout code2
         uses: actions/checkout@v3
