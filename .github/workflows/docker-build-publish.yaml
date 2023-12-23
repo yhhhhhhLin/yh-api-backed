@@ -23,6 +23,8 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: '指定版本'
+          cache: maven
 
       # 将仓库的代码打包成为jar包
       - name: Install token-pool
@@ -38,7 +40,9 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-      
+          distribution: '指定版本'
+          cache: maven
+
       # 打包所有的项目
       - name: Build with Maven
         run: |
