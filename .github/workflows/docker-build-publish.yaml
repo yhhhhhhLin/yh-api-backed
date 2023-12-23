@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: list dir
-        uses: ls -la
+        run: ls -la
 
       - name: Set up JDK 17 for current repository
         uses: actions/setup-java@v3
