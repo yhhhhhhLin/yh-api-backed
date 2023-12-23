@@ -42,14 +42,16 @@ jobs:
       - name: Checkout code2
         uses: actions/checkout@v3
 
+      - name: list dir
+        uses: ls -la
+
       - name: Set up JDK 17 for current repository
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
           cache: maven
-      - name: list dir
-        uses: ls -l
+
 
       - name: Build with Maven
         run: |
