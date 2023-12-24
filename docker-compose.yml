@@ -47,22 +47,22 @@ services:
       timeout: 10s
       retries: 5
   #  ok
-#  redis:
-#    image: redis:2
-#    networks:
-#      - api-net
-#    ports:
-#      - 26379:6379
-#    volumes:
-#      - ./data/redis:/data
-#    #    depends_on:
-#    #     nacos:
-#    #       condition: service_healthy
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
+  redis:
+    image: redis
+    networks:
+      - api-net
+    ports:
+      - 26379:6379
+    volumes:
+      - ./data/redis:/data
+    #    depends_on:
+    #     nacos:
+    #       condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   main:
     image: 1583427850/yhapi-main:3
@@ -173,14 +173,15 @@ services:
     networks:
       - api-net
 
-  front:
-    image: 1583427850/api-front:3
-    ports:
-      - 80:80
-    networks:
-      - api-net
-    depends_on:
-      main:
-        condition: service_healthy
+#  front:
+#    image: 1583427850/api-front:3
+#    ports:
+#      - 80:80
+#    networks:
+#      - api-net
+#    depends_on:
+#      main:
+#        condition: service_healthy
 networks:
   api-net:
+
