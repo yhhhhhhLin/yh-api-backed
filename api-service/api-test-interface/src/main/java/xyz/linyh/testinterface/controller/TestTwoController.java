@@ -4,13 +4,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xyz.linyh.model.user.entitys.User;
 
 @RestController
 public class TestTwoController {
 
+
     @RequestMapping(value = "/get/get")
-    public String test2(){
-        return "ok";
+    public User test2(){
+        User user = new User();
+        user.setUserName("tom");
+        user.setUserPassword("123");
+        return user;
+
     }
 
     @RequestMapping(value = "/interface/get/get")
