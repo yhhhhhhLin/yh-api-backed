@@ -5,14 +5,17 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
+import xyz.linyh.dubboapi.service.DubboUserCreditsService;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.model.user.dto.*;
@@ -40,6 +43,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @DubboReference
+    private DubboUserCreditsService dubboUserCreditsService;
+
     /**
      * 用户注册
      *
@@ -57,9 +63,10 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
-        updateAK(result);
-        return ResultUtils.success(result);
+        long userId = userService.userRegister(userAccount, userPassword, checkPassword);
+        updateAK(userId);
+        dubboUserCreditsService.CreateUserCredit(userId, PayConstant.DEFAULT_CREDIT);
+        return ResultUtils.success(userId);
     }
 
     /**

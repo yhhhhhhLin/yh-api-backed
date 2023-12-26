@@ -122,3 +122,72 @@ create table if not exists ApiInterfaceAudit
 INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey, createTime, updateTime, isDelete) VALUES (1, 'root', 'root', 'https://cn.bing.com/images/search?view=detailV2&ccid=qziNmxyw&id=1E81246A717B63ACACD809FAA09D269FF34BBF84&thid=OIP.qziNmxywXqaT7lHXOgLJqgAAAA&mediaurl=https%3a%2f%2fp.qqan.com%2fup%2f2020-7%2f2020072017382224891.jpg&exph=400&expw=400&q=%e5%a4%b4%e5%83%8f&simid=607995953255237553&FORM=IRPRST&ck=9091D49B62444EACC536D2505651DB08&selectedIndex=15', 0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'testak', 'testsk', '2023-09-04 19:03:38', '2023-09-25 20:22:30', 0);
 
 
+create database if not exists api_pay;
+
+use api_pay;
+
+create table if not exists CreditProducts
+(
+    id            bigint auto_increment comment 'id'
+        primary key,
+    description   varchar(255) comment '商品描述',
+    price         int                                not null comment '商品价格',
+    integral      int                                not null comment '商品对应多少积分',
+    picture       varchar(255)                       not null comment '商品对应图片',
+    discountPrice int                                not null comment '打折后的价格',
+    createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete      tinyint  default 0                 not null comment '是否删除',
+    constraint id
+        unique (id)
+)
+    comment '积分商品表';
+
+
+create table if not exists UserCredits
+(
+    id         bigint auto_increment comment 'id'
+        primary key,
+    userId     bigint comment '用户id',
+    credit     int                                not null comment '用户剩余多少积分',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除',
+    constraint id
+        unique (id)
+)
+    comment '用户剩余积分表';
+
+
+# 产品订单
+create table if not exists ProductsOrder
+(
+    id             bigint auto_increment comment 'id' primary key,
+    orderNo        varchar(256)                           not null comment '订单号',
+    codeUrl        varchar(256)                           null comment '二维码地址',
+    userId         bigint                                 not null comment '创建人',
+    productId      bigint                                 not null comment '商品id',
+    orderName      varchar(256)                           not null comment '商品名称',
+    total          bigint                                 not null comment '金额(分)',
+    status         varchar(256) default 'NOTPAY'          not null comment '交易状态(SUCCESS：支付成功 REFUND：转入退款 NOTPAY：未支付 CLOSED：已关闭 REVOKED：已撤销（仅付款码支付会返回）
+                                                                              USERPAYING：用户支付中（仅付款码支付会返回）PAYERROR：支付失败（仅付款码支付会返回）)',
+    payType        varchar(256) default 'WX'              not null comment '支付方式（默认 WX- 微信 ZFB- 支付宝）',
+    productInfo    text                                   null comment '商品信息',
+    formData       text                                   null comment '支付宝formData',
+    addPoints      bigint       default 0                 not null comment '增加积分个数',
+    expirationTime datetime                               null comment '过期时间',
+    createTime     datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime     datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+)
+    comment '商品订单';
+
+
+INSERT INTO api_pay.usercredits (id, userId, credit, createTime, updateTime, isDelete) VALUES (1, 1, 1000, '2023-12-26 16:30:49', '2023-12-26 16:30:49', 0);
+
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '获得100积分', 1, 100, '无', 1, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (2, '获得1100积分', 9.9, 1100, '无', 9.9, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (3, '获得3500积分', 27.9, 3500, '无', 27.9, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (4, '获得5000积分', 40, 5000, '无', 40, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+
+

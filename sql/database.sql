@@ -27,8 +27,8 @@ create table yhapi.interfaceInfo
     name             varchar(255)                       not null comment '接口名称',
     method           varchar(255)                       not null comment '请求方法',
     description      varchar(255)                       null comment '接口描述',
-    uri          varchar(255)                       not null comment '接口地址',
-    host              varchar(255)                       not null comment '接口地址',
+    uri              varchar(255)                       not null comment '接口地址',
+    host             varchar(255)                       not null comment '接口地址',
     requestHeader    text                               null comment '请求头',
     responseHeader   text                               null comment '响应信息',
     status           tinyint  default 1                 null comment '接口状态 1为可用 0为不可用',
@@ -68,9 +68,9 @@ create table yhapi.sdkfile
     id          bigint auto_increment comment 'id'
         primary key,
     userId      bigint                             not null comment '上传者id',
-    name        varchar(255)           unique      not null comment 'sdk对应文件名称',
-    filepath    varchar(255)           unique      not null comment 'sdk对应文件路径',
-    description varchar(255)                                comment '更新介绍',
+    name        varchar(255) unique                not null comment 'sdk对应文件名称',
+    filepath    varchar(255) unique                not null comment 'sdk对应文件路径',
+    description varchar(255) comment '更新介绍',
     num         int      default 0                 not null comment '对应下载次数',
     status      tinyint  default 1                 null comment '这个sdk是否可用 1为可用 0为不可用',
     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
@@ -94,28 +94,86 @@ use api_audit;
 -- api接口审核表
 create table if not exists ApiInterfaceAudit
 (
-    id          bigint auto_increment comment 'id'
+    id               bigint auto_increment comment 'id'
         primary key,
-    apiId      bigint                                      comment '接口id',
-    name    varchar(255)                            not null comment '接口名称',
-    apiDescription varchar(255)                            comment '接口描述',
-    uri     varchar(255)                       not null comment '接口uri',
-    host    varchar(255)                       not null comment '接口host',
-    method  varchar(255)                       not null comment '接口请求方法',
-    requestHeader text                            null comment '接口请求头',
-    responseHeader text                           null comment '接口响应头',
-    requestParams text                            null comment '接口post请求参数',
-    getRequestParams text                        null comment '接口请求体参数',
-    userId     bigint                             not null comment '用户id',
-    status      tinyint  default 0                 not null comment ' 审核状态 1 提交（还没审核） 2 gpt审核失败 3 gpt审核成功 4 人工审核中 5 人工审核通过 6 审核不通过 9 已经发布',
-    description varchar(255)                       null comment '审核描述',
-    createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    isDelete    tinyint  default 0                 not null comment '是否删除',
+    apiId            bigint comment '接口id',
+    name             varchar(255)                       not null comment '接口名称',
+    apiDescription   varchar(255) comment '接口描述',
+    uri              varchar(255)                       not null comment '接口uri',
+    host             varchar(255)                       not null comment '接口host',
+    method           varchar(255)                       not null comment '接口请求方法',
+    requestHeader    text                               null comment '接口请求头',
+    responseHeader   text                               null comment '接口响应头',
+    requestParams    text                               null comment '接口post请求参数',
+    getRequestParams text                               null comment '接口请求体参数',
+    userId           bigint                             not null comment '用户id',
+    status           tinyint  default 0                 not null comment ' 审核状态 1 提交（还没审核） 2 gpt审核失败 3 gpt审核成功 4 人工审核中 5 人工审核通过 6 审核不通过 9 已经发布',
+    description      varchar(255)                       null comment '审核描述',
+    createTime       datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete         tinyint  default 0                 not null comment '是否删除',
     constraint id
         unique (id)
 )
     comment 'api接口审核表';
 
 
+create database if not exists api_pay;
 
+use api_pay;
+
+create table if not exists CreditProducts
+(
+    id            bigint auto_increment comment 'id'
+        primary key,
+    description   varchar(255) comment '商品描述',
+    price         int                                not null comment '商品价格',
+    integral      int                                not null comment '商品对应多少积分',
+    picture       varchar(255)                       not null comment '商品对应图片',
+    discountPrice int                                not null comment '打折后的价格',
+    createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete      tinyint  default 0                 not null comment '是否删除',
+    constraint id
+        unique (id)
+)
+    comment '积分商品表';
+
+
+create table if not exists UserCredits
+(
+    id         bigint auto_increment comment 'id'
+        primary key,
+    userId     bigint comment '用户id',
+    credit     int                                not null comment '用户剩余多少积分',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除',
+    constraint id
+        unique (id)
+)
+    comment '用户剩余积分表';
+
+
+# 产品订单
+create table if not exists ProductsOrder
+(
+    id             bigint auto_increment comment 'id' primary key,
+    orderNo        varchar(256)                           not null comment '订单号',
+    codeUrl        varchar(256)                           null comment '二维码地址',
+    userId         bigint                                 not null comment '创建人',
+    productId      bigint                                 not null comment '商品id',
+    orderName      varchar(256)                           not null comment '商品名称',
+    total          bigint                                 not null comment '金额(分)',
+    status         varchar(256) default 'NOTPAY'          not null comment '交易状态(SUCCESS：支付成功 REFUND：转入退款 NOTPAY：未支付 CLOSED：已关闭 REVOKED：已撤销（仅付款码支付会返回）
+                                                                              USERPAYING：用户支付中（仅付款码支付会返回）PAYERROR：支付失败（仅付款码支付会返回）)',
+    payType        varchar(256) default 'WX'              not null comment '支付方式（默认 WX- 微信 ZFB- 支付宝）',
+    productInfo    text                                   null comment '商品信息',
+    formData       text                                   null comment '支付宝formData',
+    addPoints      bigint       default 0                 not null comment '增加积分个数',
+    expirationTime datetime                               null comment '过期时间',
+    createTime     datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime     datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete   tinyint  default 0                 not null comment '是否删除'
+)
+    comment '商品订单';

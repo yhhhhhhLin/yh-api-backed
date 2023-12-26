@@ -133,6 +133,22 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+  pay:
+    image: 1583427850/yhapi-pay:3
+    networks:
+      - api-net
+    ports:
+      - 7532:7532
+    depends_on:
+      nacos:
+        condition: service_healthy
+      main:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ping", "127.0.0.1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
   api-backed-gateway:
     image: 1583427850/yhapi-backed-gateway:3
