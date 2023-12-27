@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: pay-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+      config:
+        server-addr: nacos:8848
+        file-extension: yml
+        namespace: yhapi-default
+server:
+  port: 7532
