@@ -109,8 +109,6 @@ services:
     depends_on:
       nacos:
         condition: service_healthy
-      main:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "ping", "127.0.0.1"]
       interval: 10s
@@ -126,7 +124,7 @@ services:
     depends_on:
       nacos:
         condition: service_healthy
-      main:
+      audit:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "ping", "127.0.0.1"]
@@ -141,8 +139,6 @@ services:
       - 7532:7532
     depends_on:
       nacos:
-        condition: service_healthy
-      main:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "ping", "127.0.0.1"]

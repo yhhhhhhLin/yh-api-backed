@@ -26,11 +26,6 @@
 
 
         <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>xyz.linyh</groupId>
             <artifactId>token-pool</artifactId>
             <version>1.0-SNAPSHOT</version>

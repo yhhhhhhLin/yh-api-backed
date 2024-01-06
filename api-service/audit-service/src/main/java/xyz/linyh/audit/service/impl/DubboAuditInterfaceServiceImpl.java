@@ -23,8 +23,6 @@ public class DubboAuditInterfaceServiceImpl implements DubboAuditInterfaceServic
     @Autowired
     private ApiinterfaceauditService apiinterfaceauditService;
 
-    @DubboReference
-    private DubboInterfaceinfoService dubboInterfaceinfoService;
 
     /**
      * 更新interface审核表的code和msg信息
