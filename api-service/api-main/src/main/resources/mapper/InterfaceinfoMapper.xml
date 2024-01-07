@@ -5,21 +5,21 @@
 <mapper namespace="xyz.linyh.yhapi.mapper.InterfaceinfoMapper">
 
     <resultMap id="BaseResultMap" type="xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="method" column="method" jdbcType="VARCHAR"/>
-            <result property="description" column="description" jdbcType="VARCHAR"/>
-            <result property="uri" column="uri" jdbcType="VARCHAR"/>
-            <result property="host" column="host" jdbcType="VARCHAR"/>
-            <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
-            <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
-            <result property="requestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
-            <result property="getRequestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
-            <result property="status" column="status" jdbcType="TINYINT"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="uri" column="uri" jdbcType="VARCHAR"/>
+        <result property="host" column="host" jdbcType="VARCHAR"/>
+        <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
+        <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
+        <result property="requestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
+        <result property="getRequestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -28,4 +28,5 @@
         description,url,requestHeader,
         responseHeader,status,userId
     </sql>
+
 </mapper>

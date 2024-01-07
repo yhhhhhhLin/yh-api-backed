@@ -113,22 +113,21 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
 //        为文件生成一个随机名字,并保存到磁盘的对应目录下
         String saveFileName = IdUtil.randomUUID();
         String pathPre = getFilPrePath();
-        if(originalFilename==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"文件名不能为空");
+        if (originalFilename == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件名不能为空");
         }
 //        获取文件名后缀
         String[] split = originalFilename.split("\\.");
         String suffix = split[ArrayUtil.length(split) - 1];
 
-        File file = new File(pathPre + saveFileName+"."+suffix);
-        log.info("保存的文件名字为：{}",file.getName());
+        File file = new File(pathPre + saveFileName + "." + suffix);
+        log.info("保存的文件名字为：{}", file.getName());
 
 //        防止生成的文件名字重复
         while (file.exists()) {
             saveFileName = IdUtil.randomUUID();
             file = new File(pathPre + saveFileName);
         }
-
 
 
 //        将文件路径保存到数据库中
@@ -157,7 +156,7 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
             byte[] bytes = new byte[1023];
             int len;
             while ((len = inputStream.read(bytes)) != -1) {
-                fileOutputStream.write(bytes,0,len);
+                fileOutputStream.write(bytes, 0, len);
             }
 
             fileOutputStream.close();
@@ -182,25 +181,24 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
     public File installSdk(String name, Long id) {
 //        1. 查询数据获取文件保存到磁盘的位置
         Sdkfile sdkfile = this.getOne(Wrappers.<Sdkfile>lambdaQuery().eq(Sdkfile::getName, name));
-        if(sdkfile==null && sdkfile.getFilePath()==null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"找不到对应sdk文件");
+        if (sdkfile == null && sdkfile.getFilePath() == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "找不到对应sdk文件");
         }
 
 //        找到磁盘对应地址的文件
         String filePath = sdkfile.getFilePath();
 //        判断对应位置是否有对应文件
         File file = new File(filePath);
-        if(!file.exists()){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"磁盘中没有对应文件");
+        if (!file.exists()) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "磁盘中没有对应文件");
         }
 
 //        对应文件下载次数加1
-        sdkfile.setNum(sdkfile.getNum()+1);
+        sdkfile.setNum(sdkfile.getNum() + 1);
         sdkfile.setUpdateTime(new Date());
         this.updateById(sdkfile);
 
         return file;
-
 
 
     }

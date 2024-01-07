@@ -19,11 +19,12 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
 
     @Override
     public Interfaceinfo getInterfaceByURI(String interfaceURI, String method) {
-        return interfaceinfoService.getInterfaceInfoByURI(interfaceURI,method);
+        return interfaceinfoService.getInterfaceInfoByURI(interfaceURI, method);
     }
 
     /**
      * 获取所有可用接口
+     *
      * @return
      */
     @Override

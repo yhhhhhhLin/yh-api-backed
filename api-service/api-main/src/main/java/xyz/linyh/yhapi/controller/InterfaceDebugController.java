@@ -24,11 +24,11 @@ public class InterfaceDebugController {
     private InterfaceDebugService interfaceDebugService;
 
     @PostMapping("/invoke")
-    public BaseResponse<String> debug(@RequestBody DebugParamsDto dto){
-        if(dto==null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"参数错误");
+    public BaseResponse<String> debug(@RequestBody DebugParamsDto dto) {
+        if (dto == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
         }
-        log.info("debug:{}",dto);
+        log.info("debug:{}", dto);
         String result = interfaceDebugService.invokeDebug(dto.getGetRequestParams(), dto.getHeaderRequestParams(), dto.getPreUrl(), dto.getSuffUrl(), dto.getMethod(), dto.getPostValue());
 
         return ResultUtils.success(result);

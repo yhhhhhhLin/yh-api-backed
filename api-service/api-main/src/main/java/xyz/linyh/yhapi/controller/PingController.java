@@ -9,7 +9,7 @@ import xyz.linyh.ducommon.common.ResultUtils;
 public class PingController {
 
     @GetMapping("/")
-    public BaseResponse ping(){
+    public BaseResponse ping() {
         return ResultUtils.success(null);
     }
 }

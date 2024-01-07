@@ -32,13 +32,14 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
 
     /**
      * 判断接口是否还有调用次数或是否允许这个用户调用
+     *
      * @param interfaceInfoId
      * @param userId
      * @return
      */
     @Override
     public Boolean isInvoke(Long interfaceInfoId, Long userId) {
-        return userinterfaceinfoService.isInvoke(interfaceInfoId,userId);
+        return userinterfaceinfoService.isInvoke(interfaceInfoId, userId);
     }
 
     /**
@@ -52,7 +53,7 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
     public Boolean canInvoke(Long interfaceId, Long userId) {
         Boolean invoke = userinterfaceinfoService.isInvoke(interfaceId, userId);
         Boolean isOnline = interfaceinfoService.isOnline(interfaceId);
-        if(invoke &&isOnline){
+        if (invoke && isOnline) {
             return true;
         }
         return false;

@@ -36,8 +36,6 @@ import java.util.Map;
 
 /**
  * 对接口的增删改查
- *
- *
  */
 @RestController
 @RequestMapping("/interfaceInfo")
@@ -156,13 +154,14 @@ public class InterceptorInfoController {
 
     /**
      * 接口上线（管理员和接口拥有者可用）
+     *
      * @param idRequest
      * @param request
      * @return
      */
     @PostMapping("/online")
     public BaseResponse onlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                          HttpServletRequest request){
+                                            HttpServletRequest request) {
         if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -179,8 +178,8 @@ public class InterceptorInfoController {
         }
 
         LambdaUpdateWrapper<Interfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(Interfaceinfo::getId,id)
-                .set(Interfaceinfo::getStatus,1);
+        wrapper.eq(Interfaceinfo::getId, id)
+                .set(Interfaceinfo::getStatus, 1);
         boolean result = interfaceinfoService.update(wrapper);
 //        todo
         interfaceinfoService.updateGatewayCache();
@@ -189,13 +188,14 @@ public class InterceptorInfoController {
 
     /**
      * 接口下线（管理员和接口拥有者可用）
+     *
      * @param idRequest
      * @param request
      * @return
      */
     @PostMapping("/offline")
     public BaseResponse offlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                          HttpServletRequest request){
+                                             HttpServletRequest request) {
         if (idRequest == null || idRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -212,8 +212,8 @@ public class InterceptorInfoController {
         }
 
         LambdaUpdateWrapper<Interfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(Interfaceinfo::getId,id)
-                .set(Interfaceinfo::getStatus,0);
+        wrapper.eq(Interfaceinfo::getId, id)
+                .set(Interfaceinfo::getStatus, 0);
         boolean result = interfaceinfoService.update(wrapper);
 
 //        todo
@@ -239,12 +239,11 @@ public class InterceptorInfoController {
     }
 
 
-
-
-
 //    先全部用管理员ak和sk发送，后面改为根据每一个用户发送
+
     /**
      * 执行对应id接口
+     *
      * @param interfaceInfoInvokeRequest
      * @param request
      * @return
@@ -252,28 +251,28 @@ public class InterceptorInfoController {
 //    todo 只是简单的，需要改为根据每一个请求获取请求参数，然后传递
     @PostMapping("/invoke")
     public String invokeInterfaceById(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
-                                      HttpServletRequest request){
+                                      HttpServletRequest request) {
 //        判断参数是否有效
-        if(interfaceInfoInvokeRequest==null ||interfaceInfoInvokeRequest.getId()==null ||interfaceInfoInvokeRequest.getId()<=0){
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() == null || interfaceInfoInvokeRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
 //        判断接口是否有效
         Interfaceinfo interfaceInfo = interfaceinfoService.getById(interfaceInfoInvokeRequest.getId());
-        if(interfaceInfo==null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"不存在这个接口");
+        if (interfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "不存在这个接口");
         }
 
         User user = userService.getLoginUser(request);
 
 //        判断是否还有调用次数
         Boolean isInvoke = userinterfaceinfoService.isInvoke(interfaceInfoInvokeRequest.getId(), user.getId());
-        if(!isInvoke){
-            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR,"没有调用次数");
+        if (!isInvoke) {
+            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数");
         }
 
 //        添加请求参数 并发送请求到网关
-        return interfaceinfoService.invokeInterface(user,interfaceInfo,interfaceInfoInvokeRequest);
+        return interfaceinfoService.invokeInterface(user, interfaceInfo, interfaceInfoInvokeRequest);
 
 
     }
@@ -292,7 +291,7 @@ public class InterceptorInfoController {
             BeanUtils.copyProperties(interfaceInfoQueryRequest, interfaceInfoQuery);
         }
         QueryWrapper<Interfaceinfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
-        Page<Interfaceinfo> page = new Page<>(interfaceInfoQueryRequest.getCurrent(),interfaceInfoQueryRequest.getPageSize());
+        Page<Interfaceinfo> page = new Page<>(interfaceInfoQueryRequest.getCurrent(), interfaceInfoQueryRequest.getPageSize());
         Page<Interfaceinfo> interfaceInfoList = interfaceinfoService.page(page, queryWrapper);
 //        List<Interfaceinfo> interfaceInfoList = interfaceinfoService.list(queryWrapper);
         return ResultUtils.success(interfaceInfoList);
@@ -334,26 +333,27 @@ public class InterceptorInfoController {
     /**
      * 用户获取分页自己的所有接口
      * 条件查询名称 方法 uri 状态
+     *
      * @return
      */
     @PostMapping("/self")
-    public BaseResponse getSelfInterfaceInfo(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,HttpServletRequest request){
-        if(interfaceInfoQueryRequest==null || interfaceInfoQueryRequest.getPageSize()==0L || interfaceInfoQueryRequest.getCurrent()==0L){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"查询参数不能为空");
+    public BaseResponse getSelfInterfaceInfo(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
+        if (interfaceInfoQueryRequest == null || interfaceInfoQueryRequest.getPageSize() == 0L || interfaceInfoQueryRequest.getCurrent() == 0L) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "查询参数不能为空");
         }
 
         User user = userService.getLoginUser(request);
-        if(user==null){
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR,"用户不能没有登录");
+        if (user == null) {
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "用户不能没有登录");
         }
 
         LambdaQueryWrapper<Interfaceinfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Interfaceinfo::getUserId,user.getId())
-                .eq(!StrUtil.isBlank(interfaceInfoQueryRequest.getMethod()),Interfaceinfo::getMethod,interfaceInfoQueryRequest.getMethod())
-                .eq(interfaceInfoQueryRequest.getStatus()!=null,Interfaceinfo::getStatus,interfaceInfoQueryRequest.getStatus())
-                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getName()),Interfaceinfo::getName,interfaceInfoQueryRequest.getName())
-                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getUri()),Interfaceinfo::getUri,interfaceInfoQueryRequest.getUri());
-        Page<Interfaceinfo> page = new Page<>(interfaceInfoQueryRequest.getCurrent(),interfaceInfoQueryRequest.getPageSize());
+        wrapper.eq(Interfaceinfo::getUserId, user.getId())
+                .eq(!StrUtil.isBlank(interfaceInfoQueryRequest.getMethod()), Interfaceinfo::getMethod, interfaceInfoQueryRequest.getMethod())
+                .eq(interfaceInfoQueryRequest.getStatus() != null, Interfaceinfo::getStatus, interfaceInfoQueryRequest.getStatus())
+                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getName()), Interfaceinfo::getName, interfaceInfoQueryRequest.getName())
+                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getUri()), Interfaceinfo::getUri, interfaceInfoQueryRequest.getUri());
+        Page<Interfaceinfo> page = new Page<>(interfaceInfoQueryRequest.getCurrent(), interfaceInfoQueryRequest.getPageSize());
         Page<Interfaceinfo> interfaceInfoPage = interfaceinfoService.page(page, wrapper);
 
         return ResultUtils.success(interfaceInfoPage);

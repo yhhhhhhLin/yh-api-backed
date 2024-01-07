@@ -32,8 +32,6 @@ import static xyz.linyh.ducommon.constant.UserConstant.*;
 
 /**
  * 用户服务实现类
- *
- *
  */
 @Service
 @Slf4j
@@ -130,11 +128,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User getLoginUser(HttpServletRequest request) {
 
         String userId = request.getHeader(USER_Id);
-        if(userId==null){
+        if (userId == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
 //        查询数据库获取对应用户
-        User user = getUserByToken(USER_ID_PREFIX+userId);
+        User user = getUserByToken(USER_ID_PREFIX + userId);
         if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
@@ -150,12 +148,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getLoginUser(Long userId) {
-        if(userId==null){
+        if (userId == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
 
         String json = redisService.get(USER_ID_PREFIX + userId);
-        return JSONUtil.toBean(json,User.class);
+        return JSONUtil.toBean(json, User.class);
     }
 
     /**
@@ -199,7 +197,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getUserByAk(String accessKey) {
-        if(accessKey==null){
+        if (accessKey == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccessKey, accessKey));
@@ -214,12 +212,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public void saveUserToRedis(User user, String userId) {
-        if(user==null || userId==null){
+        if (user == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
         //        保存到redis中
-        redisService.saveStringToRedis(USER_ID_PREFIX+userId, JSONUtil.toJsonStr(user));
+        redisService.saveStringToRedis(USER_ID_PREFIX + userId, JSONUtil.toJsonStr(user));
     }
 
     /**
@@ -230,13 +228,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getUserByToken(String token) {
-        if(token==null){
+        if (token == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
         String json = redisService.get(token);
         User user = JSONUtil.toBean(json, User.class);
-        if(user==null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         return user;
@@ -247,7 +245,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         boolean b = this.removeById(id);
 //        删除对应redis数据
-        redisService.delete(USER_ID_PREFIX+id);
+        redisService.delete(USER_ID_PREFIX + id);
         return b;
     }
 
@@ -259,10 +257,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public Boolean updateUserById(User user) {
-        boolean result =this.updateById(user);
+        boolean result = this.updateById(user);
 
-        if(result){
-            redisService.update(String.valueOf(user.getId()),JSONUtil.toJsonStr(user));
+        if (result) {
+            redisService.update(String.valueOf(user.getId()), JSONUtil.toJsonStr(user));
         }
         return result;
     }
@@ -274,23 +272,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return
      */
     @Override
-    public Boolean updateUserBySelf(Long userId,AnyUserUpdateRequest anyUserUpdateRequest) {
-        if(userId==null){
+    public Boolean updateUserBySelf(Long userId, AnyUserUpdateRequest anyUserUpdateRequest) {
+        if (userId == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(User::getId,userId)
-                .set(User::getUserName,anyUserUpdateRequest.getUserName())
-                .set(User::getGender,anyUserUpdateRequest.getGender())
-                .set(User::getUserAvatar,anyUserUpdateRequest.getUserAvatar());
+        wrapper.eq(User::getId, userId)
+                .set(User::getUserName, anyUserUpdateRequest.getUserName())
+                .set(User::getGender, anyUserUpdateRequest.getGender())
+                .set(User::getUserAvatar, anyUserUpdateRequest.getUserAvatar());
         boolean result = this.update(wrapper);
 
-       if(!result){
-           return false;
-       }
+        if (!result) {
+            return false;
+        }
         User user = this.getById(userId);
 
-       redisService.update(String.valueOf(anyUserUpdateRequest.getId()),JSONUtil.toJsonStr(user));
+        redisService.update(String.valueOf(anyUserUpdateRequest.getId()), JSONUtil.toJsonStr(user));
 
         return true;
     }
@@ -303,7 +301,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public Boolean updateUserAkSk(Long id) {
-        if(id==null){
+        if (id == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
@@ -322,10 +320,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
         User user = this.getById(id);
-        if(user==null){
+        if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        redisService.update(USER_ID_PREFIX+id,JSONUtil.toJsonStr(user));
+        redisService.update(USER_ID_PREFIX + id, JSONUtil.toJsonStr(user));
         return update;
 
     }

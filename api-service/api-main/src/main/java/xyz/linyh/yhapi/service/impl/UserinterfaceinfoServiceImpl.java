@@ -15,6 +15,7 @@ import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
+import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 import xyz.linyh.yhapi.mapper.UserinterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
@@ -28,21 +29,20 @@ import java.util.stream.Collectors;
 
 
 /**
-* @author lin
-* @description 针对表【userinterfaceinfo(用户接口调用次数关系表)】的数据库操作Service实现
-* @createDate 2023-09-11 21:20:10
-*/
+ * @author lin
+ * @description 针对表【userinterfaceinfo(用户接口调用次数关系表)】的数据库操作Service实现
+ * @createDate 2023-09-11 21:20:10
+ */
 @DubboService
 @Slf4j
 public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoMapper, UserInterfaceinfo>
-    implements UserinterfaceinfoService {
+        implements UserinterfaceinfoService {
 
     @Autowired
     private UserinterfaceinfoMapper userinterfaceinfoMapper;
 
     @Autowired
     private InterfaceinfoService interfaceinfoService;
-
 
 
     /**
@@ -66,11 +66,11 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
         // 创建时，所有参数必须非空
         if (add) {
-            if (userId <=0 || remNum<0 || allNum<0) {
+            if (userId <= 0 || remNum < 0 || allNum < 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
             }
         }
-        if (id==null || id<=0 || userId <=0 || remNum<0 || allNum<0) {
+        if (id == null || id <= 0 || userId <= 0 || remNum < 0 || allNum < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
 //        if ((status!=0 && status!=1)) {
@@ -83,19 +83,20 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
     /**
      * 调用成功 调用次数+1，可调用次数-1
+     *
      * @param interfaceInfoId
      * @return
      */
     @Override
-    public BaseResponse invokeOk(Long interfaceInfoId, Long userId){
-        if(interfaceInfoId==null || userId==null ){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"确实接口id或用户id");
+    public BaseResponse invokeOk(Long interfaceInfoId, Long userId) {
+        if (interfaceInfoId == null || userId == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "确实接口id或用户id");
         }
 //        调用次数+1，可调用次数-1
         LambdaUpdateWrapper<UserInterfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(UserInterfaceinfo::getUserId,userId)
-                        .eq(UserInterfaceinfo::getInterfaceId,interfaceInfoId)
-                                .setSql("remNum = remNum-1,allNum = allNum+1");
+        wrapper.eq(UserInterfaceinfo::getUserId, userId)
+                .eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
+                .setSql("remNum = remNum-1,allNum = allNum+1");
         boolean update = this.update(wrapper);
         return ResultUtils.success(update);
     }
@@ -109,24 +110,24 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      */
     @Override
     public Boolean isInvoke(Long interfaceInfoId, Long userId) {
-        if(interfaceInfoId==null || userId==null){
+        if (interfaceInfoId == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
         LambdaQueryWrapper<UserInterfaceinfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(UserInterfaceinfo::getInterfaceId,interfaceInfoId)
-                .eq(UserInterfaceinfo::getUserId,userId);
+        wrapper.eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
+                .eq(UserInterfaceinfo::getUserId, userId);
 
         UserInterfaceinfo userInterfaceinfo = this.getOne(wrapper);
-        if(userInterfaceinfo==null){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"您没有调用次数，请先获取调用次数");
+        if (userInterfaceinfo == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有调用次数，请先获取调用次数");
         }
 
         Integer remNum = userInterfaceinfo.getRemNum();
         Integer status = userInterfaceinfo.getStatus();
-        if(remNum<=0 || !status.equals(UserInterfaceInfoConstant.CAN_USE)){
-            log.info("{}没有次数或无法调用这个{}接口",userId,interfaceInfoId);
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"您没有调用次数，请先获取调用次数");
+        if (remNum <= 0 || !status.equals(UserInterfaceInfoConstant.CAN_USE)) {
+            log.info("{}没有次数或无法调用这个{}接口", userId, interfaceInfoId);
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有调用次数，请先获取调用次数");
         }
         return true;
     }
@@ -140,7 +141,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     public BaseResponse<List<InterfaceInfoVO>> analyzeInterfaceInfo() {
 //       todo 获取每个接口调用次数 目前只获取调用次数前5的
         List<UserInterfaceinfo> interfaceCount = userinterfaceinfoMapper.getInterfaceCount(5);
-        if(interfaceCount==null || interfaceCount.size()==0){
+        if (interfaceCount == null || interfaceCount.size() == 0) {
             ResultUtils.success("无数据");
         }
 
@@ -169,13 +170,14 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
     /**
      * 获取用户自己接口的调用次数前5的数据
+     *
      * @param id
      * @return
      */
     @Override
     public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(Long id) {
 //        获取每一个接口对应的总调用次数
-        List<InterfaceInfoVO> interfaceCount = userinterfaceinfoMapper.getSelfInterfaceCount(5,id);
+        List<InterfaceInfoVO> interfaceCount = userinterfaceinfoMapper.getSelfInterfaceCount(5, id);
 
         return ResultUtils.success(interfaceCount);
 
@@ -218,8 +220,8 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      */
     @Override
     public Boolean addCountIfNo(Long interfaceId, Long userId, Integer count) {
-        if(interfaceId==null || userId==null || count==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"增加次数相关参数不能为可能");
+        if (interfaceId == null || userId == null || count == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "增加次数相关参数不能为可能");
         }
 
         UserInterfaceinfo userInterfaceinfo = new UserInterfaceinfo();

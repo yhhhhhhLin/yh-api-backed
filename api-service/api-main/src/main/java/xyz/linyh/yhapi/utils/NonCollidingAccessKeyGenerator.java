@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NonCollidingAccessKeyGenerator {
-    public static Map generAkAndSk()throws Exception{
+    public static Map generAkAndSk() throws Exception {
         // 生成一个随机的盐值
         byte[] salt = generateSalt();
 
@@ -18,8 +18,8 @@ public class NonCollidingAccessKeyGenerator {
         String secretKey = generateSecretKey(salt, System.currentTimeMillis());
         HashMap<String, String> map = new HashMap<>();
         // 打印生成的AK和SK
-        map.put("accessKey",accessKey);
-        map.put("secretKey",secretKey);
+        map.put("accessKey", accessKey);
+        map.put("secretKey", secretKey);
         return map;
     }
 

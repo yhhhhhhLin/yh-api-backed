@@ -40,7 +40,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
 
 //       参数校验
         if (preUrl == null || method == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"需要url前缀和请求方式");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "需要url前缀和请求方式");
         }
 
 
@@ -50,7 +50,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
         } else if ("POST".equalsIgnoreCase(method)) {
             httpRequest = HttpRequest.post(preUrl + suffUrl);
         } else {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求方式错误");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求方式错误");
         }
 
 //        添加请求参数
@@ -68,21 +68,21 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
         }
 
 //        添加请求体
-        if (postValue != null && "POST".equalsIgnoreCase(method)){
+        if (postValue != null && "POST".equalsIgnoreCase(method)) {
             httpRequest.body(postValue);
         }
 
         HttpResponse response = httpRequest.execute();
-        log.info("返回结果为:{}",response.body());
+        log.info("返回结果为:{}", response.body());
 
         int status = response.getStatus();
-        if(status != 200){
-            log.info("接口请求失败:{}",preUrl+suffUrl);
+        if (status != 200) {
+            log.info("接口请求失败:{}", preUrl + suffUrl);
             return response.body();
 //            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求失败");
         }
 
-        log.info("接口请求成功:{}，返回数据为:{}",preUrl+suffUrl,response.body());
+        log.info("接口请求成功:{}，返回数据为:{}", preUrl + suffUrl, response.body());
 
         return response.body();
 

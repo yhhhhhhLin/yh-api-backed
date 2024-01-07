@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户服务
- *
- *
  */
 public interface UserService extends IService<User> {
 
@@ -45,6 +43,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据用户id获取当前登录用户
+     *
      * @param userId
      * @return
      */
@@ -68,6 +67,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据用户ak获取用户信息
+     *
      * @param accessKey
      * @return
      */
@@ -75,13 +75,15 @@ public interface UserService extends IService<User> {
 
     /**
      * 把用户信息保存到redis中
+     *
      * @param user
      * @param token
      */
     void saveUserToRedis(User user, String token);
 
     /**
-     *根据用户token获取对应token信息
+     * 根据用户token获取对应token信息
+     *
      * @param token
      * @return
      */
@@ -91,6 +93,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 管理员修改用户信息
+     *
      * @param user
      * @return
      */
@@ -98,13 +101,15 @@ public interface UserService extends IService<User> {
 
     /**
      * 用户自己更新个人信息
+     *
      * @param anyUserUpdateRequest
      * @return
      */
-    Boolean updateUserBySelf(Long userId,AnyUserUpdateRequest anyUserUpdateRequest);
+    Boolean updateUserBySelf(Long userId, AnyUserUpdateRequest anyUserUpdateRequest);
 
     /**
      * 更新用户ak和sk
+     *
      * @param id
      * @return
      */

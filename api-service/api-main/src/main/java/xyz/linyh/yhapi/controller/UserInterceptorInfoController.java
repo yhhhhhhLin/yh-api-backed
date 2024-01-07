@@ -30,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 对接口的增删改查
- *
- *
  */
 @RestController
 @RequestMapping("/userInterfaceInfo")
@@ -115,7 +113,7 @@ public class UserInterceptorInfoController {
     @PostMapping("/update")
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest userInterfaceInfoUpdateRequest,
-                                            HttpServletRequest request) {
+                                                     HttpServletRequest request) {
         if (userInterfaceInfoUpdateRequest == null || userInterfaceInfoUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -139,7 +137,6 @@ public class UserInterceptorInfoController {
     }
 
 
-
     /**
      * 根据 id 获取
      *
@@ -156,8 +153,6 @@ public class UserInterceptorInfoController {
     }
 
 
-
-
     /**
      * 获取列表（仅管理员可使用）
      *
@@ -172,7 +167,7 @@ public class UserInterceptorInfoController {
             BeanUtils.copyProperties(userInterfaceInfoQueryRequest, userInterfaceInfoQuery);
         }
         QueryWrapper<UserInterfaceinfo> queryWrapper = new QueryWrapper<>(userInterfaceInfoQuery);
-        Page<UserInterfaceinfo> page = new Page<>(userInterfaceInfoQueryRequest.getCurrent(),userInterfaceInfoQueryRequest.getPageSize());
+        Page<UserInterfaceinfo> page = new Page<>(userInterfaceInfoQueryRequest.getCurrent(), userInterfaceInfoQueryRequest.getPageSize());
         Page<UserInterfaceinfo> userInterfaceInfoList = userInterfaceinfoService.page(page, queryWrapper);
 //        List<UserInterfaceinfo> userInterfaceInfoList = userInterfaceinfoService.list(queryWrapper);
         return ResultUtils.success(userInterfaceInfoList);
@@ -215,25 +210,26 @@ public class UserInterceptorInfoController {
 
     /**
      * 获取一个接口的详细信息，包括调用次数
+     *
      * @return
      */
     @GetMapping("/detailwithtotal")
-    public BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(HttpServletRequest request, Long interfaceId){
-        if(interfaceId==null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"接口id不能为空");
+    public BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(HttpServletRequest request, Long interfaceId) {
+        if (interfaceId == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
 
-       return userInterfaceinfoService.getInterfaceAllDataByInterfaceId(interfaceId);
+        return userInterfaceinfoService.getInterfaceAllDataByInterfaceId(interfaceId);
     }
 
     @GetMapping("detailwithremnum")
-    public BaseResponse<InterfaceInfoVO> getInterfaceByInterfaceIdAndUserId(Long interfaceId,HttpServletRequest request){
-        if(interfaceId==null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"接口id不能为空");
+    public BaseResponse<InterfaceInfoVO> getInterfaceByInterfaceIdAndUserId(Long interfaceId, HttpServletRequest request) {
+        if (interfaceId == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
 
         User user = userService.getLoginUser(request);
-        if(user==null){
+        if (user == null) {
             return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
         }
 
@@ -242,24 +238,23 @@ public class UserInterceptorInfoController {
     }
 
 
-
     @GetMapping("/experience")
-    public BaseResponse<UserInterfaceinfo> getExperienceCount(HttpServletRequest request, Long id){
-        if(id==null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"接口id不能为空");
+    public BaseResponse<UserInterfaceinfo> getExperienceCount(HttpServletRequest request, Long id) {
+        if (id == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
 
 //        获取用户
         User user = userService.getLoginUser(request);
-        if(user==null){
+        if (user == null) {
             return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
         }
 //        判断是否是首次体验
         UserInterfaceinfo userInterfaceinfo = userInterfaceinfoService.getOne(Wrappers.<UserInterfaceinfo>lambdaQuery().
                 eq(UserInterfaceinfo::getUserId, user.getId())
                 .eq(UserInterfaceinfo::getInterfaceId, id));
-        if(userInterfaceinfo!=null){
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR,"无法重复获取次数");
+        if (userInterfaceinfo != null) {
+            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无法重复获取次数");
         }
 //        增加调用次数
         Boolean isSave = userInterfaceinfoService.addCountIfNo(id, user.getId(), 10);

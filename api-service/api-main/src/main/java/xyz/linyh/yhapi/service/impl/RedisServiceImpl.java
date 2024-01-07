@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import xyz.linyh.yhapi.service.RedisService;
 
 /**
- *
  * @author lin
  */
 @Service
@@ -37,7 +36,7 @@ public class RedisServiceImpl implements RedisService {
      */
     @Override
     public Boolean delete(String key) {
-        if(key==null){
+        if (key == null) {
             return false;
         }
         return redisTemplate.delete(key);

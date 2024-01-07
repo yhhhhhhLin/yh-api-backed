@@ -32,13 +32,11 @@ import java.util.stream.Collectors;
 
 /**
  * 用户接口
- *
- *
  */
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    
+
 
     @Autowired
     private UserService userService;
@@ -186,8 +184,7 @@ public class UserController {
     }
 
     /**
-     *
-     普通用户修改个人信息
+     * 普通用户修改个人信息
      */
     @PostMapping("/userupdate")
     public BaseResponse<Boolean> updateUserAny(@RequestBody AnyUserUpdateRequest anyUserUpdateRequest, HttpServletRequest request) {
@@ -195,7 +192,7 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
-        Boolean result = userService.updateUserBySelf(user.getId(),anyUserUpdateRequest);
+        Boolean result = userService.updateUserBySelf(user.getId(), anyUserUpdateRequest);
         return ResultUtils.success(result);
     }
 

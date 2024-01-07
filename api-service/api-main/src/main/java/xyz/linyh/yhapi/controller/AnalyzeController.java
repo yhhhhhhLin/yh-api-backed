@@ -1,5 +1,6 @@
 package xyz.linyh.yhapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.codec.language.Caverphone1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,23 +34,26 @@ public class AnalyzeController {
 
     /**
      * 获取接口调用次数前5的接口
+     *
      * @return
      */
     @RequestMapping
-    public BaseResponse<List<InterfaceInfoVO>> analyzeInterfaceInfo(){
+    public BaseResponse<List<InterfaceInfoVO>> analyzeInterfaceInfo() {
         return userinterfaceinfoService.analyzeInterfaceInfo();
 
     }
 
     /**
      * 分析自己发布的调用次数前5的接口
+     *
      * @param request
      * @return
      */
     @RequestMapping("/self")
-    public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(HttpServletRequest request){
+    public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(HttpServletRequest request) {
+
         User user = userService.getLoginUser(request);
-        if(user==null){
+        if (user == null) {
             return ResultUtils.error(ErrorCode.NO_AUTH_ERROR);
         }
 

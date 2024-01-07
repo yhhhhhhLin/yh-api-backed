@@ -2,12 +2,14 @@ package xyz.linyh.yhapi.service;
 
 /**
  * 用来操作redis的服务
+ *
  * @author lin
  */
 public interface RedisService {
 
     /**
      * 将用户信息保存到redis中
+     *
      * @param key
      * @param value
      */
@@ -16,6 +18,7 @@ public interface RedisService {
 
     /**
      * 获取用户信息
+     *
      * @param key
      * @return
      */
@@ -23,6 +26,7 @@ public interface RedisService {
 
     /**
      * 删除redis中对应的key和value
+     *
      * @param key
      * @return
      */
@@ -30,6 +34,7 @@ public interface RedisService {
 
     /**
      * 根据用户id修改对应的value
+     *
      * @param key
      * @param value
      * @return

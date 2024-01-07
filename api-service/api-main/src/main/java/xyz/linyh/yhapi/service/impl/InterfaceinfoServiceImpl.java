@@ -135,21 +135,21 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
      * @return
      */
     @Override
-    public String invokeInterface(User user,Interfaceinfo interfaceInfo, InterfaceInfoInvokeRequest interfaceInfoInvokeRequest) {
-        if(user==null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口执行者id不能为空");
+    public String invokeInterface(User user, Interfaceinfo interfaceInfo, InterfaceInfoInvokeRequest interfaceInfoInvokeRequest) {
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口执行者id不能为空");
         }
         apiClient.setAccessKey(user.getAccessKey());
         apiClient.setSecretKey(user.getSecretKey());
 
-        String response =null;
+        String response = null;
 //        请求参数
         List<GRequestParamsDto> getRequestParams = interfaceInfoInvokeRequest.getGetRequestParams();
 //        请求体参数
-        String  requestParams = interfaceInfoInvokeRequest.getRequestParams();
+        String requestParams = interfaceInfoInvokeRequest.getRequestParams();
 
 //        如果没有请求参数，那么直接用简单的方式发送请求
-        if (!haveParamsOrBody(getRequestParams,requestParams)) {
+        if (!haveParamsOrBody(getRequestParams, requestParams)) {
 
             try {
                 response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
@@ -186,7 +186,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         }
 
 //        对响应进行处理
-        log.info("{} 接口的相应数据为{}",interfaceInfo.getUri(),response);
+        log.info("{} 接口的相应数据为{}", interfaceInfo.getUri(), response);
 
         return response;
     }
@@ -195,7 +195,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
 //        如果全是为空的，那么就直接返回false。如果返回true，那么就是有其中一个
 
-        return (requestParams!=null || (getRequestParams!=null && !getRequestParams.isEmpty()));
+        return (requestParams != null || (getRequestParams != null && !getRequestParams.isEmpty()));
     }
 
 }
