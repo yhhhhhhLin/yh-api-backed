@@ -31,17 +31,17 @@ public class GPTProperties {
     /**
      * 那个gpt版本模型
      */
-    private String model="gpt-3.5-turbo";
+    private String model = "gpt-3.5-turbo";
 
     /**
      * 代理地址
      */
-    private String host="api.openai.com";
+    private String host = "api.openai.com";
 
     /**
      * 是否流式返回
      */
-    private Boolean isStream=false;
+    private Boolean isStream = false;
 
     /**
      * 温度

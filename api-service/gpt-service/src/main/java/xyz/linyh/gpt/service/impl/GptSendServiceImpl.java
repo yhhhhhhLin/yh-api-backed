@@ -49,8 +49,6 @@ public class GptSendServiceImpl implements GptSendService {
     private TokenPoolClient tokenPoolClient;
 
 
-
-
     //    请求如果出现错误返回优化 todo
     @Override
     public List<GPTMessage> sendRequest(List<GPTMessage> messages) {
@@ -70,9 +68,9 @@ public class GptSendServiceImpl implements GptSendService {
             ResponseEntity<GPTResponse> responseEntity = tokenPoolClient.<ResponseEntity<GPTResponse>>addTask((token) -> {
                 System.out.println("获取到的token为:" + token);
                 headers.add("Authorization", token);
-                HttpEntity<GPTBody> httpEntity = new HttpEntity<>(gptBody,headers);
+                HttpEntity<GPTBody> httpEntity = new HttpEntity<>(gptBody, headers);
                 ResponseEntity<GPTResponse> gptResponseResponseEntity = restTemplate.postForEntity(requestURL(), httpEntity, GPTResponse.class);
-                System.out.println("请求成功"+gptResponseResponseEntity);
+                System.out.println("请求成功" + gptResponseResponseEntity);
 //                Log.info("请求成功:{}");
                 return gptResponseResponseEntity;
             });
@@ -143,7 +141,7 @@ public class GptSendServiceImpl implements GptSendService {
 
 
         } catch (RestClientException e) {
-            log.info("发送请求出错,{}",e.getMessage());
+            log.info("发送请求出错,{}", e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

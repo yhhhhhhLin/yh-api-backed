@@ -8,6 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableDubbo
 public class AuditApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AuditApplication.class,args);
+        SpringApplication.run(AuditApplication.class, args);
     }
 }

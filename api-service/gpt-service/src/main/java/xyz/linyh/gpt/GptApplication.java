@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableDubbo
 public class GptApplication {
     public static void main(String[] args) {
-        SpringApplication.run(GptApplication.class,args);
+        SpringApplication.run(GptApplication.class, args);
     }
 
 }

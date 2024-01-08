@@ -95,9 +95,9 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
                 }
             }
 
-        }catch (InterruptedException e){
-            log.info("接口处理异常{}",e.getMessage());
-        }finally {
+        } catch (InterruptedException e) {
+            log.info("接口处理异常{}", e.getMessage());
+        } finally {
 //            semaphore.release();
         }
     }
@@ -117,7 +117,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
             return null;
         }
 //        如果他回复的最后一个为空也需要重试
-        if(StringUtils.isBlank(returnMessage.get(returnMessage.size()-1).getContent().toString())){
+        if (StringUtils.isBlank(returnMessage.get(returnMessage.size() - 1).getContent().toString())) {
             return null;
         }
         try {

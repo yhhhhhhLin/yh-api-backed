@@ -35,25 +35,25 @@ import java.util.List;
 public class GptChatController {
 
 
-
     @Autowired
     private GptSendService gptSendService;
 
     /**
      * 只能先管理员用而已
+     *
      * @param messages
      * @return
      */
     @AuthCheck(mustRole = "admin")
     @PostMapping("/gptChat")
-    public Flux<ServerSentEvent> chat(@RequestBody List<GPTMessage> messages, HttpServletRequest request){
+    public Flux<ServerSentEvent> chat(@RequestBody List<GPTMessage> messages, HttpServletRequest request) {
 //        messages = this.SplitMessage(messages);
         Flux<String> stringFlux = gptSendService.sendChatRequest(messages);
 
 
         return stringFlux.mapNotNull(message -> {
 //            System.out.println(message);
-            if("[DONE]".equals(message)){
+            if ("[DONE]".equals(message)) {
                 return null;
             }
 //            System.out.println();
@@ -75,21 +75,22 @@ public class GptChatController {
 
     /**
      * 只能先管理员用而已
+     *
      * @param messages
      * @return
      */
     @AuthCheck(mustRole = "admin")
     @PostMapping("/gptChatNoStream")
-    public BaseResponse<GPTMessage> chatNoStream(@RequestBody List<GPTMessage> messages, HttpServletRequest request){
+    public BaseResponse<GPTMessage> chatNoStream(@RequestBody List<GPTMessage> messages, HttpServletRequest request) {
 //        判断gpt的字数长度是否超过长度限制，如果超过长度限制，那么就把一个message拆分成多个message
 //        messages = SplitMessage(messages);
         List<GPTMessage> returnMessages = gptSendService.sendRequest(messages);
-        if(returnMessages==null || returnMessages.size()==0){
-            return ResultUtils.error(500,"服务器错误");
+        if (returnMessages == null || returnMessages.size() == 0) {
+            return ResultUtils.error(500, "服务器错误");
         }
         System.out.println("----------------------------------------------------------------");
-        System.out.println(returnMessages.get(returnMessages.size()-1));
-        return ResultUtils.success(returnMessages.get(returnMessages.size()-1));
+        System.out.println(returnMessages.get(returnMessages.size() - 1));
+        return ResultUtils.success(returnMessages.get(returnMessages.size() - 1));
     }
 
     private List<GPTMessage> SplitMessage(List<GPTMessage> messages) {
@@ -99,15 +100,15 @@ public class GptChatController {
         String content = gptMessage.getContent();
 //        长
 //        度最长只能有1000
-        if(content.length()<=maxLength){
+        if (content.length() <= maxLength) {
             return messages;
-        }else{
-            messages.remove(messages.size()-1);
+        } else {
+            messages.remove(messages.size() - 1);
         }
-        for(int i = 0;i<=content.length()/maxLength;i++){
+        for (int i = 0; i <= content.length() / maxLength; i++) {
             GPTMessage newGptMessage = new GPTMessage();
             newGptMessage.setRole("user");
-            newGptMessage.setContent(content.substring(i*maxLength,i*maxLength+Math.min(content.length()-i*maxLength,maxLength)));
+            newGptMessage.setContent(content.substring(i * maxLength, i * maxLength + Math.min(content.length() - i * maxLength, maxLength)));
             messages.add(newGptMessage);
 
         }

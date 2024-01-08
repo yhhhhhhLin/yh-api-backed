@@ -6,8 +6,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Service;
 
 /**
- *
- 通用的一个接收审核消息的接口
+ * 通用的一个接收审核消息的接口
  */
 @Service
 @RocketMQMessageListener(topic = "test-topic-1", consumerGroup = "my-consumer_test-topic-1")

@@ -20,5 +20,4 @@ public interface GptSendService {
     public Flux<String> sendChatRequest(List<GPTMessage> messages);
 
 
-
 }

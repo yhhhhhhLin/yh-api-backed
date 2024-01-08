@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * MyBatis Plus 分页配置
- *
- *
  */
 @Configuration
 @MapperScan("xyz.linyh.audit.mapper")

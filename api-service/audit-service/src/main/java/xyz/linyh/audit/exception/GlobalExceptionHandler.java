@@ -11,8 +11,6 @@ import xyz.linyh.ducommon.exception.BusinessException;
 
 /**
  * 全局异常处理器
- *
- *
  */
 @RestControllerAdvice
 @Slf4j
@@ -20,6 +18,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义异常处理
+     *
      * @param e
      * @return
      */
