@@ -9,7 +9,7 @@ import xyz.linyh.ducommon.common.BaseResponse;
 public class OrderController {
 
 
-    public BaseResponse genOrder(){
+    public BaseResponse genOrder() {
 
         return null;
     }

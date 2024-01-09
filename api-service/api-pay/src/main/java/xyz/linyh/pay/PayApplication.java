@@ -10,6 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("xyz.linyh.pay.mapper")
 public class PayApplication {
     public static void main(String[] args) {
-        SpringApplication.run(PayApplication.class,args);
+        SpringApplication.run(PayApplication.class, args);
     }
 }

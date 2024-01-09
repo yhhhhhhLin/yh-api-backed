@@ -47,7 +47,7 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     @AuthCheck(mustRole = "admin")
     public BaseResponse delProduct(@PathVariable String productId) {
-        if (productId==null) {
+        if (productId == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
 
@@ -65,14 +65,14 @@ public class ProductController {
     @AuthCheck(mustRole = "admin")
     public BaseResponse updateProduct(@RequestBody UpdateCreditProductDto dto) {
 
-        if (dto == null || dto.getCreditId() ==null||dto.getIntegral() == null || dto.getDescription() == null || dto.getPrice() == null) {
+        if (dto == null || dto.getCreditId() == null || dto.getIntegral() == null || dto.getDescription() == null || dto.getPrice() == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
 
         CreditProducts creditProducts = new CreditProducts();
         CreditProducts oldCreditProducts = creditProductsService.getById(dto.getCreditId());
-        BeanUtils.copyProperties(oldCreditProducts,creditProducts);
-        BeanUtils.copyProperties(dto,creditProducts);
+        BeanUtils.copyProperties(oldCreditProducts, creditProducts);
+        BeanUtils.copyProperties(dto, creditProducts);
         creditProducts.setId(dto.getCreditId());
 
         boolean result = creditProductsService.updateById(creditProducts);
@@ -97,7 +97,6 @@ public class ProductController {
         List<CreditProducts> list = creditProductsService.list(Wrappers.<CreditProducts>lambdaQuery().orderByAsc(CreditProducts::getPrice));
         return ResultUtils.success(list);
     }
-
 
 
 }

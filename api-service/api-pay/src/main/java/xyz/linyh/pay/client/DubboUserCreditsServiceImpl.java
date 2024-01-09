@@ -11,8 +11,8 @@ public class DubboUserCreditsServiceImpl implements DubboUserCreditsService {
     @Autowired
     private UserCreditsService userCreditsService;
 
-    public void CreateUserCredit(Long userId,Integer credit){
-        userCreditsService.saveOneUserCredit(userId,credit);
+    public void CreateUserCredit(Long userId, Integer credit) {
+        userCreditsService.saveOneUserCredit(userId, credit);
 
     }
 }

@@ -21,12 +21,12 @@ public class CreditController {
     @GetMapping("/getCharge")
     public BaseResponse getUserCharge(HttpServletRequest request) {
         String userId = request.getHeader(UserConstant.USER_Id);
-        if(userId==null){
+        if (userId == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
 
         UserCredits userCredit = userCreditsService.getById(String.valueOf(userId));
-        if(userCredit!=null){
+        if (userCredit != null) {
             return ResultUtils.success(userCredit);
         }
 

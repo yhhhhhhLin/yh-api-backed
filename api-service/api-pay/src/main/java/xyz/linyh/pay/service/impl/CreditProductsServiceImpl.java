@@ -8,13 +8,13 @@ import xyz.linyh.model.pay.dto.CreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
 
 /**
-* @author lin
-* @description 针对表【creditproducts(积分商品表)】的数据库操作Service实现
-* @createDate 2023-12-26 13:51:22
-*/
+ * @author lin
+ * @description 针对表【creditproducts(积分商品表)】的数据库操作Service实现
+ * @createDate 2023-12-26 13:51:22
+ */
 @Service
 public class CreditProductsServiceImpl extends ServiceImpl<CreditProductsMapper, CreditProducts>
-    implements CreditProductsService {
+        implements CreditProductsService {
 
     @Override
     public boolean addCreditProduct(CreditProductDto dto) {

@@ -11,7 +11,7 @@ public class TestTwoController {
 
 
     @RequestMapping(value = "/get/get")
-    public User test2(){
+    public User test2() {
         User user = new User();
         user.setUserName("tom");
         user.setUserPassword("123");
@@ -20,22 +20,22 @@ public class TestTwoController {
     }
 
     @RequestMapping(value = "/interface/get/get")
-    public String test5(){
+    public String test5() {
         return "ok";
     }
 
     @RequestMapping
-    public String test3(){
+    public String test3() {
         return "not ok";
     }
 
     @PostMapping("/testPost")
-    public String ping(){
+    public String ping() {
         return "post ping成功";
     }
 
     @GetMapping("/testGet")
-    public String ping2(){
+    public String ping2() {
         return "get ping成功";
     }
 
