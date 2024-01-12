@@ -12,7 +12,7 @@ sudo docker-compose up
 
 如果需要初始化数据，可以在init目录下添加对应sql语句
 ```sql
-
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '获得100积分', 1, 100, '无', 1, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
 ```
 
 ## 主要功能
