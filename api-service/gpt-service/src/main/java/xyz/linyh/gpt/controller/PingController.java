@@ -10,7 +10,6 @@ public class PingController {
 
     @RequestMapping("/ping")
     public void ping() {
-        ;
         log.info("ping通gptService");
     }
 }
