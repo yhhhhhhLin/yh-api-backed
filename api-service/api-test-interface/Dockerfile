@@ -7,6 +7,7 @@ WORKDIR /app
 
 # 安装 curl 工具
 RUN apk --no-cache add curl
+RUN apk --no-cache add iputils
 
 # 复制项目 JAR 文件到镜像中
 COPY ./target/api-test-interface-1.0-SNAPSHOT.jar /app/api-test-interface-1.0-SNAPSHOT.jar

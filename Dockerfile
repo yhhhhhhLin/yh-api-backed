@@ -6,6 +6,7 @@ WORKDIR /app
 
 # 安装 curl 工具
 RUN apk --no-cache add curl
+RUN apk --no-cache add iputils
 
 # 复制项目 JAR 文件到镜像中
 COPY ./api-service/api-weather-interface/target/api-weather-interface-1.0-SNAPSHOT.jar /app/api-weather-interface-1.0-SNAPSHOT.jar

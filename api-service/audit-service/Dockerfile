@@ -4,6 +4,8 @@ WORKDIR /app
 
 # 复制项目 JAR 文件到镜像中
 COPY target/audit-service-1.0-SNAPSHOT.jar /app/audit-service-1.0-SNAPSHOT.jar
+RUN apk --no-cache add curl
+RUN apk --no-cache add iputils
 
 # 暴露应用程序的端口（如果有需要的话）
 EXPOSE 7530

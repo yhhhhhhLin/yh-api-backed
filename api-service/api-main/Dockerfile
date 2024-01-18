@@ -1,6 +1,7 @@
 # 使用官方的 OpenJDK 17 作为基础镜像
 FROM openjdk:8-alpine
 RUN apk --no-cache add curl
+RUN apk --no-cache add iputils
 
 # 设置工作目录
 WORKDIR /app

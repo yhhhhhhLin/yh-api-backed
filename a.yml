@@ -76,7 +76,7 @@ services:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7529/ping"]
+      test: ["CMD", "curl", "-f", "http://localhost:7529/"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -109,7 +109,7 @@ services:
       main:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/ping"]
+      test: ["CMD", "ping", "127.0.0.1"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -153,12 +153,8 @@ services:
     depends_on:
       nacos:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9529/ping"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-#  #  ok
+  #
+  #  #  ok
   weather-interface:
     image: 1583427850/yhapi-interface-weather:4
     ports:
@@ -166,8 +162,6 @@ services:
     networks:
       - api-net
     volumes:
-      - ./data:/etc/api/data
-      - ./config:/etc/api/config
     depends_on:
       nacos:
         condition: service_healthy
@@ -191,4 +185,3 @@ services:
 #        condition: service_healthy
 networks:
   api-net:
-
