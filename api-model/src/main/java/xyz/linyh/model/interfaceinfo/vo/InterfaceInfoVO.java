@@ -41,8 +41,10 @@ public class InterfaceInfoVO {
      */
     private String getRequestParams;
 
-
-
+    /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
 
     /**
      * 接口描述

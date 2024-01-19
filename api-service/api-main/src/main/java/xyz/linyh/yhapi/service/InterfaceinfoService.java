@@ -1,7 +1,9 @@
 package xyz.linyh.yhapi.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 
@@ -45,6 +47,20 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     String invokeInterface(User user, Interfaceinfo interfaceInfo, InterfaceInfoInvokeRequest interfaceInfoInvokeRequest);
+
+    /**
+     * 添加接口信息
+     * @param interfaceInfo
+     * @return
+     */
+    boolean addInterfaceInfo(Interfaceinfo interfaceInfo);
+
+    /**
+     * 分页查询所有接口信息
+     * @param interfaceInfoQueryRequest
+     * @return
+     */
+    Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
 
 
     /**

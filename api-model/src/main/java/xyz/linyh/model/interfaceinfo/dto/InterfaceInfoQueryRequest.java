@@ -52,6 +52,11 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     private String requestHeader;
 
     /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
+
+    /**
      * 响应信息
      */
     private String responseHeader;

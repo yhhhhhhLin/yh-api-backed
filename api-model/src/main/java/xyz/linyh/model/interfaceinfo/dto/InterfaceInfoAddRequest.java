@@ -50,6 +50,11 @@ public class InterfaceInfoAddRequest implements Serializable {
     private String host;
 
     /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
+
+    /**
      * 请求头
      */
     private String requestHeader;

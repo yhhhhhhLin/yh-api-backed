@@ -33,6 +33,7 @@ create table yhapi.interfaceInfo
     responseHeader   text                               null comment '响应信息',
     status           tinyint  default 1                 null comment '接口状态 1为可用 0为不可用',
     userId           bigint                             null comment '接口创建者id',
+    pointsRequired   int                                not null comment '调用这个接口需要花费的积分',
     isDelete         tinyint  default 0                 not null comment '是否删除 0为没删除 1为删除',
     createTime       datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime       datetime default CURRENT_TIMESTAMP not null comment '更新时间',

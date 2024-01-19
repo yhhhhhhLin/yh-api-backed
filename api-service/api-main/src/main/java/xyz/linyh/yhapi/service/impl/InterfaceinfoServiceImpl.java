@@ -4,17 +4,22 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
@@ -56,6 +61,11 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         String uri = interfaceInfo.getUri();
         String requestHeader = interfaceInfo.getRequestHeader();
         String responseHeader = interfaceInfo.getResponseHeader();
+        Integer pointsRequired = interfaceInfo.getPointsRequired();
+
+        if (pointsRequired == null || pointsRequired < 0) {
+            pointsRequired = 0;
+        }
 
         // 创建时，所有参数必须非空
         if (add) {
@@ -190,6 +200,42 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
         return response;
     }
+
+    @Override
+    public boolean addInterfaceInfo(Interfaceinfo interfaceInfo) {
+//        判断接口uri不能重复
+        List<Interfaceinfo> dbInterfaceInfos = this.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getUri, interfaceInfo.getUri()));
+        if (dbInterfaceInfos != null && dbInterfaceInfos.size() > 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能重复");
+        }
+        return this.save(interfaceInfo);
+    }
+
+    @Override
+    public Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+        long current = interfaceInfoQueryRequest.getCurrent();
+        long size = interfaceInfoQueryRequest.getPageSize();
+        String sortField = interfaceInfoQueryRequest.getSortField();
+        String sortOrder = interfaceInfoQueryRequest.getSortOrder();
+
+        // 限制爬虫
+        if (size > 50) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        QueryWrapper<Interfaceinfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
+                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        queryWrapper.like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getName()), "name", interfaceInfoQueryRequest.getName());
+        queryWrapper.like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getDescription()), "description", interfaceInfoQueryRequest.getDescription());
+        queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getMethod()), "method", interfaceInfoQueryRequest.getMethod());
+        queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), "uri", interfaceInfoQueryRequest.getUri());
+        queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), "host", interfaceInfoQueryRequest.getHost());
+        queryWrapper.eq(interfaceInfoQueryRequest.getStatus() != null, "status", interfaceInfoQueryRequest.getStatus());
+
+        return this.page(new Page<>(current, size), queryWrapper);
+    }
+
 
     private Boolean haveParamsOrBody(List<GRequestParamsDto> getRequestParams, String requestParams) {
 

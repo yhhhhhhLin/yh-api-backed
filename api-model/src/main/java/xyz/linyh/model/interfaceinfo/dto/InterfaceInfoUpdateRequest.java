@@ -41,6 +41,11 @@ public class InterfaceInfoUpdateRequest implements Serializable {
     private String method;
 
     /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
+
+    /**
      * 接口描述
      */
     private String description;

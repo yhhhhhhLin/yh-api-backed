@@ -47,6 +47,11 @@ public class Interfaceinfo implements Serializable {
     private String description;
 
     /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
+
+    /**
      * 接口uri
      */
     private String uri;

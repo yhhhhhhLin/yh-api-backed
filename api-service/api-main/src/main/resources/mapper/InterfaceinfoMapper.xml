@@ -19,11 +19,12 @@
         <result property="requestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
         <result property="getRequestParams" column="requestParams" jdbcType="LONGVARCHAR"/>
         <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="pointsRequired" column="pointsRequired" jdbcType="INTEGER"/>
         <result property="userId" column="userId" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,isDelete,requestParams,getRequestParams,
+        id,name,isDelete,requestParams,getRequestParams,pointsRequired,
         createTime,updateTime,method,
         description,url,requestHeader,
         responseHeader,status,userId
