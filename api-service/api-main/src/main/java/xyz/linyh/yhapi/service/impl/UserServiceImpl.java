@@ -207,11 +207,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 把用户信息保存到redis中
      *
-     * @param user
      * @param userId
      */
     @Override
-    public void saveUserToRedis(User user, String userId) {
+    public void saveUserToRedis(Long userId) {
+        User user = this.getById(userId);
         if (user == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

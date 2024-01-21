@@ -76,10 +76,9 @@ public interface UserService extends IService<User> {
     /**
      * 把用户信息保存到redis中
      *
-     * @param user
-     * @param token
+     * @param userId
      */
-    void saveUserToRedis(User user, String token);
+    void saveUserToRedis(Long userId);
 
     /**
      * 根据用户token获取对应token信息

@@ -3,6 +3,7 @@ package xyz.linyh.dubboapi.service;
 
 
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 
 
 /**
@@ -18,7 +19,7 @@ public interface DubboUserinterfaceinfoService {
      * @param userId
      * @return
      */
-    public BaseResponse invokeOk(Long interfaceInfoId, Long userId);
+    public BaseResponse invokeOk(Long interfaceInfoId, Long userId, InterfaceInfoInvokePayType payType);
 
     /**
      * 判断接口是否有调用次数或是否可以让这个用户调用
@@ -26,7 +27,7 @@ public interface DubboUserinterfaceinfoService {
      * @param userId
      * @return
      */
-    public Boolean isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired);
+    public InterfaceInfoInvokePayType isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired);
 
     /**
      * 判断接口是否可以调用和用户是否有调用次数调用某一个接口
@@ -34,6 +35,6 @@ public interface DubboUserinterfaceinfoService {
      * @param userId
      * @return
      */
-    public Boolean canInvoke(Long interfaceId,Long userId,Integer pointsRequired);
+    public InterfaceInfoInvokePayType canInvoke(Long interfaceId,Long userId,Integer pointsRequired);
 
 }

@@ -22,6 +22,7 @@ import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoUpdateRequest;
 import xyz.linyh.model.userinterfaceinfo.dto.UserInterfaceInfoAddRequest;
+import xyz.linyh.model.userinterfaceinfo.vo.RemCountAndCreditVO;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
@@ -236,6 +237,24 @@ public class UserInterceptorInfoController {
 
         InterfaceInfoVO userInterfaceInfo = userInterfaceinfoService.getInterfaceWithRemNumByInterfaceId(user.getId(), interfaceId);
         return ResultUtils.success(userInterfaceInfo);
+    }
+
+    /**
+     * 获取某一个接口剩余调用次数和用户剩余多少积分
+     * @param request
+     * @param interfaceId
+     * @return
+     */
+    @GetMapping("/remcountandcredits")
+    public BaseResponse<RemCountAndCreditVO> getRemCountAndCredits(HttpServletRequest request, Long interfaceId) {
+        if(interfaceId == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+        }
+        User user = userService.getLoginUser(request);
+        Integer credits = user.getCredits();
+        Integer interfaceRemCount = userInterfaceinfoService.getInterfaceRemCount(user.getId(),interfaceId);
+        RemCountAndCreditVO remCountAndCreditVO = new RemCountAndCreditVO(interfaceRemCount, credits);
+        return ResultUtils.success(remCountAndCreditVO);
     }
 
 

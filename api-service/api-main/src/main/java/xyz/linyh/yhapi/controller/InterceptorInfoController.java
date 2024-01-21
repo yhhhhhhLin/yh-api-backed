@@ -16,6 +16,8 @@ import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokeParams;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -227,12 +229,12 @@ public class InterceptorInfoController {
         User user = userService.getLoginUser(request);
 
 //        判断是否有调用次数或积分是否够
-        Boolean isInvoke = userinterfaceinfoService.isInvoke(interfaceInfoInvokeRequest.getId(), user.getId(),interfaceInfo.getPointsRequired());
-        if (!isInvoke) {
-            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分");
-        }
+        InterfaceInfoInvokeParams interfaceInfoInvokeParams = new InterfaceInfoInvokeParams();
+        InterfaceInfoInvokePayType payType = userinterfaceinfoService.isInvokeAndGetPayType(interfaceInfoInvokeRequest.getId(), user.getId(),interfaceInfo.getPointsRequired());
+        interfaceInfoInvokeParams.setPayType(payType);
 
 //        添加请求参数 并发送请求到网关
+        BeanUtils.copyProperties(interfaceInfoInvokeRequest, interfaceInfoInvokeParams);
         return interfaceinfoService.invokeInterface(user, interfaceInfo, interfaceInfoInvokeRequest);
 
     }

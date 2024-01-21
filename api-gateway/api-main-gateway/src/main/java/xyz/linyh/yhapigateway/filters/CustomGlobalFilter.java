@@ -32,6 +32,7 @@ import xyz.linyh.dubboapi.service.DubboUserinterfaceinfoService;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.utils.MyDigestUtils;
@@ -134,17 +135,16 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
 
 //       判断用户是否有调用次数调用某一个接口
-        Boolean invoke = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId(),mapInterface.getPointsRequired());
-        if (!invoke) {
-            return setErrorResponse(response, ErrorCode.NOT_INVOKE_NUM_ERROR, ErrorCode.NOT_INVOKE_NUM_ERROR.getMessage());
+        InterfaceInfoInvokePayType payType = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId(),mapInterface.getPointsRequired());
+        if ("0".equals(payType.getPayType())) {
+            log.info("用户没有调用次数");
         }
-
 
 //        7. 转发到对应的接口
         Mono<Void> filter = chain.filter(exchange);
 
 
-        return handleResponse(exchange, chain, mapInterface, user);
+        return handleResponse(exchange, chain, mapInterface, user,payType);
 //        这个是异步的方法，需要全部过滤都结束才会转发到对应的服务上 所以无法通过filter来获取响应结果
     }
 
@@ -166,7 +166,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * @param chain
      * @return
      */
-    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, Interfaceinfo interfaceinfo, User user) {
+    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, Interfaceinfo interfaceinfo, User user,InterfaceInfoInvokePayType payType) {
         ServerHttpResponse originalResponse = exchange.getResponse();
         // 保存数据的工厂
         DataBufferFactory bufferFactory = originalResponse.bufferFactory();
@@ -203,7 +203,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             try {
 //                                redis分布式锁上锁
                                 redissonLockUtil.redissonDistributedLocks(("gateway_" + user.getUserAccount()).intern(), () -> {
-                                    dubboUserinterfaceinfoService.invokeOk(interfaceinfo.getId(), user.getId());
+                                    dubboUserinterfaceinfoService.invokeOk(interfaceinfo.getId(), user.getId(),payType);
                                 }, "接口调用失败");
 //                                dubboUserinterfaceinfoService.invokeOk(interfaceInfoId,userId);
                             } catch (Exception e) {

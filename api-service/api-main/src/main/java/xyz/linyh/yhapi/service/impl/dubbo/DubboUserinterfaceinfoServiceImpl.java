@@ -5,6 +5,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import xyz.linyh.dubboapi.service.DubboUserinterfaceinfoService;
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
@@ -20,9 +21,9 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
 
 
     @Override
-    public BaseResponse invokeOk(Long interfaceInfoId, Long userId) {
+    public BaseResponse invokeOk(Long interfaceInfoId, Long userId ,InterfaceInfoInvokePayType payType) {
         try {
-            BaseResponse baseResponse = userinterfaceinfoService.invokeOk(interfaceInfoId, userId);
+            BaseResponse baseResponse = userinterfaceinfoService.invokeOk(interfaceInfoId, userId,payType);
         } catch (Exception e) {
             log.info("DubboUserinterfaceinfoServiceImpl错误");
             throw new RuntimeException(e);
@@ -38,8 +39,8 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
      * @return
      */
     @Override
-    public Boolean isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired) {
-        return userinterfaceinfoService.isInvoke(interfaceInfoId, userId,pointsRequired);
+    public InterfaceInfoInvokePayType isInvoke(Long interfaceInfoId, Long userId, Integer pointsRequired) {
+        return userinterfaceinfoService.isInvokeAndGetPayType(interfaceInfoId, userId,pointsRequired);
     }
 
     /**
@@ -50,12 +51,13 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
      * @return
      */
     @Override
-    public Boolean canInvoke(Long interfaceId, Long userId,Integer pointsRequired) {
-        Boolean invoke = userinterfaceinfoService.isInvoke(interfaceId, userId,pointsRequired);
+    public InterfaceInfoInvokePayType canInvoke(Long interfaceId, Long userId,Integer pointsRequired) {
+        InterfaceInfoInvokePayType payType = userinterfaceinfoService.isInvokeAndGetPayType(interfaceId, userId,pointsRequired);
         Boolean isOnline = interfaceinfoService.isOnline(interfaceId);
-        if (invoke && isOnline) {
-            return true;
-        }
-        return false;
+//        TODO
+//        if (invoke && isOnline) {
+//            return true;
+//        }
+        return payType;
     }
 }

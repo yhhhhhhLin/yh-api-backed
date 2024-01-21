@@ -3,6 +3,7 @@ package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 
@@ -17,7 +18,7 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
 
     void validInterfaceInfo(UserInterfaceinfo userInterfaceinfo, boolean add);
 
-    public BaseResponse invokeOk(Long interfaceInfoId, Long userId);
+    public BaseResponse invokeOk(Long interfaceInfoId, Long userId,InterfaceInfoInvokePayType payType);
 
     /**
      * 判断某个用户是否有次数调用某个接口或是否有权限调用某个接口
@@ -26,7 +27,7 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @param userId
      * @return
      */
-    Boolean isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired);
+    InterfaceInfoInvokePayType isInvokeAndGetPayType(Long interfaceInfoId, Long userId, Integer pointsRequired);
 
     /**
      * 获取所有接口的调用次数前5的数据
@@ -70,4 +71,12 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @return
      */
     InterfaceInfoVO getInterfaceWithRemNumByInterfaceId(Long userId, Long interfaceId);
+
+    /**
+     * 获取用户剩余调用次数
+     * @param id
+     * @param interfaceId
+     * @return
+     */
+    Integer getInterfaceRemCount(Long id, Long interfaceId);
 }

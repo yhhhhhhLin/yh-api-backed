@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
@@ -91,17 +93,34 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public BaseResponse invokeOk(Long interfaceInfoId, Long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public BaseResponse invokeOk(Long interfaceInfoId, Long userId, InterfaceInfoInvokePayType payType) {
         if (interfaceInfoId == null || userId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "确实接口id或用户id");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "缺少接口id或用户id");
+        }
+        boolean updateResult = false;
+        switch (payType.getPayType()) {
+            case UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_EXPERIENCE:
+                LambdaUpdateWrapper<UserInterfaceinfo> wrapper = new LambdaUpdateWrapper<>();
+                wrapper.eq(UserInterfaceinfo::getUserId, userId)
+                        .eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
+                        .setSql("remNum = remNum-1,allNum = allNum+1");
+                updateResult = this.update(wrapper);
+                break;
+            case UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_CREDITS:
+                Integer payAmount = payType.getPayAmount();
+                updateResult = userService.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).setSql("credits = credits-" + payAmount));
+                userService.saveUserToRedis(userId);
+//               更新调用次数
+                LambdaUpdateWrapper<UserInterfaceinfo> wrapper2 = new LambdaUpdateWrapper<>();
+                wrapper2.eq(UserInterfaceinfo::getUserId, userId)
+                        .eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
+                        .setSql("allNum = allNum+1");
+                updateResult = this.update(wrapper2);
+                break;
         }
 //        调用次数+1，可调用次数-1
-        LambdaUpdateWrapper<UserInterfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(UserInterfaceinfo::getUserId, userId)
-                .eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
-                .setSql("remNum = remNum-1,allNum = allNum+1");
-        boolean update = this.update(wrapper);
-        return ResultUtils.success(update);
+        return ResultUtils.success(updateResult);
     }
 
     /**
@@ -112,7 +131,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public Boolean isInvoke(Long interfaceInfoId, Long userId, Integer pointsRequired) {
+    public InterfaceInfoInvokePayType isInvokeAndGetPayType(Long interfaceInfoId, Long userId, Integer pointsRequired) {
+        Boolean canInvoke = false;
+        InterfaceInfoInvokePayType interfaceInfoInvokePayType = new InterfaceInfoInvokePayType();
         if (interfaceInfoId == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -123,23 +144,39 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
         UserInterfaceinfo userInterfaceinfo = this.getOne(wrapper);
         if (userInterfaceinfo == null) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有调用次数，请先获取调用次数");
+            canInvoke = false;
+        } else {
+            Integer remNum = userInterfaceinfo.getRemNum();
+            Integer status = userInterfaceinfo.getStatus();
+            if (remNum <= 0 || !status.equals(UserInterfaceInfoConstant.CAN_USE)) {
+                log.info("{}没有次数或无法调用这个{}接口", userId, interfaceInfoId);
+                canInvoke = false;
+            } else {
+                canInvoke = true;
+                interfaceInfoInvokePayType.setPayType(UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_EXPERIENCE);
+                interfaceInfoInvokePayType.setPayAmount(1);
+            }
         }
 
-        Integer remNum = userInterfaceinfo.getRemNum();
-        Integer status = userInterfaceinfo.getStatus();
-        if (remNum <= 0 || !status.equals(UserInterfaceInfoConstant.CAN_USE)) {
-            log.info("{}没有次数或无法调用这个{}接口", userId, interfaceInfoId);
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有调用次数，请先获取调用次数");
-        }
-        if (pointsRequired != null && pointsRequired > 0) {
+        if (pointsRequired != null && pointsRequired > 0 && !canInvoke) {
             User user = userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
             Integer credits = user.getCredits();
             if (credits < pointsRequired) {
-                throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有足够的积分，请先充值");
+                log.info("{}积分不足，无法调用这个{}接口", userId, interfaceInfoId);
+                canInvoke = false;
+            } else {
+//                user.setCredits(credits - pointsRequired);
+//                userService.updateById(user);
+                log.info("{}积分足够，调用这个{}接口", userId, interfaceInfoId);
+                canInvoke = true;
+                interfaceInfoInvokePayType.setPayType(UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_CREDITS);
+                interfaceInfoInvokePayType.setPayAmount(pointsRequired);
             }
         }
-        return true;
+        if(!canInvoke){
+            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分调用");
+        }
+        return interfaceInfoInvokePayType;
     }
 
     /**
@@ -255,6 +292,21 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
         InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
         return userinterfaceinfo;
+    }
+
+    @Override
+    public Integer getInterfaceRemCount(Long id, Long interfaceId) {
+        List<UserInterfaceinfo> list = this.list(Wrappers.<UserInterfaceinfo>lambdaQuery().eq(UserInterfaceinfo::getUserId, id).eq(UserInterfaceinfo::getInterfaceId, interfaceId));
+        if(list==null || list.isEmpty()){
+            return 0;
+        }else{
+            Integer allNum = 0;
+            for (UserInterfaceinfo userInterfaceinfo : list) {
+                allNum += userInterfaceinfo.getRemNum();
+            }
+
+            return allNum;
+        }
     }
 
 }

@@ -28,7 +28,6 @@ public class InterfaceInfoInvokeRequest implements Serializable {
     /**
      * get请求参数
      */
-//    todo 修改接收参数
     private List<GRequestParamsDto> getRequestParams;
 
 

@@ -41,9 +41,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @DubboReference
-    private DubboUserCreditsService dubboUserCreditsService;
-
     /**
      * 用户注册
      *
@@ -63,7 +60,6 @@ public class UserController {
         }
         long userId = userService.userRegister(userAccount, userPassword, checkPassword);
         updateAK(userId);
-        dubboUserCreditsService.CreateUserCredit(userId, PayConstant.DEFAULT_CREDIT);
         return ResultUtils.success(userId);
     }
 
@@ -88,7 +84,7 @@ public class UserController {
         String token = JwtUtils.generateToken(String.valueOf(user.getId()));
 
 //        保存用户信息到redis中
-        userService.saveUserToRedis(user, String.valueOf(user.getId()));
+        userService.saveUserToRedis(user.getId());
         return ResultUtils.success(token);
     }
 
