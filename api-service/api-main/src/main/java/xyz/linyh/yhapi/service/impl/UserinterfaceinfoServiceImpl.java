@@ -19,9 +19,9 @@ import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 import xyz.linyh.yhapi.mapper.UserinterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
+import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
-import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +43,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
     @Autowired
     private InterfaceinfoService interfaceinfoService;
+
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -109,7 +112,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public Boolean isInvoke(Long interfaceInfoId, Long userId) {
+    public Boolean isInvoke(Long interfaceInfoId, Long userId, Integer pointsRequired) {
         if (interfaceInfoId == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -128,6 +131,13 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
         if (remNum <= 0 || !status.equals(UserInterfaceInfoConstant.CAN_USE)) {
             log.info("{}没有次数或无法调用这个{}接口", userId, interfaceInfoId);
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有调用次数，请先获取调用次数");
+        }
+        if (pointsRequired != null && pointsRequired > 0) {
+            User user = userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
+            Integer credits = user.getCredits();
+            if (credits < pointsRequired) {
+                throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您没有足够的积分，请先充值");
+            }
         }
         return true;
     }
@@ -204,8 +214,8 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(Long interfaceId) {
-        InterfaceInfoVO interfaceInfoVO = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId);
+    public BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(Long interfaceId, Long userId) {
+        InterfaceInfoVO interfaceInfoVO = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
         return ResultUtils.success(interfaceInfoVO);
     }
 
@@ -243,7 +253,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public InterfaceInfoVO getInterfaceWithRemNumByInterfaceId(Long userId, Long interfaceId) {
 
-        InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId);
+        InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
         return userinterfaceinfo;
     }
 

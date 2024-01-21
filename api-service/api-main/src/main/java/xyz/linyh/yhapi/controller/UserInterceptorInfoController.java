@@ -218,8 +218,9 @@ public class UserInterceptorInfoController {
         if (interfaceId == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
+        User user = userService.getLoginUser(request);
 
-        return userInterfaceinfoService.getInterfaceAllDataByInterfaceId(interfaceId);
+        return userInterfaceinfoService.getInterfaceAllDataByInterfaceId(interfaceId,user.getId());
     }
 
     @GetMapping("detailwithremnum")

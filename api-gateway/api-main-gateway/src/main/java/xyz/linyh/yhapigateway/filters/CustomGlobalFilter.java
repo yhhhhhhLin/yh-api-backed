@@ -134,7 +134,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
 
 //       判断用户是否有调用次数调用某一个接口
-        Boolean invoke = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId());
+        Boolean invoke = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId(),mapInterface.getPointsRequired());
         if (!invoke) {
             return setErrorResponse(response, ErrorCode.NOT_INVOKE_NUM_ERROR, ErrorCode.NOT_INVOKE_NUM_ERROR.getMessage());
         }

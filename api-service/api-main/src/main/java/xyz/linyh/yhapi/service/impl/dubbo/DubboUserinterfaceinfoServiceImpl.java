@@ -38,8 +38,8 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
      * @return
      */
     @Override
-    public Boolean isInvoke(Long interfaceInfoId, Long userId) {
-        return userinterfaceinfoService.isInvoke(interfaceInfoId, userId);
+    public Boolean isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired) {
+        return userinterfaceinfoService.isInvoke(interfaceInfoId, userId,pointsRequired);
     }
 
     /**
@@ -50,8 +50,8 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
      * @return
      */
     @Override
-    public Boolean canInvoke(Long interfaceId, Long userId) {
-        Boolean invoke = userinterfaceinfoService.isInvoke(interfaceId, userId);
+    public Boolean canInvoke(Long interfaceId, Long userId,Integer pointsRequired) {
+        Boolean invoke = userinterfaceinfoService.isInvoke(interfaceId, userId,pointsRequired);
         Boolean isOnline = interfaceinfoService.isOnline(interfaceId);
         if (invoke && isOnline) {
             return true;

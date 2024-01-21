@@ -56,7 +56,10 @@
                (select SUM(allNum)
                 from userInterfaceinfo
                 WHERE interfaceId = #{interfaceId}
-                GROUP BY interfaceId) as allNum
+                GROUP BY interfaceId)                                        as allNum,
+               (select userinterfaceinfo.remNum
+                from userinterfaceinfo
+                where interfaceId = #{interfaceId} and i.userId = #{userId}) as remNum
         from interfaceInfo i
         where i.id = #{interfaceId};
     </select>

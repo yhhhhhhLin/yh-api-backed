@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
-import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
@@ -64,7 +62,7 @@ public class InterceptorInfoController {
         interfaceInfo.setStatus(1);
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
         // 校验参数是否正确
-        interfaceinfoService.validInterfaceInfo(interfaceInfo, true);
+        interfaceinfoService.validInterfaceInfoParams(interfaceInfo, true);
 
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
@@ -99,15 +97,12 @@ public class InterceptorInfoController {
         BeanUtils.copyProperties(interfaceInfoUpdateRequest, interfaceInfo);
 
         // 参数校验
-        interfaceinfoService.validInterfaceInfo(interfaceInfo, false);
+        interfaceinfoService.validInterfaceInfoParams(interfaceInfo, false);
 
         User user = userService.getLoginUser(request);
-        long id = interfaceInfoUpdateRequest.getId();
-        validInterface(id, user, request);
-        // 判断是否存在
-        boolean result = interfaceinfoService.updateById(interfaceInfo);
 
-//        刷新网关接口数据
+        boolean result = interfaceinfoService.updateInterfaceInfo(user, interfaceInfo);
+
         interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
@@ -231,10 +226,10 @@ public class InterceptorInfoController {
 
         User user = userService.getLoginUser(request);
 
-//        判断是否还有调用次数
-        Boolean isInvoke = userinterfaceinfoService.isInvoke(interfaceInfoInvokeRequest.getId(), user.getId());
+//        判断是否有调用次数或积分是否够
+        Boolean isInvoke = userinterfaceinfoService.isInvoke(interfaceInfoInvokeRequest.getId(), user.getId(),interfaceInfo.getPointsRequired());
         if (!isInvoke) {
-            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数");
+            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分");
         }
 
 //        添加请求参数 并发送请求到网关
@@ -271,7 +266,7 @@ public class InterceptorInfoController {
         if (interfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Page<Interfaceinfo> interfaceInfoPage =interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
+        Page<Interfaceinfo> interfaceInfoPage = interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
         return ResultUtils.success(interfaceInfoPage);
     }
 
@@ -318,7 +313,7 @@ public class InterceptorInfoController {
         interfaceInfo.setStatus(0);
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
         // 校验参数是否正确
-        interfaceinfoService.validInterfaceInfo(interfaceInfo, true);
+        interfaceinfoService.validInterfaceInfoParams(interfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
 //        保存到待审审核的地方 todo
@@ -341,14 +336,6 @@ public class InterceptorInfoController {
      * @param user 用户
      */
     private void validInterface(long id, User user, HttpServletRequest request) {
-        Interfaceinfo oldInterfaceInfo = interfaceinfoService.getById(id);
-        if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        // 仅本人或管理员可修改
-        if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
     }
 
 }

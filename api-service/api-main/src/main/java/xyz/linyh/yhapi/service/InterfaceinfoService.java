@@ -7,6 +7,8 @@ import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author lin
  * @description 针对表【interfaceinfo(接口信息表)】的数据库操作Service
@@ -20,7 +22,9 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @param interfaceInfo
      * @param add
      */
-    void validInterfaceInfo(Interfaceinfo interfaceInfo, boolean add);
+    void validInterfaceInfoParams(Interfaceinfo interfaceInfo, boolean add);
+
+
 
     Interfaceinfo getInterfaceInfoByURI(String interfaceURI, String method);
 
@@ -61,6 +65,14 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+
+    /**
+     * 更新接口信息
+     * @param user
+     * @param interfaceInfo
+     * @return
+     */
+    boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo);
 
 
     /**

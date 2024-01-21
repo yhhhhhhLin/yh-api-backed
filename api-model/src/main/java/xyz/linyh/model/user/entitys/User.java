@@ -60,6 +60,11 @@ public class User implements Serializable {
     private String accessKey;
 
     /**
+     * 积分
+     */
+    private Integer credits;
+
+    /**
      * secretKey
      */
     private String secretKey;

@@ -49,7 +49,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
      * @param add
      */
     @Override
-    public void validInterfaceInfo(Interfaceinfo interfaceInfo, boolean add) {
+    public void validInterfaceInfoParams(Interfaceinfo interfaceInfo, boolean add) {
 
         if (interfaceInfo == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -67,6 +67,11 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             pointsRequired = 0;
         }
 
+//        在uri里面不能包含空格
+        if (interfaceInfo.getUri() != null && interfaceInfo.getUri().contains(" ")) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能包含空格");
+        }
+
         // 创建时，所有参数必须非空
         if (add) {
             if (StringUtils.isAnyBlank(name, method, description, uri, requestHeader, responseHeader)) {
@@ -78,6 +83,8 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         }
 
     }
+
+
 
     @Override
     public Interfaceinfo getInterfaceInfoByURI(String interfaceURI, String method) {
@@ -234,6 +241,42 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         queryWrapper.eq(interfaceInfoQueryRequest.getStatus() != null, "status", interfaceInfoQueryRequest.getStatus());
 
         return this.page(new Page<>(current, size), queryWrapper);
+    }
+
+    @Override
+    public boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo) {
+        if(interfaceInfo==null ||interfaceInfo.getId()==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口数据或id不能为空");
+        }
+        validInterfaceInfo(interfaceInfo, user);
+//        判断数据库中是否有重复的uri
+        Interfaceinfo dbInterfaceInfo = this.getOne(
+                Wrappers.<Interfaceinfo>lambdaQuery()
+                        .eq(Interfaceinfo::getUri, interfaceInfo.getUri())
+                        .ne(Interfaceinfo::getId, interfaceInfo.getId()));
+        if(dbInterfaceInfo!=null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能重复");
+        }
+        return this.updateById(interfaceInfo);
+    }
+
+    /**
+     * 判断接口是否存在获取用户是否有权限修改这个接口
+     * @param interfaceInfo
+     * @param user
+     */
+    private void validInterfaceInfo(Interfaceinfo interfaceInfo, User user) {
+//        判断接口是否存在
+        Interfaceinfo oldInterfaceInfo = this.getById(interfaceInfo.getId());
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
+        }
+
+        //判断用户是否有权限修改这个接口 仅本人或管理员可修改
+        if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !"admin".equals(user.getUserRole())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+
     }
 
 

@@ -53,6 +53,11 @@ public class UserVO implements Serializable {
     private Date updateTime;
 
     /**
+     * 积分
+     */
+    private Integer credits;
+
+    /**
      * accessKey
      */
     private String accessKey;

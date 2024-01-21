@@ -26,7 +26,7 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @param userId
      * @return
      */
-    Boolean isInvoke(Long interfaceInfoId, Long userId);
+    Boolean isInvoke(Long interfaceInfoId, Long userId,Integer pointsRequired);
 
     /**
      * 获取所有接口的调用次数前5的数据
@@ -49,7 +49,7 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @param interfaceId
      * @return
      */
-    BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(Long interfaceId);
+    BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(Long interfaceId, Long userId);
 
 
     /**
