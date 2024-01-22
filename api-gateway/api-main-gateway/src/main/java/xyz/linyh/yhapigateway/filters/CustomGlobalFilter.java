@@ -122,7 +122,8 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         Map<String, Interfaceinfo> URIAndInterface = routeServiceImpl.getRoutes();
 
         if (URIAndInterface == null || URIAndInterface.size() <= 0) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            log.info("无法获取接口（没有此接口或已经下线）");
+            return setErrorResponse(response, ErrorCode.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
         }
 
 //        6. 判断请求接口是否存在

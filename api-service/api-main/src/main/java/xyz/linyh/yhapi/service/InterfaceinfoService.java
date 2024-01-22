@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
+import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 
@@ -73,6 +74,21 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo);
+
+    /**
+     * 判断接口是否存在和对应用户是否可以修改接口数据
+     * @param interfaceInfoId
+     * @param user
+     */
+    void validInterfaceInfo(Long interfaceInfoId, User user);
+
+    /**
+     * 更新接口状态，只可以是接口管理者或管理员可以修改
+     * @param dto
+     * @param user
+     * @return
+     */
+    boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user);
 
 
     /**

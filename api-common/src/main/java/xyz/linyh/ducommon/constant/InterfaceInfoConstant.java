@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class  InterfaceInfoConstant{
 
-    public static String STATIC_USE = "1";
-    public static String STATIC_NOT_USE = "0";
+//    接口可用状态
+    public static Integer STATIC_USE = 1;
+//    接口不可用状态
+    public static Integer STATIC_NOT_USE = 0;
     public static String GATEWAY_PATH = "http://localhost:8081/yhapi/routes";
 
 //    @Value("${gateway.url}")

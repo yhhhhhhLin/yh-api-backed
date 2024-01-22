@@ -20,6 +20,7 @@ import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
+import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
@@ -248,7 +249,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if(interfaceInfo==null ||interfaceInfo.getId()==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口数据或id不能为空");
         }
-        validInterfaceInfo(interfaceInfo, user);
+        validInterfaceInfo(interfaceInfo.getId(), user);
 //        判断数据库中是否有重复的uri
         Interfaceinfo dbInterfaceInfo = this.getOne(
                 Wrappers.<Interfaceinfo>lambdaQuery()
@@ -262,12 +263,16 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     /**
      * 判断接口是否存在获取用户是否有权限修改这个接口
-     * @param interfaceInfo
+     * @param interfaceInfoId
      * @param user
      */
-    private void validInterfaceInfo(Interfaceinfo interfaceInfo, User user) {
+    @Override
+    public void validInterfaceInfo(Long interfaceInfoId, User user) {
+        if(interfaceInfoId==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+        }
 //        判断接口是否存在
-        Interfaceinfo oldInterfaceInfo = this.getById(interfaceInfo.getId());
+        Interfaceinfo oldInterfaceInfo = this.getById(interfaceInfoId);
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
         }
@@ -276,7 +281,19 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !"admin".equals(user.getUserRole())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
+    }
 
+    @Override
+    public boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user) {
+
+//        判断这个接口只能是管理员或接口拥有着可以修改
+        this.validInterfaceInfo(dto.getInterfaceId(), user);
+
+        boolean result = this.update(Wrappers.<Interfaceinfo>lambdaUpdate()
+                .eq(Interfaceinfo::getId,dto.getInterfaceId())
+                .set(Interfaceinfo::getStatus,dto.getStatus()));
+        this.updateGatewayCache();
+        return result;
     }
 
 

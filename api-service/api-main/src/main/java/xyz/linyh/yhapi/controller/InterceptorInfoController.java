@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -15,17 +16,20 @@ import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokeParams;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
+import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 对接口的增删改查
@@ -133,57 +137,23 @@ public class InterceptorInfoController {
     }
 
     /**
-     * 接口上线（管理员和接口拥有者可用）
-     *
-     * @param idRequest 接口id
-     * @param request   request
+     * 修改接口状态（管理员和接口拥有者可用）
+     * @param dto
+     * @param request
+     * @return
      */
-    @PostMapping("/online")
-    public BaseResponse onlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                                            HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
+    @PutMapping("/updateStatus")
+    public BaseResponse<Boolean> updateStatus(@RequestBody UpdateStatusDto dto, HttpServletRequest request) {
+//        判断参数是否正确
+        if(dto == null || dto.getInterfaceId() <= 0 || dto.getStatus() == null || (dto.getStatus().equals(InterfaceInfoConstant.STATIC_USE) && dto.getStatus().equals( InterfaceInfoConstant.STATIC_NOT_USE))){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
-        long id = idRequest.getId();
+        boolean result = interfaceinfoService.updateInterfaceInfoStatus(dto,user);
 
-        validInterface(id, user, request);
-
-        LambdaUpdateWrapper<Interfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(Interfaceinfo::getId, id)
-                .set(Interfaceinfo::getStatus, 1);
-        boolean result = interfaceinfoService.update(wrapper);
-
-        interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);
     }
 
-    /**
-     * 接口下线（管理员和接口拥有者可用）
-     *
-     * @param idRequest 接口id
-     * @param request   request
-     */
-    @PostMapping("/offline")
-    public BaseResponse offlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                                             HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = userService.getLoginUser(request);
-        long id = idRequest.getId();
-
-        validInterface(id, user, request);
-
-        LambdaUpdateWrapper<Interfaceinfo> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(Interfaceinfo::getId, id)
-                .set(Interfaceinfo::getStatus, 0);
-        boolean result = interfaceinfoService.update(wrapper);
-
-//        todo
-        interfaceinfoService.updateGatewayCache();
-        return ResultUtils.success(result);
-    }
 
     /**
      * 根据 id 获取接口详细数据
@@ -214,16 +184,18 @@ public class InterceptorInfoController {
 //    todo 只是简单的，需要改为根据每一个请求获取请求参数，然后传递
     @PostMapping("/invoke")
     public String invokeInterfaceById(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
-                                      HttpServletRequest request) {
+                                      HttpServletRequest request, HttpServletResponse response) {
 //        判断参数是否有效
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() == null || interfaceInfoInvokeRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
 
 //        判断接口是否有效
-        Interfaceinfo interfaceInfo = interfaceinfoService.getById(interfaceInfoInvokeRequest.getId());
+        Interfaceinfo interfaceInfo = interfaceinfoService.getOne(Wrappers.<Interfaceinfo>lambdaQuery()
+                .eq(Interfaceinfo::getId, interfaceInfoInvokeRequest.getId())
+                .eq(Interfaceinfo::getStatus, InterfaceInfoConstant.STATIC_USE));
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "不存在这个接口");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "不存在这个接口或接口已经下线");
         }
 
         User user = userService.getLoginUser(request);
