@@ -14,7 +14,7 @@ import java.util.List;
 public interface GptSendService {
 
 
-    public List<GPTMessage> sendRequest(List<GPTMessage> messages);
+    public GPTMessage sendRequest(List<GPTMessage> messages);
 
 
     public Flux<String> sendChatRequest(List<GPTMessage> messages);

@@ -41,17 +41,23 @@ public class AuditInterfaceController {
         if (audit == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "audit参数不能为空");
         }
+
         Long userId = getLoginUserId(request);
         audit.setUserId(userId);
 
 //        创建对应审核表
         audit = apiinterfaceauditService.saveAuditInterface(audit);
-
         log.info("添加到数据库成功:{}", audit);
+
         apiinterfaceauditService.sendAuditInterfaceMsgToGpt(audit);
         return ResultUtils.success("发送成功，等待审核");
     }
 
+    /**
+     * TODO 改为去redis中获取也可以 或直接在gateway中去redis中获取然后保存起来？
+     * @param request
+     * @return
+     */
     private Long getLoginUserId(HttpServletRequest request) {
         return Long.valueOf(request.getHeader("userId"));
     }

@@ -22,7 +22,6 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
     /**
      * 更新审核的接口的code和msg
      *
-     * @param
      */
     public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg);
 

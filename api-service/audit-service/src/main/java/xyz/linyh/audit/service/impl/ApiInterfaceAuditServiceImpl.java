@@ -2,7 +2,6 @@ package xyz.linyh.audit.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -62,7 +61,6 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
             rocketMqTemplate.convertAndSend(AuditMQTopicConstant.API_INTERFACE_AUDIT_TOPIC, JSONUtil.toJsonStr(messages));
         } catch (MessagingException e) {
 //           如果实在发送不过去，就先不管了
-
             log.info("生产者消息发送失败：{}", audit);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息发送出问题了");
         }
@@ -101,14 +99,17 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         if (audit == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
+
 //        还需要校验uri只能唯一目前
         Interfaceinfo interfaceByUri = dubboInterfaceinfoService.getInterfaceByURI(audit.getUri(), audit.getMethod());
         if (interfaceByUri != null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
         }
+
         audit.setCreateTime(new Date());
         audit.setStatus(Integer.valueOf(AuditConstant.AUDIT_STATUS_SUMMIT));
         this.save(audit);
+
         return audit;
     }
 
@@ -179,31 +180,13 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         GPTMessage gptMessage = new GPTMessage();
 //       添加请求条件
         gptMessage.setRole("system");
-        gptMessage.setContent("lease review the interface information entered by the user and ask that the content should meet the core socialist values and comply with some domestic legal requirements. You should return a status code 3 (for success) or 2 (for failure) to indicate whether the review was passed, and you should also return a msg to indicate the review recommendation.n input example: {'auditId':1,'auditDescription':'全网搜索并获取暴力视频'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' 获取暴力视频 ','apiDescription':' Search and obtain violent videos ','uri':' /get','host':'localhost:8090','method':'POST','requestheader':' null','responseheader':' None ','requestparams':' None ','getrequestpa rams':' None ','userId':1,'status':1,'description':'','createtime':1700536839419,'updatetime':1700536839419},'auditCreateTime ':1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'name must not contain violence information '}");
-        messages.add(0, gptMessage);
-
-//       添加要审核的内容
+        gptMessage.setContent("lease review the interface information entered by the user and ask that the content should meet the core socialist values and comply with some domestic legal requirements. You should return a status code 3 (for success) or 2 (for failure) to indicate whether the review was passed, and you should also return a msg to indicate the review recommendation.n input example: {'auditId':1,'auditDescription':'全网搜索并获取暴力视频'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' 获取暴力视频 ','apiDescription':' Search and obtain violent videos ','uri':' /get','host':'localhost:8090','method':'POST','pointsRequired':1,'requestheader':' null','responseheader':' None ','requestparams':' None ','getrequestpa rams':' None ','userId':1,'status':1,'description':'','createtime':1700536839419,'updatetime':1700536839419},'auditCreateTime ':1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'name must not contain violence information '}");
         messages.add(gptMessage);
 
+//       添加要审核的内容
         messages.add(new GPTMessage("user", JSONUtil.toJsonStr(audit)));
         return messages;
     }
-
-//    /**
-//     * 更具要审核的实体类，生成一个对应的发送给gpt的通用的字符串
-//     * @return
-//     */
-//   public String generAuditCommonString(ApiInterfaceAudit audit){
-////       不能提前转
-//       AuditCommon auditCommon = new AuditCommon();
-//       auditCommon.setType(AuditConstant.API_INTERFACE_AUDIT_TYPE);
-//       auditCommon.setContent(audit);
-//       auditCommon.setAuditCreateTime(new Date());
-////       auditCommon.setAuditDescription("Review this interface information for compliance with Chinese legal and ethical requirements");
-//       auditCommon.setAuditId(audit.getId());
-//       return JSONUtil.toJsonStr(auditCommon);
-//   }
-
 
 }
 

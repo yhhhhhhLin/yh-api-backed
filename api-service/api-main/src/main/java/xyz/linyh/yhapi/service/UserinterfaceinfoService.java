@@ -4,6 +4,7 @@ package xyz.linyh.yhapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAnalyzeDto;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 
@@ -30,11 +31,19 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
     InterfaceInfoInvokePayType isInvokeAndGetPayType(Long interfaceInfoId, Long userId, Integer pointsRequired);
 
     /**
-     * 获取所有接口的调用次数前5的数据
+     * 获取所有接口的调用次数前xx的数据
      *
      * @return
      */
-    BaseResponse<List<InterfaceInfoVO>> analyzeInterfaceInfo();
+    List<InterfaceInfoVO> analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto);
+
+
+    /**
+     * 获取某一个用户所有接口的调用次数前xx的数据
+     * @param dto
+     * @return
+     */
+    List<InterfaceInfoVO> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto,Long userId);
 
     /**
      * 获取用户自己接口的调用次数前5的数据

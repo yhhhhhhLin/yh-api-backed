@@ -49,9 +49,8 @@ public class GptSendServiceImpl implements GptSendService {
     private TokenPoolClient tokenPoolClient;
 
 
-    //    请求如果出现错误返回优化 todo
     @Override
-    public List<GPTMessage> sendRequest(List<GPTMessage> messages) {
+    public GPTMessage sendRequest(List<GPTMessage> messages) {
 
 //        插入初始化配置
         GPTBody gptBody = new GPTBody.Builder()
@@ -81,17 +80,13 @@ public class GptSendServiceImpl implements GptSendService {
             if (statusCode == HttpStatus.OK) {
                 GPTResponse response = responseEntity.getBody();
                 GPTMessage message = response.getChoices().get(0).getMessage();
-                System.out.println(message);
-
-//                将请求后的结果保存到messages中，然后返回
-                messages.add(message);
-                return messages;
+                log.info("请求成功，返回的结果为:{}", message);
+                return message;
             } else {
-                System.out.println("请求相应出现错误");
+                log.error("请求相应出现错误");
             }
         } catch (RestClientException e) {
-            System.out.println(e);
-            System.out.println("发送请求出错");
+            log.info("发送请求出错,{}", e.getMessage(),e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -100,7 +95,7 @@ public class GptSendServiceImpl implements GptSendService {
         message.setRole("assistant");
         message.setContent("");
         messages.add(message);
-        return messages;
+        return message;
     }
 
 

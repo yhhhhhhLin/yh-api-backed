@@ -34,12 +34,14 @@ public class DubboAuditInterfaceServiceImpl implements DubboAuditInterfaceServic
     @Override
     public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg) {
         log.info("接收到要更新数据库的请求，更新的id为:{},code为:{},msg为:{}", auditId, code, msg);
+
 //        判断他原先的状态码是否是通过还是未通过，如果是这些状态，那么就不需要更新了，因为审核后的结果可能比管理员同意慢
         ApiInterfaceAudit apiInterfaceAudit = apiinterfaceauditService.getById(auditId);
         String auditStatus = String.valueOf(apiInterfaceAudit.getStatus());
         if (auditStatus.equals(AuditConstant.AUDIT_STATUS_PUBLISH) || auditStatus.equals(AuditConstant.AUDIT_STATUS_PROPLE_FAIL) || auditStatus.equals(AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS)) {
             return;
         }
+
         apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(auditId, code, msg);
 
     }

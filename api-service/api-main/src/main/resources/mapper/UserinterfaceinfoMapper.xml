@@ -21,12 +21,25 @@
         remNum,allNum,status,
         createTime,updateTime,isDelete
     </sql>
-    <select id="getInterfaceCount" resultType="xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo">
-        select interfaceId, sum(allNum) as allNum
-        from userInterfaceinfo
-        group by interfaceId
+
+    <select id="getInterfaceAnalyze" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
+
+        select i.*,sum(ui.allNum) as allNum
+        from interfaceinfo i
+        left join userinterfaceinfo ui
+        on i.id=ui.interfaceId
+        <where>
+            <if test="userId!=null">
+                and i.userId=#{userId}
+            </if>
+            and i.isDelete=0
+            and ui.isDelete=0
+        </where>
+        group by ui.interfaceId
         order by allNum desc
-        limit #{limit}    </select>
+        limit #{offset}, #{limit}
+
+    </select>
 
     <select id="getSelfInterfaceCount" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
         --         找出这个某个用户的所有接口
@@ -56,7 +69,7 @@
                (select SUM(allNum)
                 from userInterfaceinfo
                 WHERE interfaceId = #{interfaceId}
-                GROUP BY interfaceId)                                        as allNum
+                GROUP BY interfaceId) as allNum
         from interfaceInfo i
         where i.id = #{interfaceId};
     </select>

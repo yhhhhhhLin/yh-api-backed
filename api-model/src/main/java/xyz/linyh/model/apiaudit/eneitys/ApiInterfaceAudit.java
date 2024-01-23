@@ -29,6 +29,11 @@ public class ApiInterfaceAudit implements Serializable {
 
     private String method;
 
+    /**
+     * 需要花费的积分
+     */
+    private Integer pointsRequired;
+
     private String requestHeader;
 
     private String responseHeader;

@@ -1,5 +1,6 @@
 package xyz.linyh.yhapi.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -23,7 +24,7 @@ public interface UserinterfaceinfoMapper extends BaseMapper<UserInterfaceinfo> {
      * @param limit
      * @return
      */
-    public List<UserInterfaceinfo> getInterfaceCount(@Param("limit") Integer limit);
+    public List<InterfaceInfoVO> getInterfaceAnalyze(@Param("offset") int offset, @Param("limit") int limit,@Param("userId") Long userId);
 
     /**
      * 降序查询出用户自己的接口的调用总次数和对应接口id

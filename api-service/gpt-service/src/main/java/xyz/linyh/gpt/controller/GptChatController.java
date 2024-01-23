@@ -50,13 +50,12 @@ public class GptChatController {
 //        messages = this.SplitMessage(messages);
         Flux<String> stringFlux = gptSendService.sendChatRequest(messages);
 
-
         return stringFlux.mapNotNull(message -> {
-//            System.out.println(message);
+
             if ("[DONE]".equals(message)) {
                 return null;
             }
-//            System.out.println();
+
             GPTStreamResponse response = JSONUtil.toBean(message, GPTStreamResponse.class);
             if (response.getChoices().get(0).getFinish_reason() == null) {
                 System.out.println(response.getChoices().get(0));
@@ -69,9 +68,7 @@ public class GptChatController {
         });
 
     }
-//分析需求:\n分析个个月数的销售额\n原始数据\n月数 销售额\n1,1000\n2,2000 \n3,1500\n4,1800\n5,1200\n6,2500
-//7,1700
-//8,1900
+
 
     /**
      * 只能先管理员用而已
@@ -82,15 +79,16 @@ public class GptChatController {
     @AuthCheck(mustRole = "admin")
     @PostMapping("/gptChatNoStream")
     public BaseResponse<GPTMessage> chatNoStream(@RequestBody List<GPTMessage> messages, HttpServletRequest request) {
+
 //        判断gpt的字数长度是否超过长度限制，如果超过长度限制，那么就把一个message拆分成多个message
 //        messages = SplitMessage(messages);
-        List<GPTMessage> returnMessages = gptSendService.sendRequest(messages);
-        if (returnMessages == null || returnMessages.size() == 0) {
+
+        GPTMessage returnMessage = gptSendService.sendRequest(messages);
+        if (returnMessage == null) {
             return ResultUtils.error(500, "服务器错误");
         }
-        System.out.println("----------------------------------------------------------------");
-        System.out.println(returnMessages.get(returnMessages.size() - 1));
-        return ResultUtils.success(returnMessages.get(returnMessages.size() - 1));
+
+        return ResultUtils.success(returnMessage);
     }
 
     private List<GPTMessage> SplitMessage(List<GPTMessage> messages) {

@@ -7,12 +7,18 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xyz.linyh.dubboapi.service.DubboAuditInterfaceService;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.gpt.service.GptSendService;
 import xyz.linyh.model.gpt.dtos.InterfaceResult;
+import xyz.linyh.model.gpt.eneitys.GPTBody;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
+import xyz.linyh.model.gpt.eneitys.GPTResponse;
+import xyz.linyh.tokenpool.client.TokenPoolClient;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -32,35 +38,29 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
     @DubboReference
     private DubboAuditInterfaceService dubboAuditInterfaceService;
 
+    @Autowired
+    private TokenPoolClient tokenPoolClient;
+
 
     @Override
     public void onMessage(String message) {
         log.info("接收到要审核的信息:{}", message);
-//        限制只能一次处理2个，不能一次处理处理过多
 
-//        开一个线程池，规定发给gpt的请求只能有5个同时进行
         List<GPTMessage> messages = JSONUtil.toList(JSONUtil.parseArray(message), GPTMessage.class);
 
-
-////        开一个大小只有5的线程池，然后发送消息给gpt 等待结果返回，判断是否符合要求的返回格式，如果不符合，需要重新放到线程池里面
-//        ExecutorService executorService = Executors.newFixedThreadPool(5);
-
-//        先一次只能处理一个请求
         processMessage(messages);
-
-//        todo 改为线程池异步执行相关任务，在指定线程池里面
-//        CompletableFuture.runAsync(() -> processMessage(messages));
 
     }
 
-
+    /**
+     * 发送消息给gpt 如果返回结果不对，会进行重试发送，如果超过最大次数不对，那么就不会发送给gpt审核了
+     * @param messages 发送给gpt的消息
+     */
     public void processMessage(List<GPTMessage> messages) {
 
-
         try {
-//            semaphore.acquire();
             Thread.sleep(1000);
-            log.info("获取一个信号量，开始处理消息..................");
+            log.info("开始准备发送要审核的数据给gpt");
             int maxTry = 5;
             int nowTry = 0;
             Boolean isOk = false;
@@ -68,14 +68,13 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 //       发送信息到gpt,如果不对会重试五次
             InterfaceResult interfaceResult = null;
             while (nowTry < maxTry) {
-                List<GPTMessage> returnMessage = gptSendService.sendRequest(messages);
+                GPTMessage returnMessage = gptSendService.sendRequest(messages);
                 interfaceResult = check(returnMessage);
 
                 if (interfaceResult == null) {
                     log.info("重试次数为:{}", nowTry);
-
                     nowTry++;
-//                    限制发送的速度
+//                    限制重试的速度
                     Thread.sleep(5000);
                 } else {
                     isOk = true;
@@ -85,9 +84,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
             }
 
             if (isOk) {
-//            todo 刷新对应数据库信息
-                log.info("审核完成，开始去调用audit模块的相关服务..................");
-                System.out.println(interfaceResult);
+                log.info("审核完成，开始去调用audit模块的相关服务..................,结果为:{}", interfaceResult);
                 try {
                     dubboAuditInterfaceService.updateAuditInterfaceCodeAndMsg(interfaceResult.getId(), Integer.valueOf(interfaceResult.getCode()), interfaceResult.getMsg());
                 } catch (NumberFormatException e) {
@@ -97,8 +94,6 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
 
         } catch (InterruptedException e) {
             log.info("接口处理异常{}", e.getMessage());
-        } finally {
-//            semaphore.release();
         }
     }
 
@@ -109,21 +104,18 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
      * @return
      */
 
-    private InterfaceResult check(List<GPTMessage> returnMessage) {
+    private InterfaceResult check(GPTMessage returnMessage) {
         if (returnMessage == null) {
             return null;
         }
-        if (returnMessage.size() >= 8) {
-            return null;
-        }
-//        如果他回复的最后一个为空也需要重试
-        if (StringUtils.isBlank(returnMessage.get(returnMessage.size() - 1).getContent().toString())) {
-            return null;
-        }
-        try {
 
-            InterfaceResult interfaceResult = JSONUtil.toBean(returnMessage.get(returnMessage.size() - 1).getContent().toString(), InterfaceResult.class);
-            return interfaceResult;
+//        如果他回复的最后一个为空也需要重试
+        if (StringUtils.isBlank(returnMessage.getContent())) {
+            return null;
+        }
+
+        try {
+            return JSONUtil.toBean(returnMessage.getContent(), InterfaceResult.class);
         } catch (Exception e) {
             log.info("返回的结果不符合要求，需要重新发送请求");
             return null;

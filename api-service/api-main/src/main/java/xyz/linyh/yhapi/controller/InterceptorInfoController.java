@@ -138,6 +138,7 @@ public class InterceptorInfoController {
 
     /**
      * 修改接口状态（管理员和接口拥有者可用）
+     *
      * @param dto
      * @param request
      * @return
@@ -145,11 +146,11 @@ public class InterceptorInfoController {
     @PutMapping("/updateStatus")
     public BaseResponse<Boolean> updateStatus(@RequestBody UpdateStatusDto dto, HttpServletRequest request) {
 //        判断参数是否正确
-        if(dto == null || dto.getInterfaceId() <= 0 || dto.getStatus() == null || (dto.getStatus().equals(InterfaceInfoConstant.STATIC_USE) && dto.getStatus().equals( InterfaceInfoConstant.STATIC_NOT_USE))){
+        if (dto == null || dto.getInterfaceId() <= 0 || dto.getStatus() == null || (dto.getStatus().equals(InterfaceInfoConstant.STATIC_USE) && dto.getStatus().equals(InterfaceInfoConstant.STATIC_NOT_USE))) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
-        boolean result = interfaceinfoService.updateInterfaceInfoStatus(dto,user);
+        boolean result = interfaceinfoService.updateInterfaceInfoStatus(dto, user);
 
         return ResultUtils.success(result);
     }
@@ -202,7 +203,7 @@ public class InterceptorInfoController {
 
 //        判断是否有调用次数或积分是否够
         InterfaceInfoInvokeParams interfaceInfoInvokeParams = new InterfaceInfoInvokeParams();
-        InterfaceInfoInvokePayType payType = userinterfaceinfoService.isInvokeAndGetPayType(interfaceInfoInvokeRequest.getId(), user.getId(),interfaceInfo.getPointsRequired());
+        InterfaceInfoInvokePayType payType = userinterfaceinfoService.isInvokeAndGetPayType(interfaceInfoInvokeRequest.getId(), user.getId(), interfaceInfo.getPointsRequired());
         interfaceInfoInvokeParams.setPayType(payType);
 
 //        添加请求参数 并发送请求到网关
@@ -246,33 +247,23 @@ public class InterceptorInfoController {
 
     /**
      * 用户获取分页自己的所有接口
-     * 条件查询名称 方法 uri 状态
+     * 条件查询
      */
-    @PostMapping("/self")
-    public BaseResponse getSelfInterfaceInfo(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
+    @GetMapping("/self")
+    public BaseResponse getSelfInterfaceInfo(InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null || interfaceInfoQueryRequest.getPageSize() == 0L || interfaceInfoQueryRequest.getCurrent() == 0L) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "查询参数不能为空");
         }
 
         User user = userService.getLoginUser(request);
-        if (user == null) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "用户不能没有登录");
-        }
+        interfaceInfoQueryRequest.setUserId(user.getId());
+        Page<Interfaceinfo> interfaceinfoPage = interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
 
-        LambdaQueryWrapper<Interfaceinfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Interfaceinfo::getUserId, user.getId())
-                .eq(!StrUtil.isBlank(interfaceInfoQueryRequest.getMethod()), Interfaceinfo::getMethod, interfaceInfoQueryRequest.getMethod())
-                .eq(interfaceInfoQueryRequest.getStatus() != null, Interfaceinfo::getStatus, interfaceInfoQueryRequest.getStatus())
-                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getName()), Interfaceinfo::getName, interfaceInfoQueryRequest.getName())
-                .like(!StrUtil.isBlank(interfaceInfoQueryRequest.getUri()), Interfaceinfo::getUri, interfaceInfoQueryRequest.getUri());
-        Page<Interfaceinfo> page = new Page<>(interfaceInfoQueryRequest.getCurrent(), interfaceInfoQueryRequest.getPageSize());
-        Page<Interfaceinfo> interfaceInfoPage = interfaceinfoService.page(page, wrapper);
-
-        return ResultUtils.success(interfaceInfoPage);
+        return ResultUtils.success(interfaceinfoPage);
     }
 
     /**
-     * 普通用户创建对应数据接口
+     * 普通用户创建对应数据接口 todo 可以删了，没用
      * （要审核）
      *
      * @param interfaceInfoAddRequest 接口信息
@@ -283,9 +274,11 @@ public class InterceptorInfoController {
         if (interfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         Interfaceinfo interfaceInfo = new Interfaceinfo();
-        interfaceInfo.setStatus(0);
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
+        interfaceInfo.setStatus(0);
+
         // 校验参数是否正确
         interfaceinfoService.validInterfaceInfoParams(interfaceInfo, true);
         User loginUser = userService.getLoginUser(request);

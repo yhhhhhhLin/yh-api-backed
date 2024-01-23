@@ -86,7 +86,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
 
-
     @Override
     public Interfaceinfo getInterfaceInfoByURI(String interfaceURI, String method) {
         if (interfaceURI == null || method == null) {
@@ -236,6 +235,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
         queryWrapper.like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getName()), "name", interfaceInfoQueryRequest.getName());
         queryWrapper.like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getDescription()), "description", interfaceInfoQueryRequest.getDescription());
+        queryWrapper.eq(interfaceInfoQueryRequest.getUserId() != null, "userId", interfaceInfoQueryRequest.getUserId());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getMethod()), "method", interfaceInfoQueryRequest.getMethod());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), "uri", interfaceInfoQueryRequest.getUri());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), "host", interfaceInfoQueryRequest.getHost());
@@ -246,7 +246,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Override
     public boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo) {
-        if(interfaceInfo==null ||interfaceInfo.getId()==null){
+        if (interfaceInfo == null || interfaceInfo.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口数据或id不能为空");
         }
         validInterfaceInfo(interfaceInfo.getId(), user);
@@ -255,7 +255,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 Wrappers.<Interfaceinfo>lambdaQuery()
                         .eq(Interfaceinfo::getUri, interfaceInfo.getUri())
                         .ne(Interfaceinfo::getId, interfaceInfo.getId()));
-        if(dbInterfaceInfo!=null){
+        if (dbInterfaceInfo != null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能重复");
         }
         return this.updateById(interfaceInfo);
@@ -263,12 +263,13 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     /**
      * 判断接口是否存在获取用户是否有权限修改这个接口
+     *
      * @param interfaceInfoId
      * @param user
      */
     @Override
     public void validInterfaceInfo(Long interfaceInfoId, User user) {
-        if(interfaceInfoId==null){
+        if (interfaceInfoId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
 //        判断接口是否存在
@@ -290,8 +291,8 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         this.validInterfaceInfo(dto.getInterfaceId(), user);
 
         boolean result = this.update(Wrappers.<Interfaceinfo>lambdaUpdate()
-                .eq(Interfaceinfo::getId,dto.getInterfaceId())
-                .set(Interfaceinfo::getStatus,dto.getStatus()));
+                .eq(Interfaceinfo::getId, dto.getInterfaceId())
+                .set(Interfaceinfo::getStatus, dto.getStatus()));
         this.updateGatewayCache();
         return result;
     }

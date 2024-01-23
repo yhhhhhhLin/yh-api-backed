@@ -15,6 +15,7 @@ import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAnalyzeDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
@@ -173,7 +174,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
                 interfaceInfoInvokePayType.setPayAmount(pointsRequired);
             }
         }
-        if(!canInvoke){
+        if (!canInvoke) {
             throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分调用");
         }
         return interfaceInfoInvokePayType;
@@ -185,33 +186,16 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public BaseResponse<List<InterfaceInfoVO>> analyzeInterfaceInfo() {
-//       todo 获取每个接口调用次数 目前只获取调用次数前5的
-        List<UserInterfaceinfo> interfaceCount = userinterfaceinfoMapper.getInterfaceCount(5);
-        if (interfaceCount == null || interfaceCount.size() == 0) {
-            ResultUtils.success("无数据");
-        }
+    public List<InterfaceInfoVO> analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto) {
 
-        Map<Long, List<UserInterfaceinfo>> collectGroupBy = interfaceCount.stream().collect(Collectors.groupingBy(UserInterfaceinfo::getInterfaceId));
+        List<InterfaceInfoVO> interfaceAnalyze = userinterfaceinfoMapper.getInterfaceAnalyze(dto.getCurrent() - 1, dto.getTotal(), null);
+        return interfaceAnalyze;
 
-        List<Interfaceinfo> list = interfaceinfoService.list(Wrappers.<Interfaceinfo>lambdaQuery().in(Interfaceinfo::getId, collectGroupBy.keySet()));
+    }
 
-        List<InterfaceInfoVO> interfaceInfoVOS = list.stream().map(interfaceinfo -> {
-            InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
-            BeanUtils.copyProperties(interfaceinfo, interfaceInfoVO);
-            for (Long interfaceId : collectGroupBy.keySet()) {
-                if (interfaceId.equals(interfaceinfo.getId())) {
-                    interfaceInfoVO.setAllNum(collectGroupBy.get(interfaceId).get(0).getAllNum());
-                }
-            }
-
-            return interfaceInfoVO;
-        }).collect(Collectors.toList());
-
-//        todo
-        List<InterfaceInfoVO> orderInterfaceInfoVOS = interfaceInfoVOS.stream().sorted(Comparator.comparing(InterfaceInfoVO::getAllNum).reversed()).collect(Collectors.toList());
-
-        return ResultUtils.success(orderInterfaceInfoVOS);
+    @Override
+    public List<InterfaceInfoVO> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto, Long userId) {
+        return userinterfaceinfoMapper.getInterfaceAnalyze(dto.getCurrent() - 1, dto.getTotal(), userId);
     }
 
 
@@ -297,9 +281,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public Integer getInterfaceRemCount(Long id, Long interfaceId) {
         List<UserInterfaceinfo> list = this.list(Wrappers.<UserInterfaceinfo>lambdaQuery().eq(UserInterfaceinfo::getUserId, id).eq(UserInterfaceinfo::getInterfaceId, interfaceId));
-        if(list==null || list.isEmpty()){
+        if (list == null || list.isEmpty()) {
             return 0;
-        }else{
+        } else {
             Integer allNum = 0;
             for (UserInterfaceinfo userInterfaceinfo : list) {
                 allNum += userInterfaceinfo.getRemNum();
