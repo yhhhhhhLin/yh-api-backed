@@ -149,6 +149,7 @@ public class InterceptorInfoController {
         if (dto == null || dto.getInterfaceId() <= 0 || dto.getStatus() == null || (dto.getStatus().equals(InterfaceInfoConstant.STATIC_USE) && dto.getStatus().equals(InterfaceInfoConstant.STATIC_NOT_USE))) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         User user = userService.getLoginUser(request);
         boolean result = interfaceinfoService.updateInterfaceInfoStatus(dto, user);
 

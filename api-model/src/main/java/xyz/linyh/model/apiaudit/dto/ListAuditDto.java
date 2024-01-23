@@ -16,14 +16,29 @@ public class ListAuditDto extends PageRequest {
     private String name;
 
     /**
-     * 审核的内容类型
-     */
-    private String auditType;
-
-    /**
      * 审核状态
      */
     private String status;
+
+    /**
+     * 接口描述
+     */
+    private String apiDescription;
+
+    /**
+     * 接口地址
+     */
+    private String host;
+
+    /**
+     * 接口uri
+     */
+    private String uri;
+
+    /**
+     * 接口请求方法
+     */
+    private String method;
 
 
 

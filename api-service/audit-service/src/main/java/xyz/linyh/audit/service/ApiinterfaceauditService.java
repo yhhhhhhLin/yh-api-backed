@@ -50,5 +50,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @param status
      */
     void passInterfaceAudit(Long auditId, Integer status);
+
+    /**
+     * 拒绝接口审核
+     * @param auditId
+     * @param status
+     */
+    void rejectInterfaceAudit(Long auditId, Integer status,String reason);
 }
 

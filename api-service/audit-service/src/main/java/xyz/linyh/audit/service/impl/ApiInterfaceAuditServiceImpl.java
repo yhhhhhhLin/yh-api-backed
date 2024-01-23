@@ -16,6 +16,7 @@ import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
+import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
@@ -131,16 +132,17 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
      * @param auditId
      * @param status
      */
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void passInterfaceAudit(Long auditId, Integer status) {
         this.updateAuditInterfaceCodeAndMsg(auditId, status, "审核通过");
 
         ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
-//        将数据保存到真正的api文档里面
+//        将数据保存到真正的接口数据库里面
         Interfaceinfo interfaceinfo = new Interfaceinfo();
-
+        if (apiInterfaceAudit.getApiId() != null && apiInterfaceAudit.getApiId() != 0) {
+            interfaceinfo.setId(apiInterfaceAudit.getApiId());
+        }
         interfaceinfo.setName(apiInterfaceAudit.getName());
         interfaceinfo.setMethod(apiInterfaceAudit.getMethod());
         interfaceinfo.setRequestParams(apiInterfaceAudit.getRequestParams());
@@ -153,12 +155,16 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         interfaceinfo.setStatus(1);
         interfaceinfo.setUserId(apiInterfaceAudit.getUserId());
         interfaceinfo.setCreateTime(apiInterfaceAudit.getCreateTime());
+        interfaceinfo.setPointsRequired(apiInterfaceAudit.getPointsRequired());
         interfaceinfo.setUpdateTime(new Date());
 
-        Long apiId = dubboInterfaceinfoService.addInterface(interfaceinfo);
-        if (apiId == null) {
+        Long apiId = dubboInterfaceinfoService.addOrUpdateInterface(interfaceinfo);
+        if (apiId == null ) {
 //            抛出异常，事务管理
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "审核通过后，保存到真正的api文档里面失败");
+        }
+        if(apiId==0){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "保存失败，可能有重复uri");
         }
 
 //        保存id到数据库，更新审核状态
@@ -167,6 +173,25 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
                 .set(ApiInterfaceAudit::getStatus, AuditConstant.AUDIT_STATUS_PUBLISH)
                 .set(ApiInterfaceAudit::getApiId, apiId);
         this.update(wrapper);
+
+    }
+
+    @Override
+    @Transactional
+    public void rejectInterfaceAudit(Long auditId, Integer status, String reason) {
+//        判断拒绝的那个是否有apiId，如果没有，说明没有审核通过的，直接更新状态即可
+        ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
+
+        if (apiInterfaceAudit.getApiId() == null) {
+            this.updateAuditInterfaceCodeAndMsg(auditId, status, reason);
+        } else {
+            Boolean update = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_SHOULD_RE_AUDIT);
+            if (!update) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败,系统出错");
+            }
+            this.updateAuditInterfaceCodeAndMsg(auditId, status, reason);
+        }
+
 
     }
 
@@ -180,7 +205,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         GPTMessage gptMessage = new GPTMessage();
 //       添加请求条件
         gptMessage.setRole("system");
-        gptMessage.setContent("lease review the interface information entered by the user and ask that the content should meet the core socialist values and comply with some domestic legal requirements. You should return a status code 3 (for success) or 2 (for failure) to indicate whether the review was passed, and you should also return a msg to indicate the review recommendation.n input example: {'auditId':1,'auditDescription':'全网搜索并获取暴力视频'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' 获取暴力视频 ','apiDescription':' Search and obtain violent videos ','uri':' /get','host':'localhost:8090','method':'POST','pointsRequired':1,'requestheader':' null','responseheader':' None ','requestparams':' None ','getrequestpa rams':' None ','userId':1,'status':1,'description':'','createtime':1700536839419,'updatetime':1700536839419},'auditCreateTime ':1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'name must not contain violence information '}");
+        gptMessage.setContent("The interface information input by users is reviewed, and the content is required to comply with the core socialist values and comply with some domestic legal requirements. You should return status code 3 (success) or 2 (failure) to indicate whether the review passed, and you should also return an msg to indicate review suggestions. Please return in Chinese. n Input example: {'auditId':1,' auditDescription':'Search the entire network and obtain violent videos'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' Get violent videos','apiDescription':'Search and get violent videos','uri':' /get','host':'localhost:8090','method':'POST','pointsRequired':1, 'requestheader':'null','responseheader': 'None', 'requestparams': 'None', 'getrequestpa rams': 'None', 'userId': 1, 'Status': 1, 'Description': ' ', 'createtime': 1700536839419, 'updatetime': 1700536839419}, 'auditCreateTime': 1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'Name must not contain violent information'}");
         messages.add(gptMessage);
 
 //       添加要审核的内容

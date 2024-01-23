@@ -32,7 +32,15 @@ public interface DubboInterfaceinfoService{
      * @param interfaceinfo
      * @return 添加后的接口id
      */
-    Long addInterface(Interfaceinfo interfaceinfo);
+    Long addOrUpdateInterface(Interfaceinfo interfaceinfo);
+
+    /**
+     * 修改接口状态
+     * @param id
+     * @param status
+     * @return
+     */
+    Boolean updateInterfaceStatusById(Long id, Integer status);
 
 
     /**

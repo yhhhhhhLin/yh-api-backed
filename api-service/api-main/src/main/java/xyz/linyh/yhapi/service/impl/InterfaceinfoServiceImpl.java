@@ -268,7 +268,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
      * @param user
      */
     @Override
-    public void validInterfaceInfo(Long interfaceInfoId, User user) {
+    public Interfaceinfo validInterfaceInfo(Long interfaceInfoId, User user) {
         if (interfaceInfoId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口id不能为空");
         }
@@ -282,13 +282,18 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !"admin".equals(user.getUserRole())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
+        return oldInterfaceInfo;
     }
 
     @Override
     public boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user) {
 
 //        判断这个接口只能是管理员或接口拥有着可以修改
-        this.validInterfaceInfo(dto.getInterfaceId(), user);
+        Interfaceinfo interfaceinfo = this.validInterfaceInfo(dto.getInterfaceId(), user);
+
+        if (!InterfaceInfoConstant.STATIC_NOT_USE.equals(dto.getStatus()) && !InterfaceInfoConstant.STATIC_USE.equals(interfaceinfo.getStatus())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "只能修改上下线的状态");
+        }
 
         boolean result = this.update(Wrappers.<Interfaceinfo>lambdaUpdate()
                 .eq(Interfaceinfo::getId, dto.getInterfaceId())

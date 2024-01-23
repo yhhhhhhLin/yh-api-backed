@@ -80,7 +80,7 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @param interfaceInfoId
      * @param user
      */
-    void validInterfaceInfo(Long interfaceInfoId, User user);
+    Interfaceinfo validInterfaceInfo(Long interfaceInfoId, User user);
 
     /**
      * 更新接口状态，只可以是接口管理者或管理员可以修改

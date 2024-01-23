@@ -40,10 +40,25 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
      * @return 添加后的接口id
      */
     @Override
-    public Long addInterface(Interfaceinfo interfaceinfo) {
-        interfaceinfoService.save(interfaceinfo);
+    public Long addOrUpdateInterface(Interfaceinfo interfaceinfo) {
+//        判断uri不能重复
+        Interfaceinfo dbInterfaceinfo = interfaceinfoService.getOne(Wrappers.<Interfaceinfo>lambdaQuery()
+                .eq(Interfaceinfo::getUri, interfaceinfo.getUri())
+                .ne(Interfaceinfo::getId, interfaceinfo.getId()));
+        if (dbInterfaceinfo != null) {
+            return null;
+        }
+
+        interfaceinfoService.saveOrUpdate(interfaceinfo);
         interfaceinfoService.updateGatewayCache();
         return interfaceinfo.getId();
+    }
+
+    @Override
+    public Boolean updateInterfaceStatusById(Long id, Integer status) {
+        return interfaceinfoService.update(Wrappers.<Interfaceinfo>lambdaUpdate()
+                .eq(Interfaceinfo::getId, id)
+                .set(Interfaceinfo::getStatus, status));
     }
 
     /**

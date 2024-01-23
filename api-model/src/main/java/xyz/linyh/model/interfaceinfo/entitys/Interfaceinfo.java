@@ -72,7 +72,7 @@ public class Interfaceinfo implements Serializable {
     private String responseHeader;
 
     /**
-     * 接口状态 1为可用 0为不可用
+     * 接口状态 0为不可用 1为可用 2为待审核中 3为需要修改信息重新提交审核
      */
     private Integer status;
 

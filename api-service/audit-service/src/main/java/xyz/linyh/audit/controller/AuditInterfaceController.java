@@ -1,10 +1,10 @@
 package xyz.linyh.audit.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
 import xyz.linyh.ducommon.annotation.AuthCheck;
@@ -54,33 +54,27 @@ public class AuditInterfaceController {
     }
 
     /**
-     * TODO 改为去redis中获取也可以 或直接在gateway中去redis中获取然后保存起来？
-     * @param request
-     * @return
-     */
-    private Long getLoginUserId(HttpServletRequest request) {
-        return Long.valueOf(request.getHeader("userId"));
-    }
-
-    /**
-     * TODO 需要管理员才能干
      * 分页查看所有审核的接口
      *
      * @return 返回所有审核的接口
      */
     @AuthCheck(mustRole = "admin")
-    @PostMapping("/list")
-    public BaseResponse<Page<ApiInterfaceAudit>> listAudit(@RequestBody ListAuditDto dto, HttpServletRequest request) {
+    @GetMapping
+    public BaseResponse<Page<ApiInterfaceAudit>> listAudit(ListAuditDto dto, HttpServletRequest request) {
 //        参数校验
         if (dto == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "dto参数不能为空");
         }
-
         dto.check();
+
         Page<ApiInterfaceAudit> page = new Page<>(dto.getCurrent(), dto.getPageSize());
         Page<ApiInterfaceAudit> pageList = apiinterfaceauditService.page(page, Wrappers.<ApiInterfaceAudit>lambdaQuery()
-                .like(dto.getName() != null, ApiInterfaceAudit::getName, dto.getName())
-                .eq(dto.getStatus() != null, ApiInterfaceAudit::getStatus, dto.getStatus()).orderByDesc(ApiInterfaceAudit::getCreateTime));
+                .like(StrUtil.isNotBlank(dto.getName()), ApiInterfaceAudit::getName, dto.getName())
+                .eq(StrUtil.isNotBlank(dto.getStatus()), ApiInterfaceAudit::getStatus, dto.getStatus()).orderByDesc(ApiInterfaceAudit::getCreateTime)
+                .like(StrUtil.isNotBlank(dto.getApiDescription()), ApiInterfaceAudit::getApiDescription, dto.getApiDescription())
+                .eq(StrUtil.isNotBlank(dto.getUri()), ApiInterfaceAudit::getUri, dto.getUri())
+                .eq(StrUtil.isNotBlank(dto.getHost()), ApiInterfaceAudit::getHost, dto.getHost())
+                .eq(StrUtil.isNotBlank(dto.getMethod()), ApiInterfaceAudit::getMethod, dto.getMethod()));
         return ResultUtils.success(pageList);
     }
 
@@ -115,15 +109,14 @@ public class AuditInterfaceController {
         if (dto == null || dto.getStatus() == null || dto.getAuditId() == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status或auditId参数不能为空");
         }
-        apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(dto.getAuditId(), dto.getStatus(), dto.getDescription());
-//        判断状态，如果是通过，那么才通过审核
-        if (dto.getStatus().equals(Integer.valueOf(AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS))) {
+
+        if (AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS.equals(dto.getStatus())) {
             apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(), dto.getStatus());
+        } else if (AuditConstant.AUDIT_STATUS_PROPLE_FAIL.equals(dto.getStatus())) {
+            apiinterfaceauditService.rejectInterfaceAudit(dto.getAuditId(), dto.getStatus(), dto.getDescription());
+        } else {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status参数错误");
         }
-//        TODO 如果是不通过，可能还需要去修改对应主服务的状态
-
-//        将数据保存到api接口的数据库中
-
 
         return ResultUtils.success(true);
     }
@@ -137,4 +130,15 @@ public class AuditInterfaceController {
     public BaseResponse<Object> updateAudit(@PathVariable Long id) {
         return null;
     }
+
+    /**
+     * TODO 改为去redis中获取也可以 或直接在gateway中去redis中获取然后保存起来？
+     *
+     * @param request
+     * @return
+     */
+    private Long getLoginUserId(HttpServletRequest request) {
+        return Long.valueOf(request.getHeader("userId"));
+    }
+
 }
