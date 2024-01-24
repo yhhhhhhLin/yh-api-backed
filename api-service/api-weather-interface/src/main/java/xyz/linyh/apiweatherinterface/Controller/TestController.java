@@ -6,18 +6,18 @@ import xyz.linyh.model.user.vo.UserVO;
 @RestController
 public class TestController {
 
-    @RequestMapping("/test")
-    public String test(){
-        return "test";
+    @GetMapping("/testGet")
+    public String test(String username){
+        return username;
     }
 
-    @PostMapping("/test2")
+    @PostMapping("/testPost")
     public Object test2(@RequestBody UserVO userVO){
         return userVO;
     }
 
-    @GetMapping("/test3")
-    public String test3(String userName){
-        return userName;
+    @GetMapping("/testPing")
+    public String test3(){
+        return "ping 通";
     }
 }

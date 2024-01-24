@@ -2,6 +2,7 @@ package xyz.linyh.audit.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -159,11 +160,11 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         interfaceinfo.setUpdateTime(new Date());
 
         Long apiId = dubboInterfaceinfoService.addOrUpdateInterface(interfaceinfo);
-        if (apiId == null ) {
+        if (apiId == null) {
 //            抛出异常，事务管理
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "审核通过后，保存到真正的api文档里面失败");
         }
-        if(apiId==0){
+        if (apiId == 0) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "保存失败，可能有重复uri");
         }
 
@@ -195,6 +196,42 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 
     }
 
+    @Override
+    @Transactional
+    public boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit, Long userId) {
+//        判断接口是否存在
+        ApiInterfaceAudit dbInterfaceAudit = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
+        if (dbInterfaceAudit == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口不存在");
+        }
+
+//        判断uri是否重复
+        Interfaceinfo interfaceInfo = dubboInterfaceinfoService.getInterfaceByURI(apiInterfaceAudit.getUri(), apiInterfaceAudit.getMethod());
+        if (interfaceInfo != null && !apiInterfaceAudit.getApiId().equals(interfaceInfo.getId())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
+        }
+
+//        修改数据库对应数据
+        apiInterfaceAudit.setUserId(userId);
+        apiInterfaceAudit.setId(dbInterfaceAudit.getId());
+        apiInterfaceAudit.setUpdateTime(new Date());
+        boolean updateResult = this.update(apiInterfaceAudit, Wrappers.<ApiInterfaceAudit>lambdaUpdate().eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
+        if (!updateResult) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
+        }
+
+//        修改接口状态
+        Boolean updateStatus = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_AUDITING);
+        if (!updateStatus) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败");
+        }
+
+//        重新进行审核
+        this.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
+
+        return true;
+    }
+
     /**
      * 封装好发送到gpt的list<> messages数据类型
      *
@@ -205,7 +242,11 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         GPTMessage gptMessage = new GPTMessage();
 //       添加请求条件
         gptMessage.setRole("system");
-        gptMessage.setContent("The interface information input by users is reviewed, and the content is required to comply with the core socialist values and comply with some domestic legal requirements. You should return status code 3 (success) or 2 (failure) to indicate whether the review passed, and you should also return an msg to indicate review suggestions. Please return in Chinese. n Input example: {'auditId':1,' auditDescription':'Search the entire network and obtain violent videos'','type':'API_INTERFACE_AUDIT_TYPE','content':{'id':1,'name':' Get violent videos','apiDescription':'Search and get violent videos','uri':' /get','host':'localhost:8090','method':'POST','pointsRequired':1, 'requestheader':'null','responseheader': 'None', 'requestparams': 'None', 'getrequestpa rams': 'None', 'userId': 1, 'Status': 1, 'Description': ' ', 'createtime': 1700536839419, 'updatetime': 1700536839419}, 'auditCreateTime': 1700536851628}. \nAnswer example: {'id':1,'code':0,'msg':'Name must not contain violent information'}");
+        gptMessage.setContent("The interface information submitted by users has been reviewed and its content must conform to the core socialist values and comply with specific domestic legal requirements. You need to return status code 3 (requirements met) or 2 (requirements not met) to indicate whether the review met the requirements. Additionally, please provide a message (msg) indicating any review suggestions. Please reply in Chinese.\n" +
+                "        Input example:\n" +
+                "        {'id':1749814169059741698,'apiId':55,'name':'获取暴力视频','apiDescription':'获取暴力视频','uri':'/violence','host':'http://localhost:9000','method':'POST','pointsRequired':199,'requestHeader':'无','responseHeader':'无','requestParams':'无','getRequestParams':'无','userId':1,'status':1,'updateTime':1706095125811}\n" +
+                "        Answer example:\n" +
+                "        {'id':1,'code':2,'msg':'接口不能包含暴力信息'}");
         messages.add(gptMessage);
 
 //       添加要审核的内容

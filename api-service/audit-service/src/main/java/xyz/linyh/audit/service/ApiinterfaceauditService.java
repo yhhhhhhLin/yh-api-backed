@@ -57,5 +57,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @param status
      */
     void rejectInterfaceAudit(Long auditId, Integer status,String reason);
+
+    /**
+     * 更新审核的接口 判断接口是否存在和修改接口表状态和审核状态
+     * @param apiInterfaceAudit
+     * @return
+     */
+    boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit,Long userId);
 }
 

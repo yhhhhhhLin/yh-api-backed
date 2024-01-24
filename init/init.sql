@@ -9,6 +9,7 @@ create table if not exists user
     userAccount  varchar(256)                           not null comment '账号',
     userAvatar   varchar(1024)                          null comment '用户头像',
     gender       tinyint                                null comment '性别',
+    credit       int          default 0                 null comment '余额',
     userRole     varchar(256) default 'user'            not null comment '用户角色：user / admin',
     userPassword varchar(512)                           not null comment '密码',
     accessKey    varchar(512)                           null comment 'accessKey',
@@ -19,6 +20,7 @@ create table if not exists user
     constraint uni_userAccount
         unique (userAccount)
 ) comment '用户';
+
 
 create table yhapi.interfaceInfo
 (
@@ -118,11 +120,6 @@ create table if not exists ApiInterfaceAudit
 )
     comment 'api接口审核表';
 
-
-
-INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey, createTime, updateTime, isDelete) VALUES (1, 'root', 'root', 'https://cn.bing.com/images/search?view=detailV2&ccid=qziNmxyw&id=1E81246A717B63ACACD809FAA09D269FF34BBF84&thid=OIP.qziNmxywXqaT7lHXOgLJqgAAAA&mediaurl=https%3a%2f%2fp.qqan.com%2fup%2f2020-7%2f2020072017382224891.jpg&exph=400&expw=400&q=%e5%a4%b4%e5%83%8f&simid=607995953255237553&FORM=IRPRST&ck=9091D49B62444EACC536D2505651DB08&selectedIndex=15', 0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'testak', 'testsk', '2023-09-04 19:03:38', '2023-09-25 20:22:30', 0);
-
-
 create database if not exists api_pay;
 
 use api_pay;
@@ -182,9 +179,7 @@ create table if not exists ProductsOrder
     isDelete   tinyint  default 0                 not null comment '是否删除'
 )
     comment '商品订单';
-
-
-INSERT INTO api_pay.usercredits (id, userId, credit, createTime, updateTime, isDelete) VALUES (1, 1, 1000, '2023-12-26 16:30:49', '2023-12-26 16:30:49', 0);
+INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey, createTime, updateTime, isDelete, credits) VALUES (1, 'root', 'root', 'https://cn.bing.com/images/search?view=detailV2&ccid=qziNmxyw&id=1E81246A717B63ACACD809FAA09D269FF34BBF84&thid=OIP.qziNmxywXqaT7lHXOgLJqgAAAA&mediaurl=https%3a%2f%2fp.qqan.com%2fup%2f2020-7%2f2020072017382224891.jpg&exph=400&expw=400&q=%e5%a4%b4%e5%83%8f&simid=607995953255237553&FORM=IRPRST&ck=9091D49B62444EACC536D2505651DB08&selectedIndex=15', 0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'testak', 'testsk', '2023-09-04 19:03:38', '2024-01-21 22:57:16', 0, 100);
 
 INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '获得100积分', 1, 100, '无', 1, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
 INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (2, '获得1100积分', 9.9, 1100, '无', 9.9, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);

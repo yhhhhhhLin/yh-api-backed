@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
@@ -14,6 +15,7 @@ import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.dto.ListAuditDto;
+import xyz.linyh.model.apiaudit.dto.UpdateInterfaceAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,12 +72,37 @@ public class AuditInterfaceController {
         Page<ApiInterfaceAudit> page = new Page<>(dto.getCurrent(), dto.getPageSize());
         Page<ApiInterfaceAudit> pageList = apiinterfaceauditService.page(page, Wrappers.<ApiInterfaceAudit>lambdaQuery()
                 .like(StrUtil.isNotBlank(dto.getName()), ApiInterfaceAudit::getName, dto.getName())
-                .eq(StrUtil.isNotBlank(dto.getStatus()), ApiInterfaceAudit::getStatus, dto.getStatus()).orderByDesc(ApiInterfaceAudit::getCreateTime)
+                .eq(StrUtil.isNotBlank(dto.getStatus()), ApiInterfaceAudit::getStatus, dto.getStatus())
+                .orderByDesc(ApiInterfaceAudit::getUpdateTime)
                 .like(StrUtil.isNotBlank(dto.getApiDescription()), ApiInterfaceAudit::getApiDescription, dto.getApiDescription())
                 .eq(StrUtil.isNotBlank(dto.getUri()), ApiInterfaceAudit::getUri, dto.getUri())
                 .eq(StrUtil.isNotBlank(dto.getHost()), ApiInterfaceAudit::getHost, dto.getHost())
                 .eq(StrUtil.isNotBlank(dto.getMethod()), ApiInterfaceAudit::getMethod, dto.getMethod()));
         return ResultUtils.success(pageList);
+    }
+
+    /**
+     * 如果修改了接口内容，那么需要重新审核接口
+     *
+     * @param dto 修改的接口内容
+     * @return
+     */
+    @PutMapping
+    public BaseResponse<Object> updateAudit(@RequestBody UpdateInterfaceAuditDto dto, HttpServletRequest request) {
+        if (dto == null || dto.getId() == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "请求参数或id不能为空");
+        }
+
+        ApiInterfaceAudit apiInterfaceAudit = new ApiInterfaceAudit();
+        BeanUtils.copyProperties(dto, apiInterfaceAudit);
+        apiInterfaceAudit.setApiId(dto.getId());
+        apiInterfaceAudit.setId(null);
+        apiInterfaceAudit.setStatus(AuditConstant.AUDIT_STATUS_SUMMIT);
+
+        Long userId = getLoginUserId(request);
+        boolean result = apiinterfaceauditService.updateAuditInterface(apiInterfaceAudit, userId);
+
+        return ResultUtils.success(result);
     }
 
     /**

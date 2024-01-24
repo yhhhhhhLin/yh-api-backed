@@ -69,6 +69,7 @@ public class AuditInterfaceListener implements RocketMQListener<String> {
             InterfaceResult interfaceResult = null;
             while (nowTry < maxTry) {
                 GPTMessage returnMessage = gptSendService.sendRequest(messages);
+                log.info("返回的消息为:{}", returnMessage);
                 interfaceResult = check(returnMessage);
 
                 if (interfaceResult == null) {

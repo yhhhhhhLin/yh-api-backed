@@ -8,7 +8,6 @@ public class PingController {
 
     @RequestMapping("/ping")
     public void ping() {
-        ;
         System.out.println("ping通auditService");
     }
 }
