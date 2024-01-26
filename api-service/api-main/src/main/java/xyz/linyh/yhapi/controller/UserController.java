@@ -4,28 +4,36 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
-import xyz.linyh.dubboapi.service.DubboUserCreditsService;
+import org.springframework.web.multipart.MultipartFile;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
-import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.model.user.dto.*;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserVO;
-import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.yhapi.service.UserService;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +43,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
 
 
@@ -117,6 +126,23 @@ public class UserController {
         return ResultUtils.success(userVO);
     }
 
+
+//    @GetMapping(value = "/get/login/avatar", produces = {MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_GIF_VALUE})
+//    public byte[] getLoginUserAvatar(HttpServletRequest request) {
+//        User user = userService.getLoginUser(request);
+//        String avatarPath = user.getUserAvatar();
+//        try {
+//            File file = new File(avatarPath);
+//            FileInputStream inputStream = new FileInputStream(file);
+//            byte[] bytes = new byte[inputStream.available()];
+//            inputStream.read(bytes, 0, inputStream.available());
+//            return bytes;
+//        } catch (IOException e) {
+//            log.error("获取用户头像失败", e);
+//            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+//        }
+//    }
+
     // endregion
 
     // region 增删改查
@@ -190,6 +216,21 @@ public class UserController {
         User user = userService.getLoginUser(request);
         Boolean result = userService.updateUserBySelf(user.getId(), anyUserUpdateRequest);
         return ResultUtils.success(result);
+    }
+
+    @PostMapping("/update/avatar")
+    public BaseResponse updateAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        if (file == null || StringUtils.isEmpty(file.getOriginalFilename())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        User user = userService.getLoginUser(request);
+        boolean result = userService.saveUserAvatars(file, user);
+//        刷新缓存
+        userService.saveUserToRedis(user.getId());
+//        还需要刷新缓存
+        return ResultUtils.success(result);
+
     }
 
     /**

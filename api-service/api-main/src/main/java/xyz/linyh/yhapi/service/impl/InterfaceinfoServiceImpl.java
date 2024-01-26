@@ -290,7 +290,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 //        判断这个接口只能是管理员或接口拥有着可以修改
         Interfaceinfo interfaceinfo = this.validInterfaceInfo(dto.getInterfaceId(), user);
 
-        if (!InterfaceInfoConstant.STATIC_NOT_USE.equals(dto.getStatus()) && !InterfaceInfoConstant.STATIC_USE.equals(interfaceinfo.getStatus())) {
+        if (!InterfaceInfoConstant.STATIC_NOT_USE.equals(interfaceinfo.getStatus()) && !InterfaceInfoConstant.STATIC_USE.equals(interfaceinfo.getStatus())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "只能修改上下线的状态");
         }
 

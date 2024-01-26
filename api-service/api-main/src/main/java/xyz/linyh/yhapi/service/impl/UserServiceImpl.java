@@ -1,5 +1,7 @@
 package xyz.linyh.yhapi.service.impl;
 
+import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,7 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
@@ -26,6 +30,8 @@ import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import static xyz.linyh.ducommon.constant.RedisConstant.USER_ID_PREFIX;
@@ -353,14 +359,75 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return userProfileVo;
     }
 
+    @Override
+    @Transactional
+    public boolean saveUserAvatars(MultipartFile file, User user) {
+//        为头像生成一个唯一文件名
+        String fileNamePre = IdUtil.simpleUUID();
+        String fileName = file.getOriginalFilename();
+        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        String avatarPath = fileNamePre + suffix;
+
+//        把旧的覆盖掉
+        if (user.getUserAvatar() != null) {
+            File oldAvatar = new File(user.getUserAvatar());
+            if (oldAvatar.exists()) {
+                oldAvatar.delete();
+            }
+        }
+
+        String saveFileAbsPath = saveFileToDisk(avatarPath, file);
+        if(!StringUtils.isNotBlank(saveFileAbsPath)){
+            log.info("文件保存失败，抛出异常，使用事务");
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"文件保存失败");
+        }
+
+        return this.update(Wrappers.<User>lambdaUpdate()
+                .eq(User::getId, user.getId())
+                .set(User::getUserAvatar, saveFileAbsPath));
+    }
+
+    /**
+     * 保存文件到磁盘 TODO（后面升级为保存到oss中） 可能还需要把旧的覆盖掉
+     *
+     * @param fileNameNew
+     * @param file
+     * @return
+     */
+    private String saveFileToDisk(String fileNameNew, MultipartFile file) {
+        String path = null;
+//        获取当前操作系统
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().startsWith("win")) {
+            path = "D:\\img\\apiAvatar";
+        } else {
+            path = "/home/img/apiAvatar";
+        }
+
+        File fileDir = new File(path);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
+
+        File avaFile = new File(path + "/" + fileNameNew);
+        try {
+            file.transferTo(avaFile);
+            return path + "/" + fileNameNew;
+        }catch (IOException e) {
+            log.error("文件保存失败",e);
+            return null;
+        }
+
+    }
+
     private UserProfileVo getUserInterfaceInfo(UserProfileVo userProfileVo, User profileUserInfo) {
 //        查询数据库获取可用接口数量和接口被调用总次数
         InterfaceAllCountAndCallCount result = interfaceinfoMapper.getAllInterCountAndCallCount(profileUserInfo.getId());
 
-        if(result!=null) {
+        if (result != null) {
             userProfileVo.setCanUseInterfaceNum(result.getCanUseInterfaceNum());
             userProfileVo.setInterfaceTransferNum(result.getInterfaceTransferNum());
-        }else{
+        } else {
             userProfileVo.setCanUseInterfaceNum(0);
             userProfileVo.setInterfaceTransferNum(0);
         }

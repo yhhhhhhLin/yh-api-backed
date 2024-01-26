@@ -2,6 +2,7 @@ package xyz.linyh.yhapi.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserProfileVo;
@@ -122,4 +123,12 @@ public interface UserService extends IService<User> {
      * @return
      */
     UserProfileVo getUserProfile(User user, String account);
+
+    /**
+     * 保存用户头像
+     * @param file
+     * @param user
+     * @return
+     */
+    boolean saveUserAvatars(MultipartFile file, User user);
 }
