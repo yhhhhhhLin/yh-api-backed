@@ -24,7 +24,7 @@ public interface UserinterfaceinfoMapper extends BaseMapper<UserInterfaceinfo> {
      * @param limit
      * @return
      */
-    public List<InterfaceInfoVO> getInterfaceAnalyze(@Param("offset") int offset, @Param("limit") int limit,@Param("userId") Long userId);
+    public List<InterfaceInfoVO> getInterfaceAnalyze(@Param("offset") int offset, @Param("limit") int limit,@Param("userId") Long userId, @Param("status") String status);
 
     /**
      * 降序查询出用户自己的接口的调用总次数和对应接口id

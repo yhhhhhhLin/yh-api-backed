@@ -30,4 +30,19 @@
         responseHeader,status,userId
     </sql>
 
+    <select id="getAllInterCountAndCallCount"
+            resultType="xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount">
+
+        SELECT
+            SUM(ui.allNum) AS interfaceTransferNum,
+            COUNT(i.id) AS canUseInterfaceNum
+        FROM
+            userInterfaceinfo ui
+                JOIN
+            interfaceInfo i ON ui.interfaceId = i.id
+        WHERE
+            ui.userId = 1 and ui.status=1 and i.isDelete = 0 and ui.isDelete = 0
+
+    </select>
+
 </mapper>

@@ -168,6 +168,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * @return
      */
     public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, Interfaceinfo interfaceinfo, User user,InterfaceInfoInvokePayType payType) {
+        log.info("gateway 获取到返回值");
         ServerHttpResponse originalResponse = exchange.getResponse();
         // 保存数据的工厂
         DataBufferFactory bufferFactory = originalResponse.bufferFactory();

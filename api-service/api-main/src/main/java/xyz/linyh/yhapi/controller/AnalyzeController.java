@@ -40,7 +40,7 @@ public class AnalyzeController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"需要输入一次展示多少个数据");
         }
 
-        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeAllInterfaceInfo(dto);
+        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeAllInterfaceInfo(dto.getCurrent(),dto.getTotal(),null);
 
         return ResultUtils.success(interfaceInfoVOS);
     }
@@ -60,7 +60,7 @@ public class AnalyzeController {
 
         User user = userService.getLoginUser(request);
 
-        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeSelfInterfaceInfo(dto, user.getId());
+        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeSelfInterfaceInfo(dto.getCurrent(),dto.getTotal(), user.getId(),null);
         return ResultUtils.success(interfaceInfoVOS);
     }
 

@@ -35,15 +35,15 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      *
      * @return
      */
-    List<InterfaceInfoVO> analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto);
+    List<InterfaceInfoVO> analyzeAllInterfaceInfo(Integer current, Integer total,String status);
 
 
     /**
      * 获取某一个用户所有接口的调用次数前xx的数据
-     * @param dto
+     * @param current'当前页
      * @return
      */
-    List<InterfaceInfoVO> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto,Long userId);
+    List<InterfaceInfoVO> analyzeSelfInterfaceInfo(Integer current, Integer total,Long userId,String status);
 
     /**
      * 获取用户自己接口的调用次数前5的数据

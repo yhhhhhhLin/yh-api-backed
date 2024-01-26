@@ -186,16 +186,16 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      * @return
      */
     @Override
-    public List<InterfaceInfoVO> analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto) {
+    public List<InterfaceInfoVO> analyzeAllInterfaceInfo(Integer current, Integer total, String status) {
 
-        List<InterfaceInfoVO> interfaceAnalyze = userinterfaceinfoMapper.getInterfaceAnalyze(dto.getCurrent() - 1, dto.getTotal(), null);
+        List<InterfaceInfoVO> interfaceAnalyze = userinterfaceinfoMapper.getInterfaceAnalyze(current-1, total, null,status);
         return interfaceAnalyze;
 
     }
 
     @Override
-    public List<InterfaceInfoVO> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto, Long userId) {
-        return userinterfaceinfoMapper.getInterfaceAnalyze(dto.getCurrent() - 1, dto.getTotal(), userId);
+    public List<InterfaceInfoVO> analyzeSelfInterfaceInfo(Integer current ,Integer total, Long userId,String status) {
+        return userinterfaceinfoMapper.getInterfaceAnalyze(current - 1, total, userId,status);
     }
 
 

@@ -2,6 +2,8 @@ package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
+import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
@@ -89,6 +91,7 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user);
+
 
 
     /**

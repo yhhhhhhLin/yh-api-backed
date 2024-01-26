@@ -85,11 +85,9 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
                 throw new RuntimeException(e);
             }
 
-            log.info("转换后的要请求地址为:{}",newUrl);
             exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newUrl);
 
-            System.out.println(exchange.getRequest().getQueryParams());
-
+            log.info("修改后的请求地址为:{}",newUrl);
             return chain.filter(exchange);
         }, config.getOrder());
     }

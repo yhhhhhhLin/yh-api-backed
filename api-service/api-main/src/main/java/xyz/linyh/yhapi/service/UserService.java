@@ -4,6 +4,7 @@ package xyz.linyh.yhapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
+import xyz.linyh.model.user.vo.UserProfileVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -113,4 +114,12 @@ public interface UserService extends IService<User> {
      * @return
      */
     Boolean updateUserAkSk(Long id);
+
+    /**
+     * 获取某一个用户的主页信息
+     * @param user
+     * @param account
+     * @return
+     */
+    UserProfileVo getUserProfile(User user, String account);
 }

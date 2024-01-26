@@ -1,7 +1,6 @@
 package xyz.linyh.yhapi.service.impl;
 
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -14,16 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
 import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
+import xyz.linyh.model.user.vo.UserProfileVo;
+import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.mapper.UserMapper;
+import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
+import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Map;
 
 import static xyz.linyh.ducommon.constant.RedisConstant.USER_ID_PREFIX;
@@ -40,6 +42,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private InterfaceinfoMapper interfaceinfoMapper;
 
     @Autowired
     private RedisService redisService;
@@ -326,6 +331,53 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         redisService.update(USER_ID_PREFIX + id, JSONUtil.toJsonStr(user));
         return update;
 
+    }
+
+    @Override
+    public UserProfileVo getUserProfile(User user, String account) {
+        UserProfileVo userProfileVo = new UserProfileVo();
+
+        User profileUserInfo = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserAccount, account));
+        if (profileUserInfo == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
+        }
+
+        if (profileUserInfo.getId().equals(user.getId())) {
+            userProfileVo.setSelf(true);
+        }
+
+        userProfileVo = setUserInfo(userProfileVo, profileUserInfo);
+
+        userProfileVo = getUserInterfaceInfo(userProfileVo, profileUserInfo);
+
+        return userProfileVo;
+    }
+
+    private UserProfileVo getUserInterfaceInfo(UserProfileVo userProfileVo, User profileUserInfo) {
+//        查询数据库获取可用接口数量和接口被调用总次数
+        InterfaceAllCountAndCallCount result = interfaceinfoMapper.getAllInterCountAndCallCount(profileUserInfo.getId());
+
+        if(result!=null) {
+            userProfileVo.setCanUseInterfaceNum(result.getCanUseInterfaceNum());
+            userProfileVo.setInterfaceTransferNum(result.getInterfaceTransferNum());
+        }else{
+            userProfileVo.setCanUseInterfaceNum(0);
+            userProfileVo.setInterfaceTransferNum(0);
+        }
+
+        return userProfileVo;
+    }
+
+    /**
+     * 赋值
+     *
+     * @param userProfileVo
+     * @param profileUserInfo
+     * @return
+     */
+    private UserProfileVo setUserInfo(UserProfileVo userProfileVo, User profileUserInfo) {
+        BeanUtils.copyProperties(profileUserInfo, userProfileVo);
+        return userProfileVo;
     }
 
 }

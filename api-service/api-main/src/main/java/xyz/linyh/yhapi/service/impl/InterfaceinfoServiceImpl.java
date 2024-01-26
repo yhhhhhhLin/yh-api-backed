@@ -171,8 +171,8 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             try {
                 response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
             } catch (Exception e) {
-                log.error("发送请求失败");
-                log.error(e.getMessage());
+
+                log.error("发送请求失败,response为:{},{}",e.getMessage(),e);
             }
         } else {
 
@@ -197,8 +197,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 response = apiClient.request(interfaceInfo.getUri(), interfaceParams);
 
             } catch (Exception e) {
-                log.error("发送请求失败");
-                log.error(e.getMessage());
+                log.error("发送请求失败,{}",e.getMessage(),e);
             }
         }
 

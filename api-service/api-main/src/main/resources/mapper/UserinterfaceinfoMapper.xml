@@ -25,12 +25,15 @@
     <select id="getInterfaceAnalyze" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
 
         select i.*,sum(ui.allNum) as allNum
-        from interfaceinfo i
-        left join userinterfaceinfo ui
+        from interfaceInfo i
+        left join userInterfaceinfo ui
         on i.id=ui.interfaceId
         <where>
             <if test="userId!=null">
                 and i.userId=#{userId}
+            </if>
+            <if test="status!=null">
+                and i.status = #{status}
             </if>
             and i.isDelete=0
             and ui.isDelete=0
