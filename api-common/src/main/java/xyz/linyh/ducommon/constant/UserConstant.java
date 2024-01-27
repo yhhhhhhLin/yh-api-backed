@@ -31,5 +31,9 @@ public interface UserConstant {
      */
     String ADMIN_ROLE = "admin";
 
+    String SAVE_AVATAR_WIN_PRE_PATH = "D:\\img\\apiAvatar";
+
+    String SAVE_AVATAR_LINUX_PRE_PATH = "/home/img/apiAvatar";
+
     // endregion
 }

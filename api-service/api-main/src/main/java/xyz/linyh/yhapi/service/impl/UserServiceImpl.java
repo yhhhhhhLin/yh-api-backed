@@ -1,6 +1,5 @@
 package xyz.linyh.yhapi.service.impl;
 
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.constant.UserConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
 import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
@@ -23,10 +23,8 @@ import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserProfileVo;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.mapper.UserMapper;
-import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
-import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -376,15 +374,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
         }
 
-        String saveFileAbsPath = saveFileToDisk(avatarPath, file);
-        if(!StringUtils.isNotBlank(saveFileAbsPath)){
+        String result = saveFileToDisk(avatarPath, file);
+        if (!StringUtils.isNotBlank(result)) {
             log.info("文件保存失败，抛出异常，使用事务");
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"文件保存失败");
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件保存失败");
         }
 
         return this.update(Wrappers.<User>lambdaUpdate()
                 .eq(User::getId, user.getId())
-                .set(User::getUserAvatar, saveFileAbsPath));
+                .set(User::getUserAvatar, avatarPath));
     }
 
     /**
@@ -399,9 +397,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //        获取当前操作系统
         String os = System.getProperty("os.name");
         if (os.toLowerCase().startsWith("win")) {
-            path = "D:\\img\\apiAvatar";
+            path = UserConstant.SAVE_AVATAR_WIN_PRE_PATH;
         } else {
-            path = "/home/img/apiAvatar";
+            path = UserConstant.SAVE_AVATAR_LINUX_PRE_PATH;
         }
 
         File fileDir = new File(path);
@@ -412,9 +410,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         File avaFile = new File(path + "/" + fileNameNew);
         try {
             file.transferTo(avaFile);
-            return path + "/" + fileNameNew;
-        }catch (IOException e) {
-            log.error("文件保存失败",e);
+            return fileNameNew;
+        } catch (IOException e) {
+            log.error("文件保存失败", e);
             return null;
         }
 
