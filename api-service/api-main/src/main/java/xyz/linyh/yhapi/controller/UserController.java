@@ -1,19 +1,14 @@
 package xyz.linyh.yhapi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.annotation.AuthCheck;
@@ -31,12 +26,7 @@ import xyz.linyh.yhapi.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +61,7 @@ public class UserController {
             return null;
         }
         long userId = userService.userRegister(userAccount, userPassword, checkPassword);
-        updateAK(userId);
+        userService.updateUserAkSk(userId);
         return ResultUtils.success(userId);
     }
 
@@ -129,15 +119,20 @@ public class UserController {
         return ResultUtils.success(userVO);
     }
 
-    @GetMapping(value = "/get/login/avatar",produces = {MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_GIF_VALUE})
-    public byte[] getLoginUserAvatar(HttpServletRequest request) {
+    @GetMapping(value = "/get/login/avatar", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    public byte[] getLoginUserAvatar(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
-        User user = userService.getLoginUser(request);
+        User user = userService.getLoginUser(userId);
+        if (user == null) {
+            user = userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
+        }
 
         File loginUserAvatar = userService.getLoginUserAvatar(user);
         byte[] bytes = new byte[0];
-        try {
-            FileInputStream inputStream = new FileInputStream(loginUserAvatar);
+        try (FileInputStream inputStream = new FileInputStream(loginUserAvatar);) {
             bytes = new byte[inputStream.available()];
             inputStream.read(bytes, 0, inputStream.available());
         } catch (IOException e) {
@@ -267,19 +262,11 @@ public class UserController {
 
     /**
      * 重置用户ak和sk
-     *
-     * @param id
-     * @param
-     * @return
      */
     @GetMapping("/updateak")
-    @Async
-    public BaseResponse updateAK(Long id) {
-        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Boolean result = userService.updateUserAkSk(id);
+    public BaseResponse updateAK(HttpServletRequest request) {
+        User user = userService.getLoginUser(request);
+        Boolean result = userService.updateUserAkSk(user.getId());
         return ResultUtils.success(result);
     }
 

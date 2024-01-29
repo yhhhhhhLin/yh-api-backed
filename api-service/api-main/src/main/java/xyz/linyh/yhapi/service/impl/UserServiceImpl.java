@@ -333,11 +333,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .set(User::getSecretKey, map.get("secretKey")));
 
 
-        User user = this.getById(id);
-        if (user == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        redisService.update(USER_ID_PREFIX + id, JSONUtil.toJsonStr(user));
+        this.saveUserToRedis(id);
         return update;
 
     }
@@ -373,9 +369,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 //        把旧的覆盖掉
         if (user.getUserAvatar() != null) {
-            File oldAvatar = new File(user.getUserAvatar());
-            if (oldAvatar.exists()) {
-                oldAvatar.delete();
+            File avatarAbsPath = getAvatarAbsPath(user.getUserAvatar());
+            if (avatarAbsPath.exists() && avatarAbsPath.isFile()) {
+                avatarAbsPath.delete();
             }
         }
 

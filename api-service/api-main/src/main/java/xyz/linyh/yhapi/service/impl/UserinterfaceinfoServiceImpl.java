@@ -120,7 +120,8 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
                 updateResult = this.update(wrapper2);
                 break;
         }
-//        调用次数+1，可调用次数-1
+
+//        更新用户信息redis缓存
         return ResultUtils.success(updateResult);
     }
 
@@ -135,6 +136,11 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     public InterfaceInfoInvokePayType isInvokeAndGetPayType(Long interfaceInfoId, Long userId, Integer pointsRequired) {
         Boolean canInvoke = false;
         InterfaceInfoInvokePayType interfaceInfoInvokePayType = new InterfaceInfoInvokePayType();
+        if(pointsRequired==0){
+            interfaceInfoInvokePayType.setPayType(UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_FREE);
+            interfaceInfoInvokePayType.setPayAmount(0);
+            return interfaceInfoInvokePayType;
+        }
         if (interfaceInfoId == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

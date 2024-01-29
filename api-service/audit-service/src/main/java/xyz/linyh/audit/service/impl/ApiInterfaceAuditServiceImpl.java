@@ -201,8 +201,11 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     public boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit, Long userId) {
 //        判断接口是否存在
         ApiInterfaceAudit dbInterfaceAudit = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
+
         if (dbInterfaceAudit == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口不存在");
+            apiInterfaceAudit.setId(null);
+        }else{
+            apiInterfaceAudit.setApiId(dbInterfaceAudit.getApiId());
         }
 
 //        判断uri是否重复
@@ -213,10 +216,9 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 
 //        修改数据库对应数据
         apiInterfaceAudit.setUserId(userId);
-        apiInterfaceAudit.setId(dbInterfaceAudit.getId());
         apiInterfaceAudit.setUpdateTime(new Date());
-        boolean updateResult = this.update(apiInterfaceAudit, Wrappers.<ApiInterfaceAudit>lambdaUpdate().eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
-        if (!updateResult) {
+        boolean saveOrUpdateResult = this.saveOrUpdate(apiInterfaceAudit);
+        if (!saveOrUpdateResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
         }
 
