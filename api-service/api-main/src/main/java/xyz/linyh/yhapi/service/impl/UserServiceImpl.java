@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -30,6 +32,9 @@ import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static xyz.linyh.ducommon.constant.RedisConstant.USER_ID_PREFIX;
@@ -385,14 +390,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .set(User::getUserAvatar, avatarPath));
     }
 
+    @Override
+    public File getLoginUserAvatar(User user) {
+
+        String userAvatar = user.getUserAvatar();
+        return getAvatarAbsPath(userAvatar);
+    }
+
     /**
-     * 保存文件到磁盘 TODO（后面升级为保存到oss中） 可能还需要把旧的覆盖掉
-     *
-     * @param fileNameNew
-     * @param file
+     * 根据不同的系统获取头像的绝对路径
+     * @param userAvatar
      * @return
      */
-    private String saveFileToDisk(String fileNameNew, MultipartFile file) {
+    private File getAvatarAbsPath(String userAvatar) {
+
         String path = null;
 //        获取当前操作系统
         String os = System.getProperty("os.name");
@@ -407,7 +418,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             fileDir.mkdirs();
         }
 
-        File avaFile = new File(path + "/" + fileNameNew);
+        return new File(path + "/" + userAvatar);
+    }
+
+    /**
+     * 保存文件到磁盘 TODO（后面升级为保存到oss中）
+     *
+     * @param fileNameNew
+     * @param file
+     * @return
+     */
+    private String saveFileToDisk(String fileNameNew, MultipartFile file) {
+        File avaFile = getAvatarAbsPath(fileNameNew);
         try {
             file.transferTo(avaFile);
             return fileNameNew;

@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -32,7 +33,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -126,22 +129,26 @@ public class UserController {
         return ResultUtils.success(userVO);
     }
 
+    @GetMapping(value = "/get/login/avatar",produces = {MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_GIF_VALUE})
+    public byte[] getLoginUserAvatar(HttpServletRequest request) {
 
-//    @GetMapping(value = "/get/login/avatar", produces = {MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_GIF_VALUE})
-//    public byte[] getLoginUserAvatar(HttpServletRequest request) {
-//        User user = userService.getLoginUser(request);
-//        String avatarPath = user.getUserAvatar();
-//        try {
-//            File file = new File(avatarPath);
-//            FileInputStream inputStream = new FileInputStream(file);
-//            byte[] bytes = new byte[inputStream.available()];
-//            inputStream.read(bytes, 0, inputStream.available());
-//            return bytes;
-//        } catch (IOException e) {
-//            log.error("获取用户头像失败", e);
-//            throw new BusinessException(ErrorCode.OPERATION_ERROR);
-//        }
-//    }
+        User user = userService.getLoginUser(request);
+
+        File loginUserAvatar = userService.getLoginUserAvatar(user);
+        byte[] bytes = new byte[0];
+        try {
+            FileInputStream inputStream = new FileInputStream(loginUserAvatar);
+            bytes = new byte[inputStream.available()];
+            inputStream.read(bytes, 0, inputStream.available());
+        } catch (IOException e) {
+            log.error("读取文件失败", e);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件打开错误");
+        }
+
+        return bytes;
+
+
+    }
 
     // endregion
 
@@ -218,6 +225,13 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 更新用户头像
+     *
+     * @param file
+     * @param request
+     * @return
+     */
     @PostMapping("/update/avatar")
     public BaseResponse updateAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null || StringUtils.isEmpty(file.getOriginalFilename())) {
