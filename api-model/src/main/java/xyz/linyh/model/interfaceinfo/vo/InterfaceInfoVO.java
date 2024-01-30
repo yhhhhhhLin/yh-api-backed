@@ -98,6 +98,16 @@ public class InterfaceInfoVO {
     private Integer allNum;
 
     /**
+     * 接口拥有者用户账号
+     */
+    private String userAccount;
+
+    /**
+     * 接口拥有者用户姓名
+     */
+    private String userName;
+
+    /**
      * 剩余次数接口
      */
     private Integer remNum;

@@ -36,7 +36,7 @@
                 and i.status = #{status}
             </if>
             and i.isDelete=0
-            and ui.isDelete=0
+            and (ui.isDelete=0 or ui.isDelete is null)
         </where>
         group by ui.interfaceId
         order by allNum desc
@@ -72,15 +72,15 @@
                (select SUM(allNum)
                 from userInterfaceinfo
                 WHERE interfaceId = #{interfaceId}
-                GROUP BY interfaceId) as allNum
-        from interfaceInfo i
-        where i.id = #{interfaceId};
+                GROUP BY interfaceId) as allNum,u.userName,u.userAccount
+        from interfaceInfo i ,user u
+        where i.id = #{interfaceId} and i.userId = u.id;
     </select>
 
     <select id="getInterfaceCountByInterfaceIdAndUserId"
             resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
         select i.*, ui.remNum
-        from interfaceInfo i userInterfaceInfo ui
+        from interfaceInfo i, userInterfaceInfo ui
         where i.id=#{interfaceId}
           and ui.interfaceId=#{interfaceId}
           and ui.userId=#{userId}

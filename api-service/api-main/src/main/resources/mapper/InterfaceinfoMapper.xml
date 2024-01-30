@@ -33,15 +33,16 @@
     <select id="getAllInterCountAndCallCount"
             resultType="xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount">
 
-        SELECT SUM(ui.allNum) AS interfaceTransferNum,
-               COUNT(i.id)    AS canUseInterfaceNum
-        FROM userInterfaceinfo ui
-                 JOIN
-             interfaceInfo i ON ui.interfaceId = i.id
-        WHERE i.userId = #{id}
-          and (i.status = 1 or i.status = 0)
-          and i.isDelete = 0
-          and ui.isDelete = 0
+        select count(1) as canUseInterfaceNum, sum(a.interfaceAllNum) interfaceTransferNum
+        from (SELECT SUM(ui.allNum) AS interfaceAllNum
+              FROM userInterfaceinfo ui
+                       RIGHT JOIN
+                   interfaceInfo i ON ui.interfaceId = i.id
+              WHERE i.userId = #{id}
+                and (i.status = 1 or i.status = 0)
+                and i.isDelete = 0
+                and (ui.isDelete = 0 or ui.isDelete is null)
+              group by i.id) a
 
     </select>
 
