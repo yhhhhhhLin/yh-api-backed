@@ -132,15 +132,17 @@ public class AuditInterfaceController {
      */
     @PostMapping("/status")
     @AuthCheck(mustRole = "admin")
-    public BaseResponse<Boolean> auditInterface(@RequestBody AuditStatusDto dto) {
+    public BaseResponse<Boolean> auditInterface(@RequestBody AuditStatusDto dto,HttpServletRequest request) {
         if (dto == null || dto.getStatus() == null || dto.getAuditId() == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status或auditId参数不能为空");
         }
 
+        Long userId = getLoginUserId(request);
+
         if (AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS.equals(dto.getStatus())) {
-            apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(), dto.getStatus());
+            apiinterfaceauditService.passInterfaceAudit(dto.getAuditId(), dto.getStatus(),userId);
         } else if (AuditConstant.AUDIT_STATUS_PROPLE_FAIL.equals(dto.getStatus())) {
-            apiinterfaceauditService.rejectInterfaceAudit(dto.getAuditId(), dto.getStatus(), dto.getDescription());
+            apiinterfaceauditService.rejectInterfaceAudit(dto.getAuditId(), dto.getStatus(), dto.getDescription(),userId);
         } else {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status参数错误");
         }

@@ -40,7 +40,7 @@ public interface DubboInterfaceinfoService{
      * @param status
      * @return
      */
-    Boolean updateInterfaceStatusById(Long id, Integer status);
+    Boolean updateInterfaceStatusById(Long id, Integer status,Long userId);
 
 
     /**

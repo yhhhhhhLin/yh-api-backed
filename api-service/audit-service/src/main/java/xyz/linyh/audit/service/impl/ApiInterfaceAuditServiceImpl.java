@@ -135,7 +135,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void passInterfaceAudit(Long auditId, Integer status) {
+    public void passInterfaceAudit(Long auditId, Integer status,Long userId) {
         this.updateAuditInterfaceCodeAndMsg(auditId, status, "审核通过");
 
         ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
@@ -179,14 +179,14 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 
     @Override
     @Transactional
-    public void rejectInterfaceAudit(Long auditId, Integer status, String reason) {
+    public void rejectInterfaceAudit(Long auditId, Integer status, String reason,Long userId) {
 //        判断拒绝的那个是否有apiId，如果没有，说明没有审核通过的，直接更新状态即可
         ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
 
         if (apiInterfaceAudit.getApiId() == null) {
             this.updateAuditInterfaceCodeAndMsg(auditId, status, reason);
         } else {
-            Boolean update = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_SHOULD_RE_AUDIT);
+            Boolean update = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_SHOULD_RE_AUDIT,userId);
             if (!update) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败,系统出错");
             }
@@ -197,16 +197,11 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit, Long userId) {
 //        判断接口是否存在
-        ApiInterfaceAudit dbInterfaceAudit = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery().eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
-
-        if (dbInterfaceAudit == null) {
-            apiInterfaceAudit.setId(null);
-        }else{
-            apiInterfaceAudit.setApiId(dbInterfaceAudit.getApiId());
-        }
+        ApiInterfaceAudit dbInterfaceAudit = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery()
+                .eq(ApiInterfaceAudit::getApiId, apiInterfaceAudit.getApiId()));
 
 //        判断uri是否重复
         Interfaceinfo interfaceInfo = dubboInterfaceinfoService.getInterfaceByURI(apiInterfaceAudit.getUri(), apiInterfaceAudit.getMethod());
@@ -214,16 +209,25 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
         }
 
-//        修改数据库对应数据
+//        如果原本里面没有对应apiId，那么就新增，如果已经有那么就更新
         apiInterfaceAudit.setUserId(userId);
         apiInterfaceAudit.setUpdateTime(new Date());
-        boolean saveOrUpdateResult = this.saveOrUpdate(apiInterfaceAudit);
+
+        boolean saveOrUpdateResult = false;
+        if(dbInterfaceAudit==null){
+            saveOrUpdateResult = this.save(apiInterfaceAudit);
+        }else{
+            saveOrUpdateResult = this.update(apiInterfaceAudit,Wrappers.<ApiInterfaceAudit>lambdaQuery()
+                    .eq(ApiInterfaceAudit::getApiId,apiInterfaceAudit.getApiId()));
+            apiInterfaceAudit.setId(dbInterfaceAudit.getId());
+        }
+
         if (!saveOrUpdateResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
         }
 
 //        修改接口状态
-        Boolean updateStatus = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_AUDITING);
+        Boolean updateStatus = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_AUDITING,userId);
         if (!updateStatus) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败");
         }

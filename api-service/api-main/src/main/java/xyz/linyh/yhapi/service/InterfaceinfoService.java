@@ -92,6 +92,12 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      */
     boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user);
 
+    /**
+     * 添加或更新接口信息
+     * @param interfaceinfo
+     * @return
+     */
+    boolean saveOrUpdateInterface(Interfaceinfo interfaceinfo);
 
 
     /**

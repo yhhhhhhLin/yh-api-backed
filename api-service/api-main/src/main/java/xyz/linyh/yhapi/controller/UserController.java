@@ -212,7 +212,7 @@ public class UserController {
      */
     @PostMapping("/userupdate")
     public BaseResponse<Boolean> updateUserAny(@RequestBody AnyUserUpdateRequest anyUserUpdateRequest, HttpServletRequest request) {
-        if (anyUserUpdateRequest == null || anyUserUpdateRequest.getId() == null) {
+        if (anyUserUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);

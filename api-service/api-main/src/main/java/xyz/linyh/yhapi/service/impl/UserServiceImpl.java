@@ -292,17 +292,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(User::getId, userId)
-                .set(User::getUserName, anyUserUpdateRequest.getUserName())
-                .set(User::getGender, anyUserUpdateRequest.getGender())
-                .set(User::getUserAvatar, anyUserUpdateRequest.getUserAvatar());
+                .set(StringUtils.isNotBlank(anyUserUpdateRequest.getUserName()),User::getUserName, anyUserUpdateRequest.getUserName())
+                .set(anyUserUpdateRequest.getGender()!=null,User::getGender, anyUserUpdateRequest.getGender());
         boolean result = this.update(wrapper);
 
         if (!result) {
             return false;
         }
-        User user = this.getById(userId);
+        this.saveUserToRedis(userId);
 
-        redisService.update(String.valueOf(anyUserUpdateRequest.getId()), JSONUtil.toJsonStr(user));
 
         return true;
     }

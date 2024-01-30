@@ -49,14 +49,14 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @param auditId
      * @param status
      */
-    void passInterfaceAudit(Long auditId, Integer status);
+    void passInterfaceAudit(Long auditId, Integer status,Long userId);
 
     /**
      * 拒绝接口审核
      * @param auditId
      * @param status
      */
-    void rejectInterfaceAudit(Long auditId, Integer status,String reason);
+    void rejectInterfaceAudit(Long auditId, Integer status,String reason,Long userId);
 
     /**
      * 更新审核的接口 判断接口是否存在和修改接口表状态和审核状态

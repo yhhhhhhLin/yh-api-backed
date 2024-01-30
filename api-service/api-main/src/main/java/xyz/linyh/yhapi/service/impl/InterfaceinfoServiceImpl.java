@@ -12,10 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
@@ -42,6 +45,8 @@ import java.util.Map;
 public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, Interfaceinfo>
         implements InterfaceinfoService {
 
+    @Autowired
+    private InterfaceinfoMapper interfaceinfoMapper;
 
     /**
      * 对接口信息进行校验
@@ -208,6 +213,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
     public boolean addInterfaceInfo(Interfaceinfo interfaceInfo) {
 //        判断接口uri不能重复
         List<Interfaceinfo> dbInterfaceInfos = this.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getUri, interfaceInfo.getUri()));
@@ -218,6 +224,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
+    @Cacheable(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,key = "#root.args[0].current+'_'+#root.args[0].pageSize+'_'+T(java.util.Objects).hash(#root.args[0])")
     public Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
@@ -244,6 +251,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
     public boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo) {
         if (interfaceInfo == null || interfaceInfo.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口数据或id不能为空");
@@ -285,6 +293,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
     public boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user) {
 
 //        判断这个接口只能是管理员或接口拥有着可以修改
@@ -299,6 +308,13 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 .set(Interfaceinfo::getStatus, dto.getStatus()));
         this.updateGatewayCache();
         return result;
+    }
+
+
+    @Override
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
+    public boolean saveOrUpdateInterface(Interfaceinfo interfaceinfo) {
+        return this.saveOrUpdate(interfaceinfo);
     }
 
 

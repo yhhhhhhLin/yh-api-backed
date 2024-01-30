@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
@@ -17,6 +18,7 @@ import xyz.linyh.ducommon.common.DeleteRequest;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokeParams;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
@@ -121,6 +123,7 @@ public class InterceptorInfoController {
      * @param request       request
      */
     @PostMapping("/delete")
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
     public BaseResponse<Boolean> deleteInterfaceInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

@@ -5,9 +5,10 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
+import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
+import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
-import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 import java.util.List;
 
@@ -49,16 +50,17 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
             return null;
         }
 
-        interfaceinfoService.saveOrUpdate(interfaceinfo);
+        interfaceinfoService.saveOrUpdateInterface(interfaceinfo);
         interfaceinfoService.updateGatewayCache();
         return interfaceinfo.getId();
     }
 
     @Override
-    public Boolean updateInterfaceStatusById(Long id, Integer status) {
-        return interfaceinfoService.update(Wrappers.<Interfaceinfo>lambdaUpdate()
-                .eq(Interfaceinfo::getId, id)
-                .set(Interfaceinfo::getStatus, status));
+    public Boolean updateInterfaceStatusById(Long id, Integer status, Long userId) {
+        UpdateStatusDto dto = new UpdateStatusDto(id, status);
+        User user = new User();
+        user.setId(userId);
+        return interfaceinfoService.updateInterfaceInfoStatus(dto, user);
     }
 
     /**
