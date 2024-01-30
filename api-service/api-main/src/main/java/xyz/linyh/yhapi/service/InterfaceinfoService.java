@@ -97,7 +97,7 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @param interfaceinfo
      * @return
      */
-    boolean saveOrUpdateInterface(Interfaceinfo interfaceinfo);
+    Interfaceinfo saveOrUpdateInterface(Interfaceinfo interfaceinfo);
 
 
     /**

@@ -43,16 +43,20 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
     @Override
     public Long addOrUpdateInterface(Interfaceinfo interfaceinfo) {
 //        判断uri不能重复
-        Interfaceinfo dbInterfaceinfo = interfaceinfoService.getOne(Wrappers.<Interfaceinfo>lambdaQuery()
+        List<Interfaceinfo> dbInterfaceInfos = interfaceinfoService.list(Wrappers.<Interfaceinfo>lambdaQuery()
                 .eq(Interfaceinfo::getUri, interfaceinfo.getUri())
                 .ne(Interfaceinfo::getId, interfaceinfo.getId()));
-        if (dbInterfaceinfo != null) {
+        if (dbInterfaceInfos != null && !dbInterfaceInfos.isEmpty()) {
             return null;
         }
 
-        interfaceinfoService.saveOrUpdateInterface(interfaceinfo);
+        interfaceinfo = interfaceinfoService.saveOrUpdateInterface(interfaceinfo);
         interfaceinfoService.updateGatewayCache();
-        return interfaceinfo.getId();
+        if(interfaceinfo!=null) {
+            return interfaceinfo.getId();
+        }else{
+            return null;
+        }
     }
 
     @Override

@@ -1,13 +1,17 @@
 package xyz.linyh.audit.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +22,9 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.apiaudit.dto.ListAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
@@ -73,6 +79,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
      * 更新审核的接口的code和msg
      */
     @Override
+    @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg) {
         if (auditId == null || code == null || msg == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
@@ -96,6 +103,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
      * @return
      */
     @Override
+    @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public ApiInterfaceAudit saveAuditInterface(ApiInterfaceAudit audit) {
 //        参数校验
         if (audit == null) {
@@ -135,6 +143,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public void passInterfaceAudit(Long auditId, Integer status,Long userId) {
         this.updateAuditInterfaceCodeAndMsg(auditId, status, "审核通过");
 
@@ -179,6 +188,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public void rejectInterfaceAudit(Long auditId, Integer status, String reason,Long userId) {
 //        判断拒绝的那个是否有apiId，如果没有，说明没有审核通过的，直接更新状态即可
         ApiInterfaceAudit apiInterfaceAudit = this.getById(auditId);
@@ -198,6 +208,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit, Long userId) {
 //        判断接口是否存在
         ApiInterfaceAudit dbInterfaceAudit = this.getOne(Wrappers.<ApiInterfaceAudit>lambdaQuery()
@@ -236,6 +247,21 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         this.sendAuditInterfaceMsgToGpt(apiInterfaceAudit);
 
         return true;
+    }
+
+    @Override
+    @Cacheable(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,key = "#root.args[0].current+'_'+#root.args[0].pageSize+'_'+T(java.util.Objects).hash(#root.args[0])")
+    public Page<ApiInterfaceAudit> listAuditPage(ListAuditDto dto) {
+
+        Page<ApiInterfaceAudit> page = new Page<>(dto.getCurrent(), dto.getPageSize());
+        return this.page(page, Wrappers.<ApiInterfaceAudit>lambdaQuery()
+                .like(StrUtil.isNotBlank(dto.getName()), ApiInterfaceAudit::getName, dto.getName())
+                .eq(StrUtil.isNotBlank(dto.getStatus()), ApiInterfaceAudit::getStatus, dto.getStatus())
+                .orderByDesc(ApiInterfaceAudit::getUpdateTime)
+                .like(StrUtil.isNotBlank(dto.getApiDescription()), ApiInterfaceAudit::getApiDescription, dto.getApiDescription())
+                .eq(StrUtil.isNotBlank(dto.getUri()), ApiInterfaceAudit::getUri, dto.getUri())
+                .eq(StrUtil.isNotBlank(dto.getHost()), ApiInterfaceAudit::getHost, dto.getHost())
+                .eq(StrUtil.isNotBlank(dto.getMethod()), ApiInterfaceAudit::getMethod, dto.getMethod()));
     }
 
     /**

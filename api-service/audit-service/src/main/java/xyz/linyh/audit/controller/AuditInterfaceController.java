@@ -69,15 +69,8 @@ public class AuditInterfaceController {
         }
         dto.check();
 
-        Page<ApiInterfaceAudit> page = new Page<>(dto.getCurrent(), dto.getPageSize());
-        Page<ApiInterfaceAudit> pageList = apiinterfaceauditService.page(page, Wrappers.<ApiInterfaceAudit>lambdaQuery()
-                .like(StrUtil.isNotBlank(dto.getName()), ApiInterfaceAudit::getName, dto.getName())
-                .eq(StrUtil.isNotBlank(dto.getStatus()), ApiInterfaceAudit::getStatus, dto.getStatus())
-                .orderByDesc(ApiInterfaceAudit::getUpdateTime)
-                .like(StrUtil.isNotBlank(dto.getApiDescription()), ApiInterfaceAudit::getApiDescription, dto.getApiDescription())
-                .eq(StrUtil.isNotBlank(dto.getUri()), ApiInterfaceAudit::getUri, dto.getUri())
-                .eq(StrUtil.isNotBlank(dto.getHost()), ApiInterfaceAudit::getHost, dto.getHost())
-                .eq(StrUtil.isNotBlank(dto.getMethod()), ApiInterfaceAudit::getMethod, dto.getMethod()));
+        Page<ApiInterfaceAudit> pageList = apiinterfaceauditService.listAuditPage(dto);
+
         return ResultUtils.success(pageList);
     }
 
@@ -150,15 +143,6 @@ public class AuditInterfaceController {
         return ResultUtils.success(true);
     }
 
-    /**
-     * 更新某一个审核接口
-     *
-     * @return
-     */
-    @PutMapping("/{id}")
-    public BaseResponse<Object> updateAudit(@PathVariable Long id) {
-        return null;
-    }
 
     /**
      * TODO 改为去redis中获取也可以 或直接在gateway中去redis中获取然后保存起来？

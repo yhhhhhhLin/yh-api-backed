@@ -313,8 +313,9 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Override
     @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
-    public boolean saveOrUpdateInterface(Interfaceinfo interfaceinfo) {
-        return this.saveOrUpdate(interfaceinfo);
+    public Interfaceinfo saveOrUpdateInterface(Interfaceinfo interfaceinfo) {
+        boolean result = this.saveOrUpdate(interfaceinfo);
+        return interfaceinfo;
     }
 
 

@@ -1,8 +1,10 @@
 package xyz.linyh.audit.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
+import xyz.linyh.model.apiaudit.dto.ListAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 
 /**
@@ -64,5 +66,12 @@ public interface ApiinterfaceauditService extends IService<ApiInterfaceAudit> {
      * @return
      */
     boolean updateAuditInterface(ApiInterfaceAudit apiInterfaceAudit,Long userId);
+
+    /**
+     * 分页查询所有审核数据
+     * @param dto
+     * @return
+     */
+    Page<ApiInterfaceAudit> listAuditPage(ListAuditDto dto);
 }
 

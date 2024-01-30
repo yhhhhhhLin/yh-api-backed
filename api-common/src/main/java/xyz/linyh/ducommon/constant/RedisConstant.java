@@ -12,4 +12,9 @@ public interface RedisConstant {
      * 分页的interface缓存names
      */
     String INTERFACE_PAGE_CACHE_NAMES = "interface_page";
+
+    /**
+     * 分页的interface缓存names
+     */
+    String AUDIT_PAGE_CACHE_NAMES = "audit_page";
 }
