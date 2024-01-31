@@ -17,4 +17,9 @@ public interface RedisConstant {
      * 分页的interface缓存names
      */
     String AUDIT_PAGE_CACHE_NAMES = "audit_page";
+
+    /**
+     * 保存到redis中的每日访问量key前缀
+     */
+    String DAILY_VISIT_KEY_PRE = "daily_visit_";
 }

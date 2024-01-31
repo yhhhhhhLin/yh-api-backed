@@ -20,6 +20,7 @@
         <module>audit-service</module>
         <module>gpt-service</module>
         <module>api-pay</module>
+        <module>scheduled-service</module>
     </modules>
 
     <properties>
