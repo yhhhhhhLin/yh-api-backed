@@ -3,8 +3,6 @@ name: Package Project And Push to Docker
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build-and-publish:
@@ -18,7 +16,6 @@ jobs:
           repository: yhhhhhhLin/token-pool
           ref: master
 
-
       - name: Set up JDK 17 for token-pool
         uses: actions/setup-java@v3
         with:
@@ -26,24 +23,13 @@ jobs:
           distribution: 'adopt'
           cache: maven
 
-      - name: Install token-pool
+      - name: Install token-pool dependencies
         run: |
+          cd token-pool
           mvn clean install
-
-      - name: List contents of current directory
-        run: |
-          cd ../
-          ls -la
-
-      - name: Manually download HikariCP-4.0.3.jar
-        run: |
-          wget https://repo.maven.apache.org/maven2/com/zaxxer/HikariCP/4.0.3/HikariCP-4.0.3.jar -P ~/.m2/repository/com/zaxxer/HikariCP/4.0.3/
 
       - name: Checkout code2
         uses: actions/checkout@v3
-
-      - name: list dir
-        run: ls -la
 
       - name: Set up JDK 17 for current repository
         uses: actions/setup-java@v3
@@ -52,26 +38,26 @@ jobs:
           distribution: 'adopt'
           cache: maven
 
+      - name: Build JAR for current repository
+        run: |
+          mvn clean package
 
-#      - name: Build with Maven
-#        run: |
-#          mvn clean
-#          mvn -B package --file pom.xml
-#
-#      - name: Login to Docker Hub
+      - name: Show output JAR
+        run: |
+          ls -R target
+
+#      - name: Build Docker image
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: Dockerfile
+#          push: true
+#          tags: |
+#            your-docker-registry/your-image-name:latest
 #        env:
 #          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 #          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#        run: |
-#          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 #
-#      #将所有文件按照dockerFile打包
-#      - name: Build Docker image
-#        run: docker
-#
-#      - name: Tag Docker imag
-#        run: docker
-#      - name: Push To DockerHub
-#        run: docker
+
 
 
