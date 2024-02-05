@@ -2,12 +2,8 @@ package xyz.linyh.yhapi.service.impl;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import io.swagger.models.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.tomcat.util.http.RequestUtil;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;

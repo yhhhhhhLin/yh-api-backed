@@ -1,17 +1,12 @@
 package xyz.linyh.audit.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
 import xyz.linyh.dubboapi.service.DubboAuditInterfaceService;
-import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.ducommon.constant.AuditConstant;
-import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
-
-import javax.print.DocFlavor;
 
 /**
  * 提供远程调用接口给其他的微服务

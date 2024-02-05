@@ -6,7 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.model.sdkfile.entitys.Sdkfile;
 import xyz.linyh.model.user.entitys.User;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author lin

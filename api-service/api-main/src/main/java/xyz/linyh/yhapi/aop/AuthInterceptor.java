@@ -9,15 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.enums.UserRoleEnum;
-import xyz.linyh.ducommon.annotation.AuthCheck;
-import xyz.linyh.yapiclientsdk.client.ApiClient;
+import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.UserService;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**

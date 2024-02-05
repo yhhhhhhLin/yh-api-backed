@@ -1,10 +1,7 @@
 package xyz.linyh.yhapi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 

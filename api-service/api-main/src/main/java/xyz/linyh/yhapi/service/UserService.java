@@ -2,7 +2,6 @@ package xyz.linyh.yhapi.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.model.user.dto.AnyUserUpdateRequest;
 import xyz.linyh.model.user.entitys.User;
@@ -10,7 +9,6 @@ import xyz.linyh.model.user.vo.UserProfileVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.net.MalformedURLException;
 
 /**
  * 用户服务

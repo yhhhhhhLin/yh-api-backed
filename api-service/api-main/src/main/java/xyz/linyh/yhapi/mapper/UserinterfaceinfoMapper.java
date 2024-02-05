@@ -1,12 +1,9 @@
 package xyz.linyh.yhapi.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Service;
-import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
+import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 
 import java.util.List;
 

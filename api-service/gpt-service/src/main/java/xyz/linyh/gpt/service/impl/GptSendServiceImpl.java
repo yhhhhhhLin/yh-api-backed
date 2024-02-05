@@ -1,11 +1,7 @@
 package xyz.linyh.gpt.service.impl;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,14 +18,9 @@ import xyz.linyh.gpt.service.GptSendService;
 import xyz.linyh.model.gpt.eneitys.GPTBody;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
 import xyz.linyh.model.gpt.eneitys.GPTResponse;
-import xyz.linyh.model.gpt.eneitys.GPTStreamResponse;
 import xyz.linyh.tokenpool.client.TokenPoolClient;
 
-import javax.annotation.Resource;
-
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Slf4j

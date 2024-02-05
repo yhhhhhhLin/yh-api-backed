@@ -7,22 +7,15 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xyz.linyh.dubboapi.service.DubboAuditInterfaceService;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.gpt.service.GptSendService;
 import xyz.linyh.model.gpt.dtos.InterfaceResult;
-import xyz.linyh.model.gpt.eneitys.GPTBody;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
-import xyz.linyh.model.gpt.eneitys.GPTResponse;
 import xyz.linyh.tokenpool.client.TokenPoolClient;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 
 /**
  * 用来接收相关的接口审核信息

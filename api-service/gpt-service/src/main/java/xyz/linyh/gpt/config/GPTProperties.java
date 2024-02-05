@@ -2,7 +2,6 @@ package xyz.linyh.gpt.config;
 
 import lombok.Data;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

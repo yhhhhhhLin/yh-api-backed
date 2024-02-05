@@ -2,15 +2,11 @@ package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.apache.ibatis.annotations.Param;
-import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
 import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lin

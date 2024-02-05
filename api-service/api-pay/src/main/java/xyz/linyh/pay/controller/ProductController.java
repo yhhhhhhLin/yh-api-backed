@@ -4,18 +4,16 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.linyh.model.pay.dto.UpdateCreditProductDto;
-import xyz.linyh.model.pay.eneity.UserCredits;
-import xyz.linyh.pay.service.CreditProductsService;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.PageRequest;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.model.pay.dto.CreditProductDto;
+import xyz.linyh.model.pay.dto.UpdateCreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
+import xyz.linyh.pay.service.CreditProductsService;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController

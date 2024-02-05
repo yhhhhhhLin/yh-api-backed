@@ -4,7 +4,6 @@ package xyz.linyh.yhapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAnalyzeDto;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 

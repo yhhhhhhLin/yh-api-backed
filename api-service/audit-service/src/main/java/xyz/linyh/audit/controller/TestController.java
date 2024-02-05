@@ -2,13 +2,9 @@ package xyz.linyh.audit.controller;
 
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.audit.service.impl.ApiInterfaceAuditServiceImpl;
-import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
-
-import java.util.Date;
 
 @RestController
 public class TestController {

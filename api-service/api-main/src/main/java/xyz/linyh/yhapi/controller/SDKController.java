@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.sdkfile.entitys.Sdkfile;
 import xyz.linyh.model.user.entitys.User;
-import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.yhapi.service.SdkfileService;
 import xyz.linyh.yhapi.service.UserService;
 

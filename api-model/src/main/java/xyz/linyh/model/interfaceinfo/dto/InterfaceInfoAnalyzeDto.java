@@ -3,7 +3,6 @@ package xyz.linyh.model.interfaceinfo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import xyz.linyh.ducommon.common.PageRequest;
 import xyz.linyh.ducommon.constant.CommonConstant;
 
 import java.io.Serializable;

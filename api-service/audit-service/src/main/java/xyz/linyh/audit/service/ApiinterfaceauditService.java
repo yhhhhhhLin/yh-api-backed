@@ -3,7 +3,6 @@ package xyz.linyh.audit.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
 import xyz.linyh.model.apiaudit.dto.ListAuditDto;
 import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 

@@ -11,7 +11,6 @@ import xyz.linyh.ducommon.constant.UserProfileConstant;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserProfileVo;
-import xyz.linyh.yhapi.service.InterfaceinfoService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 

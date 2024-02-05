@@ -1,30 +1,21 @@
 package xyz.linyh.gpt.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ResultUtils;
-import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.gpt.service.GptSendService;
 import xyz.linyh.model.gpt.eneitys.GPTMessage;
-import xyz.linyh.model.gpt.eneitys.GPTResponse;
 import xyz.linyh.model.gpt.eneitys.GPTStreamResponse;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 /**

@@ -2,10 +2,10 @@ package xyz.linyh.pay.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import xyz.linyh.pay.mapper.CreditProductsMapper;
-import xyz.linyh.pay.service.CreditProductsService;
 import xyz.linyh.model.pay.dto.CreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
+import xyz.linyh.pay.mapper.CreditProductsMapper;
+import xyz.linyh.pay.service.CreditProductsService;
 
 /**
  * @author lin

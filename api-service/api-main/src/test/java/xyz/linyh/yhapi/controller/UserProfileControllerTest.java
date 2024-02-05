@@ -1,7 +1,6 @@
 package xyz.linyh.yhapi.controller;
 
 import com.alibaba.fastjson.JSON;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
-
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserProfileVo;
