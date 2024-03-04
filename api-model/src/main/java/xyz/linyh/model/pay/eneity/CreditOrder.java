@@ -8,12 +8,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @TableName productsorder
+ * @TableName CreditOrder
  */
-@TableName(value ="ProductsOrder")
+@TableName(value ="CreditOrder")
 @Data
 @EqualsAndHashCode
-public class ProductsOrder implements Serializable {
+public class CreditOrder implements Serializable {
 
     /**
      * 数据对应的id
@@ -24,11 +24,6 @@ public class ProductsOrder implements Serializable {
      * 订单号
      */
     private String orderNo;
-
-    /**
-     * 没用
-     */
-    private String codeUrl;
 
     /**
      * 用户id
@@ -61,19 +56,29 @@ public class ProductsOrder implements Serializable {
     private String payType;
 
     /**
-     * 产品类型
+     * 产品信息
      */
     private String productInfo;
 
-    private String formData;
-
+    /**
+     * 增加的积分
+     */
     private Long addPoints;
 
-    private Date expirationTime;
+    /**
+     * 订单过期时间
+     */
+    private Long expirationTime;
 
-    private Date createTime;
+    /**
+     * 订单创建时间
+     */
+    private Long createTime;
 
-    private Date updateTime;
+    /**
+     * 订单更新时间
+     */
+    private Long updateTime;
 
     private Integer isDelete;
 

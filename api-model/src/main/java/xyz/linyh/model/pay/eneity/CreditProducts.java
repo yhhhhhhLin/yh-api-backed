@@ -16,7 +16,7 @@ public class CreditProducts implements Serializable {
 
     private String description;
 
-    private double price;
+    private Long price;
 
     private Integer integral;
 

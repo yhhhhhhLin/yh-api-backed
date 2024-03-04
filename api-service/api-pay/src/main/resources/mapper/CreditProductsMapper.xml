@@ -7,7 +7,7 @@
     <resultMap id="BaseResultMap" type="xyz.linyh.model.pay.eneity.CreditProducts">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="price" column="price" jdbcType="DOUBLE"/>
+        <result property="price" column="price" jdbcType="INTEGER"/>
         <result property="integral" column="integral" jdbcType="INTEGER"/>
         <result property="picture" column="picture" jdbcType="VARCHAR"/>
         <result property="discountPrice" column="discountPrice" jdbcType="DOUBLE"/>

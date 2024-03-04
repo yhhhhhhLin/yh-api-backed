@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.pay.dto.CreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
 
+import java.util.List;
+
 /**
  * @author lin
  * @description 针对表【creditproducts(积分商品表)】的数据库操作Service
@@ -18,4 +20,11 @@ public interface CreditProductsService extends IService<CreditProducts> {
      * @return
      */
     boolean addCreditProduct(CreditProductDto dto);
+
+    /**
+     * 获取所有积分商品
+     *
+     * @return
+     */
+    List<CreditProducts> listAllCreditProduct();
 }

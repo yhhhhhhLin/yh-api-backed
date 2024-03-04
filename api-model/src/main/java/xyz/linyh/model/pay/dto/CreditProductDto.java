@@ -13,7 +13,7 @@ public class CreditProductDto {
     /**
      * 多少价格
      */
-    private Double price;
+    private Long price;
 
     /**
      * 多少积分
