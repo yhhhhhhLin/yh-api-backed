@@ -17,6 +17,9 @@ import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * 用户信息
+ */
 @RestController
 public class UserProfileController {
 
@@ -26,6 +29,12 @@ public class UserProfileController {
     @Autowired
     private UserinterfaceinfoService userinterfaceinfoService;
 
+    /**
+     * 获取某一个用户的信息（包括发布的接口数量，接口调用总次数等等数据)
+     * @param account
+     * @param request
+     * @return
+     */
     @GetMapping("/user/profile/{account}")
     public BaseResponse getUserProfile(@PathVariable String account, HttpServletRequest request) {
         if (account == null) {
@@ -39,7 +48,7 @@ public class UserProfileController {
     }
 
     /**
-     * 获取业务列表
+     * 获取某一个业务列表
      *
      * @param type 业务类型
      * @return 返回BaseResponse对象

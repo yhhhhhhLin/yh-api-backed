@@ -12,6 +12,9 @@ import xyz.linyh.pay.service.UserCreditsService;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ *
+ */
 @RestController
 public class CreditController {
 

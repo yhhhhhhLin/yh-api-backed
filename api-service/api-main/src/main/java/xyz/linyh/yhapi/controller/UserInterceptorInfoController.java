@@ -46,7 +46,7 @@ public class UserInterceptorInfoController {
     // region 增删改查
 
     /**
-     * 创建
+     * 创建 接口
      *
      * @param userInterfaceInfoAddRequest
      * @param request
@@ -206,7 +206,6 @@ public class UserInterceptorInfoController {
         return ResultUtils.success(userInterfaceInfoPage);
     }
 
-    // endregion
 
     /**
      * 获取一个接口的详细信息，包括调用次数
@@ -241,7 +240,7 @@ public class UserInterceptorInfoController {
     /**
      * 获取某一个接口剩余调用次数和用户剩余多少积分
      * @param request
-     * @param interfaceId
+     * @param interfaceId 接口id
      * @return
      */
     @GetMapping("/remcountandcredits")
@@ -257,6 +256,12 @@ public class UserInterceptorInfoController {
     }
 
 
+    /**
+     * 某一个用户获取某一个接口的测试次数
+     * @param request
+     * @param id 接口id
+     * @return
+     */
     @GetMapping("/experience")
     public BaseResponse<UserInterfaceinfo> getExperienceCount(HttpServletRequest request, Long id) {
         if (id == null) {

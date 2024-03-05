@@ -75,6 +75,8 @@
         <rocket.version>2.2.3</rocket.version>
         <redisson.version>3.20.0</redisson.version>
         <redis.version>3.1.5</redis.version>
+        <ali.pay.sdk.version>4.34.0.ALL</ali.pay.sdk.version>
+        <common.logging.version>1.2</common.logging.version>
     </properties>
 
     <dependencies>
@@ -381,7 +383,21 @@
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis.plus.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${ali.pay.sdk.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${common.logging.version}</version>
+            </dependency>
         </dependencies>
+
+
     </dependencyManagement>
 
     <!--  构建-->

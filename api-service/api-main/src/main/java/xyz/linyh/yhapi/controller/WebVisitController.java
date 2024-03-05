@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 网站访问统计
+ */
 @RestController
 @RequestMapping("/visit")
 public class WebVisitController {

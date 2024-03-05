@@ -19,7 +19,7 @@ import xyz.linyh.model.apiaudit.eneitys.ApiInterfaceAudit;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * api平台接口对应增删改查的controller
+ * 审核接口数据的增删改查
  *
  * @author lin
  */

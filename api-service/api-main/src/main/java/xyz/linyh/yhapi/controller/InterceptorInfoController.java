@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 对接口的增删改查
+ * 对平台接口数据修改接口
  */
 @RestController
 @RequestMapping("/interfaceInfo")
@@ -47,7 +47,6 @@ public class InterceptorInfoController {
     private UserService userService;
 
 
-    // region 增删改查
 
     /**
      * 管理员创建对应数据接口
@@ -174,7 +173,6 @@ public class InterceptorInfoController {
     }
 
 
-//    先全部用管理员ak和sk发送，后面改为根据每一个用户发送
 
     /**
      * 执行对应id接口
@@ -260,39 +258,6 @@ public class InterceptorInfoController {
         Page<Interfaceinfo> interfaceinfoPage = interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
 
         return ResultUtils.success(interfaceinfoPage);
-    }
-
-    /**
-     * 普通用户创建对应数据接口 todo 可以删了，没用
-     * （要审核）
-     *
-     * @param interfaceInfoAddRequest 接口信息
-     * @param request                 request
-     */
-    @PostMapping("/useradd")
-    public BaseResponse<Long> addInterfaceInfoByUser(@RequestBody InterfaceInfoAddRequest interfaceInfoAddRequest, HttpServletRequest request) {
-        if (interfaceInfoAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
-        Interfaceinfo interfaceInfo = new Interfaceinfo();
-        BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
-        interfaceInfo.setStatus(0);
-
-        // 校验参数是否正确
-        interfaceinfoService.validInterfaceInfoParams(interfaceInfo, true);
-        User loginUser = userService.getLoginUser(request);
-        interfaceInfo.setUserId(loginUser.getId());
-//        保存到待审审核的地方 todo
-//        boolean result = interfaceinfoService.save(interfaceInfo);
-        if (!true) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR);
-        }
-        long newInterfaceInfoId = interfaceInfo.getId();
-//        todo
-//        interfaceinfoService.updateGatewayCache();
-
-        return ResultUtils.success(newInterfaceInfoId);
     }
 
 

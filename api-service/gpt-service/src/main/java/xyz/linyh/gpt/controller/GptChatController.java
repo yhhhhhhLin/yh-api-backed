@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
+ * gpt 聊天
  * @author lin
  */
 @RestController
@@ -30,9 +31,10 @@ public class GptChatController {
     private GptSendService gptSendService;
 
     /**
+     * gpt聊天（流式返回）
      * 只能先管理员用而已
      *
-     * @param messages
+     * @param messages 聊天信息，需要把历史数据也一起发送
      * @return
      */
     @AuthCheck(mustRole = "admin")
@@ -63,8 +65,9 @@ public class GptChatController {
 
     /**
      * 只能先管理员用而已
+     * gpt聊天，不是stream返回
      *
-     * @param messages
+     * @param messages 聊天数据，需要把历史聊天数据也一起携带了
      * @return
      */
     @AuthCheck(mustRole = "admin")

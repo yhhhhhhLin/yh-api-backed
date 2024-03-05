@@ -13,6 +13,7 @@ import xyz.linyh.model.interfaceinfo.dto.DebugParamsDto;
 import xyz.linyh.yhapi.service.InterfaceDebugService;
 
 /**
+ * 用户接口在线调试
  * @author lin
  */
 @RestController
@@ -23,6 +24,11 @@ public class InterfaceDebugController {
     @Autowired
     private InterfaceDebugService interfaceDebugService;
 
+    /**
+     * 执行某一个接口调试
+     * @param dto 数据
+     * @return
+     */
     @PostMapping("/invoke")
     public BaseResponse<String> debug(@RequestBody DebugParamsDto dto) {
         if (dto == null) {
