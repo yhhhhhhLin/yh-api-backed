@@ -65,5 +65,4 @@ public class AnalyzeController {
         return ResultUtils.success(interfaceInfoVOS);
     }
 
-
 }
