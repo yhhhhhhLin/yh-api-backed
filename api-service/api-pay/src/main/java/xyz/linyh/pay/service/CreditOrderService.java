@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.pay.dto.CreateCreditOrderDto;
 import xyz.linyh.model.pay.eneity.CreditOrder;
 
+import java.util.Map;
+
 /**
 * @author lin
 * @description 针对表【creditOrder(积分订单表)】的数据库操作Service
@@ -16,4 +18,11 @@ public interface CreditOrderService extends IService<CreditOrder> {
      * @return
      */
     CreditOrder createCreditOrder(CreateCreditOrderDto dto,Long userId);
+
+    /**
+     * 更新对应订单状态,和后续操作
+     * @param params
+     * @return
+     */
+    boolean updateOrderStatusAndOpt(Map<String, String> params);
 }

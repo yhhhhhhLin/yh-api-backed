@@ -13,6 +13,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import xyz.linyh.backedgateway.utils.JwtUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 用来判断用户是否登录的校验
  */
@@ -24,9 +28,16 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         ServerHttpResponse response = exchange.getResponse();
-//        判断是否是登录页面，如果是登录页面，那么不用鉴权
+//        支付宝的回调不需要认证，后面限流可能还需要判断支付宝的地址
+        List<String> whiteList = new ArrayList<>(Arrays.asList("/pay/order/url/notify"));
+//        判断是否是登录页面，注册页面..，如果是登录页面，那么不用鉴权
         String path = exchange.getRequest().getURI().getPath();
+        System.out.println("----------------------------------------"+path+"-----------------------------------------");
         if(path!=null && (path.contains("login") && !path.contains("get") || path.contains("register"))){
+            return chain.filter(exchange);
+        }
+//        如果是白名单的路径，那么可以直接访问
+        if(whiteList.contains(path)){
             return chain.filter(exchange);
         }
 

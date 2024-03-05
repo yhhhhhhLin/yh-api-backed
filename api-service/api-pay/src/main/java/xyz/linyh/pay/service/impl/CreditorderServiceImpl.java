@@ -16,6 +16,7 @@ import xyz.linyh.pay.service.CreditOrderService;
 import xyz.linyh.pay.service.CreditProductsService;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 
 /**
@@ -66,6 +67,17 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "创建订单失败");
         }
         return creditOrder;
+    }
+
+    @Override
+    public boolean updateOrderStatusAndOpt(Map<String, String> params) {
+//        0. 参数校验
+
+//        1. 更新订单状态
+
+//        2. 判断订单的类型，进行订单完成后的后续操作
+
+        return true;
     }
 
     /**

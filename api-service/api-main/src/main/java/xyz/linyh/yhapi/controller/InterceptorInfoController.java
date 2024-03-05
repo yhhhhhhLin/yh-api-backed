@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/interfaceInfo")
 @Slf4j
+@RefreshScope
 public class InterceptorInfoController {
 
     @Autowired
@@ -45,7 +48,6 @@ public class InterceptorInfoController {
 
     @Autowired
     private UserService userService;
-
 
 
     /**

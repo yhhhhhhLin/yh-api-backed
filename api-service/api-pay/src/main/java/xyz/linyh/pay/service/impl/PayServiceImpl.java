@@ -12,7 +12,7 @@ import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.pay.eneity.CreditOrder;
-import xyz.linyh.pay.config.AlipayProperties;
+import xyz.linyh.pay.config.AliPayClientConfig;
 import xyz.linyh.pay.service.CreditOrderService;
 import xyz.linyh.pay.service.PayService;
 
@@ -49,16 +49,18 @@ public class PayServiceImpl implements PayService {
         //设置请求参数
         AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
 //        TODO 配置
-        alipayRequest.setReturnUrl(AlipayProperties.return_url);
-        alipayRequest.setNotifyUrl(AlipayProperties.notify_url);
+        alipayRequest.setReturnUrl(AliPayClientConfig.return_url);
+        alipayRequest.setNotifyUrl(AliPayClientConfig.notify_url);
 
 //        商户订单号，必须唯一
         String out_trade_no = orderId;
 
         // 付款金额
         String total_amount = creditOrder.getTotal().toString();
+
         //订单名称
         String subject = creditOrder.getOrderName();
+
         //商品描述
         String body = creditOrder.getOrderName();
 
