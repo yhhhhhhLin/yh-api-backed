@@ -1,5 +1,6 @@
 package xyz.linyh.model.pay.eneity;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -80,6 +81,7 @@ public class CreditOrder implements Serializable {
      */
     private Long updateTime;
 
+    @TableLogic
     private Integer isDelete;
 
     private static final long serialVersionUID = 1L;

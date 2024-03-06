@@ -52,13 +52,13 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         CreditOrder creditOrder = new CreditOrder();
         creditOrder.setOrderNo(getOrderId());
         creditOrder.setUserId(userId);
-        creditOrder.setProductId(0L);
+        creditOrder.setProductId(dto.getProductId());
         creditOrder.setOrderName(creditProduct.getDescription());
         creditOrder.setTotal(dto.getNum() * creditProduct.getPrice());
         creditOrder.setStatus(PayConstant.ORDER_STATIC_UNPAID);
         creditOrder.setPayType(dto.getPayType().toString());
         creditOrder.setProductInfo(creditProduct.getDescription());
-        creditOrder.setAddPoints(creditOrder.getAddPoints());
+        creditOrder.setAddPoints(((long) creditProduct.getIntegral() * dto.getNum()));
         creditOrder.setExpirationTime(LocalDateTime.now().plusDays(1L).toEpochSecond(java.time.ZoneOffset.of("+8")));
         creditOrder.setCreateTime(LocalDateTime.now().toEpochSecond(java.time.ZoneOffset.of("+8")));
         creditOrder.setUpdateTime(LocalDateTime.now().toEpochSecond(java.time.ZoneOffset.of("+8")));
