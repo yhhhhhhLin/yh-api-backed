@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class PayServiceImpl implements PayService {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不存在");
         }
 
-        if (PayConstant.ORDER_STATIC_UNPAID.equals(creditOrder.getStatus())) {
+        if (!PayConstant.ORDER_STATIC_UNPAID.equals(creditOrder.getStatus())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不是待支付订单");
         }
 
@@ -49,8 +50,8 @@ public class PayServiceImpl implements PayService {
         //设置请求参数
         AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
 //        TODO 配置
-        alipayRequest.setReturnUrl(AliPayClientConfig.return_url);
-        alipayRequest.setNotifyUrl(AliPayClientConfig.notify_url);
+        alipayRequest.setReturnUrl(AliPayClientConfig.static_return_url);
+        alipayRequest.setNotifyUrl(AliPayClientConfig.static_notify_url);
 
 //        商户订单号，必须唯一
         String out_trade_no = orderId;
@@ -72,7 +73,9 @@ public class PayServiceImpl implements PayService {
 
         //请求
         try {
-            return myAlipayClient.pageExecute(alipayRequest).getBody();
+            AlipayTradePagePayResponse response = myAlipayClient.pageExecute(alipayRequest);
+            System.out.println(response);
+            return response.getBody();
         } catch (AlipayApiException e) {
             log.error("支付宝支付失败", e);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "支付宝支付失败");

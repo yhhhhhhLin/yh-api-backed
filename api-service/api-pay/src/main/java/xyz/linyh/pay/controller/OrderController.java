@@ -73,8 +73,8 @@ public class OrderController {
 
     @PostMapping("/url/notify")
     public void notifyUrl(@RequestParam Map<String,String> params) throws AlipayApiException {
-//        1. 进行参数校验判断是否合法
-        boolean checkResult = AlipaySignature.rsaCheckV1(params, AliPayClientConfig.alipay_public_key, AliPayClientConfig.charset, AliPayClientConfig.sign_type);
+//        1. 进行参数校验判断是否合法 todo
+        boolean checkResult = AlipaySignature.rsaCheckV1(params, AliPayClientConfig.static_alipay_public_key, AliPayClientConfig.static_charset, AliPayClientConfig.static_sign_type);
         if(!checkResult){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验签失败");
         }
