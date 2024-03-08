@@ -1,5 +1,6 @@
 package xyz.linyh.pay.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.pay.dto.CreateCreditOrderDto;
 import xyz.linyh.model.pay.eneity.CreditOrder;
@@ -25,4 +26,27 @@ public interface CreditOrderService extends IService<CreditOrder> {
      * @return
      */
     boolean updateOrderStatusAndOpt(Map<String, String> params);
+
+    /**
+     * 查询所有积分订单分页
+     *
+     * @param current  当前页数
+     * @param pageSize 每页显示条数
+     * @return
+     */
+    Page<CreditOrder> listAllCreditOrderByPage(Integer current, Integer pageSize,Long userId);
+
+    /**
+     * 根据id查询积分订单信息
+     * @param id
+     * @return
+     */
+    CreditOrder getCreditOrderById(String id,Long userId);
+
+    /**
+     * 删除某一个订单
+     * @param id
+     * @param userId
+     */
+    void deleteCreditOrderByUserIdAndId(String id, Long userId);
 }

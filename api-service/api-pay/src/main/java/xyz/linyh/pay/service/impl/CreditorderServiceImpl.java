@@ -3,6 +3,7 @@ package xyz.linyh.pay.service.impl;
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,6 +110,22 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         }
 
         return true;
+    }
+
+    @Override
+    public Page<CreditOrder> listAllCreditOrderByPage(Integer current, Integer pageSize,Long userId) {
+        Page<CreditOrder> page = new Page<CreditOrder>(current, pageSize);
+        return this.page(page, Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getUserId,userId).orderByDesc(CreditOrder::getCreateTime));
+    }
+
+    @Override
+    public CreditOrder getCreditOrderById(String id, Long userId) {
+        return this.getOne(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getId, id).eq(CreditOrder::getUserId, userId));
+    }
+
+    @Override
+    public void deleteCreditOrderByUserIdAndId(String id, Long userId) {
+        this.remove(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getId, id).eq(CreditOrder::getUserId, userId));
     }
 
     /**
