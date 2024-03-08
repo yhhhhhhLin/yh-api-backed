@@ -24,12 +24,14 @@ import java.util.List;
 @Slf4j
 public class AuthorizeFilter implements Ordered, GlobalFilter {
 
+    static List<String> WHITELIST = new ArrayList<>(Arrays.asList("/pay/order/url/notify","/pay/order/url/return"));
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         ServerHttpResponse response = exchange.getResponse();
 //        支付宝的回调不需要认证，后面限流可能还需要判断支付宝的地址
-        List<String> whiteList = new ArrayList<>(Arrays.asList("/pay/order/url/notify"));
+
 //        判断是否是登录页面，注册页面..，如果是登录页面，那么不用鉴权
         String path = exchange.getRequest().getURI().getPath();
         System.out.println("----------------------------------------"+path+"-----------------------------------------");
@@ -37,7 +39,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             return chain.filter(exchange);
         }
 //        如果是白名单的路径，那么可以直接访问
-        if(whiteList.contains(path)){
+        if(WHITELIST.contains(path)){
             return chain.filter(exchange);
         }
 

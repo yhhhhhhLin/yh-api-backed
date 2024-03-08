@@ -37,8 +37,14 @@ public class FlowLimitingFilter implements Ordered, GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 1. 获取用户ip地址
         String ipAddress = getClientIpAddress(exchange.getRequest());
+        log.info("用户请求的地址为{}", ipAddress);
+//        如果是白名单里面的地址，那么可以直接访问
+        String path = exchange.getRequest().getURI().getPath();
+        if (AuthorizeFilter.WHITELIST.contains(path)) {
+            return chain.filter(exchange);
+        }
 //        如果不是通过nginx转发的，直接不能访问
-        if(ipAddress==null){
+        if (ipAddress == null) {
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
             return response.setComplete();
@@ -50,17 +56,16 @@ public class FlowLimitingFilter implements Ordered, GlobalFilter {
 
         // 每一个ip一秒只能请求10次
         if (visitInfo.incrementAndCheckLimit()) {
-            log.info("{}请求次数超过了限制--------",ipAddress);
-            System.out.println("有超出次数的"+ipAddress);
+            log.info("{}请求次数超过了限制--------", ipAddress);
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
             return response.setComplete();
         }
-        log.info("{}请求次数没有超过限制",ipAddress);
+        log.info("{}请求次数没有超过限制", ipAddress);
 
 //        增加redis的请求次数
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        redisUtil.addDailyVisitCount(LocalDate.now().format(format),ipAddress);
+        redisUtil.addDailyVisitCount(LocalDate.now().format(format), ipAddress);
 
 
         return chain.filter(exchange);

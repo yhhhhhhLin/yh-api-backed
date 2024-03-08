@@ -2,10 +2,13 @@ package xyz.linyh.pay.service.impl;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.constant.AlipayConstant;
 import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.pay.dto.CreateCreditOrderDto;
@@ -53,7 +56,7 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         creditOrder.setOrderNo(getOrderId());
         creditOrder.setUserId(userId);
         creditOrder.setProductId(dto.getProductId());
-        creditOrder.setOrderName(creditProduct.getDescription());
+        creditOrder.setOrderName(creditProduct.getDescription() +"* "+dto.getNum());
         creditOrder.setTotal(dto.getNum() * creditProduct.getPrice());
         creditOrder.setStatus(PayConstant.ORDER_STATIC_UNPAID);
         creditOrder.setPayType(dto.getPayType().toString());
@@ -70,10 +73,38 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateOrderStatusAndOpt(Map<String, String> params) {
 //        0. 参数校验
+        if (params == null || params.isEmpty()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "更新订单状态需要携带参数");
+        }
+
+        String orderNum = params.get(AlipayConstant.ALI_PAY_ORDER_NUM);
+        CreditOrder creditOrder = this.getOne(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getOrderNo, orderNum));
+        if(creditOrder==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不存在");
+        }
+
+        Long orderTotal = creditOrder.getTotal();
+        if(!orderTotal.equals(Long.valueOf(params.get(AlipayConstant.ALI_PAY_ORDER_TOTAL)))){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单金额不一致");
+        }
+
+        if(params.get(AlipayConstant.ALI_PAY_ORDER_RESULT).equals(AlipayConstant.PAY_RESULT_SUCCESS)){
+//            更新订单状态
+            creditOrder.setStatus(PayConstant.ORDER_STATIC_PAID);
+            this.updateById(creditOrder);
+//            增加用户积分
+        }else{
+
+        }
+
+
+
 
 //        1. 更新订单状态
+
 
 //        2. 判断订单的类型，进行订单完成后的后续操作
 

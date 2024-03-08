@@ -19,6 +19,11 @@ public interface RedisConstant {
     String AUDIT_PAGE_CACHE_NAMES = "audit_page";
 
     /**
+     * 所有积分产品缓存names
+     */
+    String CREDIT_PRODUCT_CACHE_NAMES = "credit_product_list";;
+
+    /**
      * 保存到redis中的每日访问量key前缀
      */
     String DAILY_VISIT_KEY_PRE = "daily_visit_";

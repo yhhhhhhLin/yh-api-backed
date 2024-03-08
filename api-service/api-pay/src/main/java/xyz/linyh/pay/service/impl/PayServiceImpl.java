@@ -74,7 +74,6 @@ public class PayServiceImpl implements PayService {
         //请求
         try {
             AlipayTradePagePayResponse response = myAlipayClient.pageExecute(alipayRequest);
-            System.out.println(response);
             return response.getBody();
         } catch (AlipayApiException e) {
             log.error("支付宝支付失败", e);

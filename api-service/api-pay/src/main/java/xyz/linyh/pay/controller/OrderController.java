@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
@@ -73,11 +74,12 @@ public class OrderController {
 
     @PostMapping("/url/notify")
     public void notifyUrl(@RequestParam Map<String,String> params) throws AlipayApiException {
-//        1. 进行参数校验判断是否合法 todo
+//        1. 进行参数校验判断是否合法
         boolean checkResult = AlipaySignature.rsaCheckV1(params, AliPayClientConfig.static_alipay_public_key, AliPayClientConfig.static_charset, AliPayClientConfig.static_sign_type);
         if(!checkResult){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "验签失败");
         }
+        System.out.println(params);
         creditOrderService.updateOrderStatusAndOpt(params);
 
     }

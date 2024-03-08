@@ -2,11 +2,13 @@ package xyz.linyh.pay.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.model.pay.dto.CreditProductDto;
 import xyz.linyh.model.pay.dto.UpdateCreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
@@ -48,12 +50,13 @@ public class CreditProductsController {
     }
 
     /**
-     * 删除某一个积分商品
+     * 删除某一个积分商品 添加缓存
      * @param productId 积分商品id
      * @return
      */
     @DeleteMapping("/{productId}")
     @AuthCheck(mustRole = "admin")
+    @CacheEvict(cacheNames = RedisConstant.CREDIT_PRODUCT_CACHE_NAMES,allEntries = true)
     public BaseResponse delProduct(@PathVariable String productId) {
         if (productId == null) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
@@ -76,6 +79,7 @@ public class CreditProductsController {
      */
     @PutMapping
     @AuthCheck(mustRole = "admin")
+    @CacheEvict(cacheNames = RedisConstant.CREDIT_PRODUCT_CACHE_NAMES,allEntries = true)
     public BaseResponse updateProduct(@RequestBody UpdateCreditProductDto dto) {
 
         if (dto == null || dto.getCreditId() == null || dto.getIntegral() == null || dto.getDescription() == null || dto.getPrice() == null) {

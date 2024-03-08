@@ -2,7 +2,10 @@ package xyz.linyh.pay.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.model.pay.dto.CreditProductDto;
 import xyz.linyh.model.pay.eneity.CreditProducts;
 import xyz.linyh.pay.mapper.CreditProductsMapper;
@@ -20,6 +23,7 @@ public class CreditProductsServiceImpl extends ServiceImpl<CreditProductsMapper,
         implements CreditProductsService {
 
     @Override
+    @CacheEvict(cacheNames = RedisConstant.CREDIT_PRODUCT_CACHE_NAMES,allEntries = true)
     public boolean addCreditProduct(CreditProductDto dto) {
         CreditProducts creditProducts = new CreditProducts();
         creditProducts.setDescription(dto.getDescription());
@@ -32,6 +36,7 @@ public class CreditProductsServiceImpl extends ServiceImpl<CreditProductsMapper,
     }
 
     @Override
+    @Cacheable(cacheNames = RedisConstant.CREDIT_PRODUCT_CACHE_NAMES,key = "#root.methodName")
     public List<CreditProducts> listAllCreditProduct() {
         return this.list(Wrappers.<CreditProducts>lambdaQuery().orderByDesc(CreditProducts::getPrice));
     }
