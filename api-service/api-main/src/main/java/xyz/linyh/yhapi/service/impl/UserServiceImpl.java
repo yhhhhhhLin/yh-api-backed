@@ -386,6 +386,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return getAvatarAbsPath(userAvatar);
     }
 
+    @Override
+    public boolean addUserCredit(Long userId, Integer addCredit) {
+        if(userId == null || addCredit == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户id和要增加的积分不能为空");
+        }
+        return this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).setSql("credit = credit" + addCredit));
+    }
+
     /**
      * 根据不同的系统获取头像的绝对路径
      * @param userAvatar

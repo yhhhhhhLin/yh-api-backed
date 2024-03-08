@@ -28,5 +28,10 @@ public class DubboUserServiceImpl implements DubboUserService {
         return userService.getLoginUser(Long.valueOf(userId));
     }
 
+    @Override
+    public boolean addUserCredit(Long userId, Integer addCredit) {
+        return userService.addUserCredit(userId, addCredit);
+    }
+
 
 }

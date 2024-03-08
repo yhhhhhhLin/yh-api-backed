@@ -139,4 +139,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     File getLoginUserAvatar(User user);
+
+    /**
+     * 增加用户积分
+     * @param userId 用户id
+     * @param addCredit 要增加的积分
+     */
+    boolean addUserCredit(Long userId, Integer addCredit);
 }

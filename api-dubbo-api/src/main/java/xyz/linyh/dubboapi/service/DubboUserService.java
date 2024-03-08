@@ -23,4 +23,11 @@ public interface DubboUserService{
      * @return
      */
     User getLoginUser(String userId);
+
+    /**
+     * 给某一个用户增加积分
+     * @param userId
+     * @param addCredit
+     */
+    boolean addUserCredit(Long userId,Integer addCredit);
 }

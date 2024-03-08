@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.linyh.dubboapi.service.DubboUserService;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.AlipayConstant;
 import xyz.linyh.ducommon.constant.PayConstant;
@@ -34,6 +35,9 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
     @Autowired
     private CreditProductsService creditProductsService;
 
+    @Autowired
+    private DubboUserService dubboUserService;
+
 
     @Override
     public CreditOrder createCreditOrder(CreateCreditOrderDto dto, Long userId) {
@@ -56,7 +60,7 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         creditOrder.setOrderNo(getOrderId());
         creditOrder.setUserId(userId);
         creditOrder.setProductId(dto.getProductId());
-        creditOrder.setOrderName(creditProduct.getDescription() +"* "+dto.getNum());
+        creditOrder.setOrderName(creditProduct.getDescription() + "* " + dto.getNum());
         creditOrder.setTotal(dto.getNum() * creditProduct.getPrice());
         creditOrder.setStatus(PayConstant.ORDER_STATIC_UNPAID);
         creditOrder.setPayType(dto.getPayType().toString());
@@ -82,31 +86,27 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
 
         String orderNum = params.get(AlipayConstant.ALI_PAY_ORDER_NUM);
         CreditOrder creditOrder = this.getOne(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getOrderNo, orderNum));
-        if(creditOrder==null){
+        if (creditOrder == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不存在");
         }
 
         Long orderTotal = creditOrder.getTotal();
-        if(!orderTotal.equals(Long.valueOf(params.get(AlipayConstant.ALI_PAY_ORDER_TOTAL)))){
+        if (!orderTotal.equals(Long.valueOf(params.get(AlipayConstant.ALI_PAY_ORDER_TOTAL)))) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单金额不一致");
         }
 
-        if(params.get(AlipayConstant.ALI_PAY_ORDER_RESULT).equals(AlipayConstant.PAY_RESULT_SUCCESS)){
+        if (params.get(AlipayConstant.ALI_PAY_ORDER_RESULT).equals(AlipayConstant.PAY_RESULT_SUCCESS)) {
 //            更新订单状态
             creditOrder.setStatus(PayConstant.ORDER_STATIC_PAID);
             this.updateById(creditOrder);
 //            增加用户积分
-        }else{
-
+            boolean addCreditResult = dubboUserService.addUserCredit(creditOrder.getUserId(), Integer.parseInt(creditOrder.getAddPoints().toString()));
+            if (!addCreditResult) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "增加用户积分失败");
+            }
+        } else {
+            log.error("支付失败");
         }
-
-
-
-
-//        1. 更新订单状态
-
-
-//        2. 判断订单的类型，进行订单完成后的后续操作
 
         return true;
     }
