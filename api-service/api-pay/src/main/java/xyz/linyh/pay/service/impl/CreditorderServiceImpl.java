@@ -92,7 +92,9 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         }
 
         Long orderTotal = creditOrder.getTotal();
-        if (!orderTotal.equals(Long.valueOf(params.get(AlipayConstant.ALI_PAY_ORDER_TOTAL)))) {
+        String strPrice = params.get(AlipayConstant.ALI_PAY_ORDER_TOTAL);
+        int intPrice = Integer.parseInt(strPrice)*100;
+        if (orderTotal != intPrice) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单金额不一致");
         }
 

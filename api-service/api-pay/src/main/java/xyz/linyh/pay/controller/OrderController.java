@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * 订单模块（创建订单可以，支付订单...）
+ * 保存到数据库的金额为实际价格*100
  */
 @RestController
 @RequestMapping("/order")
@@ -149,7 +150,6 @@ public class OrderController {
         }
         return null;
     }
-
 
     @PostMapping("/url/notify")
     public void notifyUrl(@RequestParam Map<String, String> params) throws AlipayApiException {

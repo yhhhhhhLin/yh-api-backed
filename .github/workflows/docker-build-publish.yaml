@@ -1,75 +1,75 @@
-name: Package Project And Push to Docker
-
-on:
-  push:
-    branches: [ "master" ]
-
-jobs:
-  build-and-publish:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout token-pool
-        uses: actions/checkout@v3
-        with:
-          repository: yhhhhhhLin/token-pool
-          ref: master
-          path: token-pool
-
-      - name: Set up JDK 17 for token-pool
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: maven
-
-      - name: Install token-pool dependencies
-        run: |
-          cd token-pool
-          mvn clean install
-
-      - name: Checkout yh-api-backed
-        uses: actions/checkout@v3
-        with:
-          path: yh-api-backed
-
-      - name: Set up JDK 17 for yh-api-backed
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: maven
-
-      - name: Install yh-api-backed dependencies
-        run: |
-          cd yh-api-backed
-          mvn clean install -U -Dmaven.test.skip=true
+#name: Package Project And Push to Docker
 #
-#      - name: Set up JDK 17 for current repository
-#        uses: actions/setup-java@v3
-
+#on:
+#  push:
+#    branches: [ "master" ]
 #
-#      - name: Build JAR for current repository
-#        run: |
-#          mvn clean package
+#jobs:
+#  build-and-publish:
 #
-#      - name: Show output JAR
-#        run: |
-#          ls -R target
-
-#      - name: Build Docker image
-#        uses: docker/build-push-action@v2
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout token-pool
+#        uses: actions/checkout@v3
 #        with:
-#          context: .
-#          file: Dockerfile
-#          push: true
-#          tags: |
-#            your-docker-registry/your-image-name:latest
-#        env:
-#          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#          repository: yhhhhhhLin/token-pool
+#          ref: master
+#          path: token-pool
 #
-
-
-
+#      - name: Set up JDK 17 for token-pool
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#          cache: maven
+#
+#      - name: Install token-pool dependencies
+#        run: |
+#          cd token-pool
+#          mvn clean install
+#
+#      - name: Checkout yh-api-backed
+#        uses: actions/checkout@v3
+#        with:
+#          path: yh-api-backed
+#
+#      - name: Set up JDK 17 for yh-api-backed
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#          cache: maven
+#
+#      - name: Install yh-api-backed dependencies
+#        run: |
+#          cd yh-api-backed
+#          mvn clean install -U -Dmaven.test.skip=true
+##
+##      - name: Set up JDK 17 for current repository
+##        uses: actions/setup-java@v3
+#
+##
+##      - name: Build JAR for current repository
+##        run: |
+##          mvn clean package
+##
+##      - name: Show output JAR
+##        run: |
+##          ls -R target
+#
+##      - name: Build Docker image
+##        uses: docker/build-push-action@v2
+##        with:
+##          context: .
+##          file: Dockerfile
+##          push: true
+##          tags: |
+##            your-docker-registry/your-image-name:latest
+##        env:
+##          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+##          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+##
+#
+#
+#

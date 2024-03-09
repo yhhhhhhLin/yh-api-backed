@@ -57,7 +57,7 @@ public class PayServiceImpl implements PayService {
         String out_trade_no = orderId;
 
         // 付款金额
-        String total_amount = creditOrder.getTotal().toString();
+        String total_amount = String.valueOf((creditOrder.getTotal()/100));
 
         //订单名称
         String subject = creditOrder.getOrderName();

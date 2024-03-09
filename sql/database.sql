@@ -121,30 +121,77 @@ create table if not exists ApiInterfaceAudit
 create database if not exists api_pay;
 
 use api_pay;
+# 保存到数据库的价格为实际价格的100
 
-create table if not exists CreditProducts
+create table creditOrder
+(
+    id             bigint auto_increment comment '数据对应的id'
+        primary key,
+    orderNo        varchar(255)      null comment '订单号',
+    userId         bigint            null comment '用户id',
+    productId      bigint            null comment '产品id',
+    orderName      varchar(255)      null comment '产品名称',
+    total          bigint            null comment '价格（为实际价格*100）',
+    status         varchar(255)      null comment '状态',
+    payType        varchar(255)      null comment '支付类型',
+    productInfo    text              null comment '产品信息',
+    addPoints      bigint            null comment '增加的积分',
+    expirationTime int               null comment '订单过期时间',
+    createTime     int               null comment '订单创建时间',
+    updateTime     int               null comment '订单更新时间',
+    isDelete       tinyint default 0 not null comment '是否删除',
+    constraint orderNo_unique
+        unique (orderNo)
+)
+    comment '积分订单表';
+
+
+create table creditProducts
 (
     id            bigint auto_increment comment 'id'
         primary key,
-    description   varchar(255) comment '商品描述',
-    price         int                                not null comment '商品价格',
+    description   varchar(255)                       null comment '商品描述',
+    price         int                                not null comment '商品价格(保存到数据库为实际价格*100)',
     integral      int                                not null comment '商品对应多少积分',
     picture       varchar(255)                       not null comment '商品对应图片',
-    discountPrice int                                not null comment '打折后的价格',
+    discountPrice int                             not null comment '打折后的价格',
     createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete      tinyint  default 0                 not null comment '是否删除',
     constraint id
         unique (id)
 )
-    comment '积分商品表';
+    comment '积分商品表(为实际价格的*100)';
+
+create table productsOrder
+(
+    id             bigint auto_increment comment 'id'
+        primary key,
+    orderNo        varchar(256)                           not null comment '订单号',
+    codeUrl        varchar(256)                           null comment '二维码地址',
+    userId         bigint                                 not null comment '创建人',
+    productId      bigint                                 not null comment '商品id',
+    orderName      varchar(256)                           not null comment '商品名称',
+    total          bigint                                 not null comment '金额(保存到数据库为实际价格*100)',
+    status         varchar(256) default 'NOTPAY'          not null comment '交易状态(SUCCESS：支付成功 REFUND：转入退款 NOTPAY：未支付 CLOSED：已关闭 REVOKED：已撤销（仅付款码支付会返回）
+                                                                              USERPAYING：用户支付中（仅付款码支付会返回）PAYERROR：支付失败（仅付款码支付会返回）)',
+    payType        varchar(256) default 'WX'              not null comment '支付方式（默认 WX- 微信 ZFB- 支付宝）',
+    productInfo    text                                   null comment '商品信息',
+    formData       text                                   null comment '支付宝formData',
+    addPoints      bigint       default 0                 not null comment '增加积分个数',
+    expirationTime datetime                               null comment '过期时间',
+    createTime     datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime     datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete       tinyint      default 0                 not null comment '是否删除'
+)
+    comment '商品订单';
 
 
-create table if not exists UserCredits
+create table userCredits
 (
     id         bigint auto_increment comment 'id'
         primary key,
-    userId     bigint comment '用户id',
+    userId     bigint                             null comment '用户id',
     credit     int                                not null comment '用户剩余多少积分',
     createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
@@ -155,25 +202,10 @@ create table if not exists UserCredits
     comment '用户剩余积分表';
 
 
-# 产品订单
-create table if not exists ProductsOrder
-(
-    id             bigint auto_increment comment 'id' primary key,
-    orderNo        varchar(256)                           not null comment '订单号',
-    codeUrl        varchar(256)                           null comment '二维码地址',
-    userId         bigint                                 not null comment '创建人',
-    productId      bigint                                 not null comment '商品id',
-    orderName      varchar(256)                           not null comment '商品名称',
-    total          bigint                                 not null comment '金额(分)',
-    status         varchar(256) default 'NOTPAY'          not null comment '交易状态(SUCCESS：支付成功 REFUND：转入退款 NOTPAY：未支付 CLOSED：已关闭 REVOKED：已撤销（仅付款码支付会返回）
-                                                                              USERPAYING：用户支付中（仅付款码支付会返回）PAYERROR：支付失败（仅付款码支付会返回）)',
-    payType        varchar(256) default 'WX'              not null comment '支付方式（默认 WX- 微信 ZFB- 支付宝）',
-    productInfo    text                                   null comment '商品信息',
-    formData       text                                   null comment '支付宝formData',
-    addPoints      bigint       default 0                 not null comment '增加积分个数',
-    expirationTime datetime                               null comment '过期时间',
-    createTime     datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime     datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    isDelete   tinyint  default 0                 not null comment '是否删除'
-)
-    comment '商品订单';
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '100积分', 100, 100, '无', 100, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (2, '1100积分', 990, 1100, '无', 990, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (3, '3500积分', 2790, 3500, '无', 2790, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (4, '5000积分', 4000, 5000, '无', 4000, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739598686180085762, '10000积分', 10000, 10000, 'TODO', 10000, '2023-12-26 18:47:03', '2023-12-26 18:56:43', 1);
+INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739601214343081985, '10000积分', 7000, 10000, 'TODO', 7000, '2023-12-26 18:57:04', '2023-12-26 18:57:04', 0);
+

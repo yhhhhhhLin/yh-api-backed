@@ -22,7 +22,7 @@ public class CreditProducts implements Serializable {
 
     private String picture;
 
-    private double discountPrice;
+    private Integer discountPrice;
 
     private Date createTime;
 

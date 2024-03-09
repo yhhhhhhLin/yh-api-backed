@@ -28,6 +28,6 @@ public class CreditProductDto {
     /**
      * 折扣价格
      */
-    private Double discountPrice;
+    private Integer discountPrice;
 
 }

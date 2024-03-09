@@ -15,7 +15,7 @@ public class UpdateCreditProductDto {
     /**
      * 多少价格
      */
-    private Double price;
+    private Integer price;
 
     /**
      * 多少积分
@@ -30,6 +30,6 @@ public class UpdateCreditProductDto {
     /**
      * 折扣价格
      */
-    private Double discountPrice;
+    private Integer discountPrice;
 
 }
