@@ -1,8 +1,8 @@
-#name: Package Project And Push to Docker
-#
-#on:
-#  push:
-#    branches: [ "master" ]
+name: Package Project And Push to Docker
+
+on:
+  push:
+    branches: [ "master" ]
 #
 #jobs:
 #  build-and-publish:
