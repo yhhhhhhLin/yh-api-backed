@@ -4,18 +4,18 @@ on:
   push:
     branches: [ "master" ]
 #
-#jobs:
-#  build-and-publish:
-#
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout token-pool
-#        uses: actions/checkout@v3
-#        with:
-#          repository: yhhhhhhLin/token-pool
-#          ref: master
-#          path: token-pool
+jobs:
+  build-and-publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout token-pool
+        uses: actions/checkout@v3
+        with:
+          repository: yhhhhhhLin/token-pool
+          ref: master
+          path: token-pool
 #
 #      - name: Set up JDK 17 for token-pool
 #        uses: actions/setup-java@v3
