@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * 数据分析接口
+ *
  * @author lin
  */
 @RestController
@@ -37,11 +38,11 @@ public class AnalyzeController {
      */
     @GetMapping("/all")
     public BaseResponse analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto) {
-        if(dto==null || dto.getTotal()==null || dto.getCurrent() == null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"需要输入一次展示多少个数据");
+        if (dto == null || dto.getTotal() == null || dto.getCurrent() == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "需要输入一次展示多少个数据");
         }
 
-        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeAllInterfaceInfo(dto.getCurrent(),dto.getTotal(),null);
+        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeAllInterfaceInfo(dto.getCurrent(), dto.getTotal(), null);
 
         return ResultUtils.success(interfaceInfoVOS);
     }
@@ -54,14 +55,14 @@ public class AnalyzeController {
      * @return
      */
     @GetMapping("/self")
-    public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto,HttpServletRequest request) {
-        if(dto==null || dto.getTotal()==null || dto.getCurrent() == null){
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR,"需要输入一次展示多少个数据");
+    public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto, HttpServletRequest request) {
+        if (dto == null || dto.getTotal() == null || dto.getCurrent() == null) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "需要输入一次展示多少个数据");
         }
 
         User user = userService.getLoginUser(request);
 
-        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeSelfInterfaceInfo(dto.getCurrent(),dto.getTotal(), user.getId(),null);
+        List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeSelfInterfaceInfo(dto.getCurrent(), dto.getTotal(), user.getId(), null);
         return ResultUtils.success(interfaceInfoVOS);
     }
 

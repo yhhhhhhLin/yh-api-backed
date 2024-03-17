@@ -120,7 +120,7 @@ public class InterceptorInfoController {
      * @param request       request
      */
     @PostMapping("/delete")
-    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
     public BaseResponse<Boolean> deleteInterfaceInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -173,7 +173,6 @@ public class InterceptorInfoController {
         interfaceInfo.setHost("");
         return ResultUtils.success(interfaceInfo);
     }
-
 
 
     /**

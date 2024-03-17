@@ -39,12 +39,12 @@ public class SDKController {
     private UserService userService;
 
 
-
     /**
      * 上传接口调用sdk接口
      * 保存文件到磁盘，然后保存路径到数据库
+     *
      * @param request
-     * @param file 文件数据
+     * @param file        文件数据
      * @param description 接口描述
      * @return
      */

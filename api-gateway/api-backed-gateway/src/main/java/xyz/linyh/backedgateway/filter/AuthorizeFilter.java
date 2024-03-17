@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 public class AuthorizeFilter implements Ordered, GlobalFilter {
 
-    static List<String> WHITELIST = new ArrayList<>(Arrays.asList("/pay/order/url/notify","/pay/order/url/return"));
+    static List<String> WHITELIST = new ArrayList<>(Arrays.asList("/pay/order/url/notify", "/pay/order/url/return"));
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -34,16 +34,16 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
 //        判断是否是登录页面，注册页面..，如果是登录页面，那么不用鉴权
         String path = exchange.getRequest().getURI().getPath();
-        System.out.println("----------------------------------------"+path+"-----------------------------------------");
-        if(path!=null && (path.contains("login") && !path.contains("get") || path.contains("register"))){
+        System.out.println("----------------------------------------" + path + "-----------------------------------------");
+        if (path != null && (path.contains("login") && !path.contains("get") || path.contains("register"))) {
             return chain.filter(exchange);
         }
 //        如果是白名单的路径，那么可以直接访问
-        if(WHITELIST.contains(path)){
+        if (WHITELIST.contains(path)) {
             return chain.filter(exchange);
         }
 
-        if(path!=null && (path.contains("gpt/connect") )){
+        if (path != null && (path.contains("gpt/connect"))) {
             return chain.filter(exchange);
         }
 
@@ -53,19 +53,19 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
         boolean isValidate = JwtUtils.validateToken(token);
 
-        if(!isValidate){
+        if (!isValidate) {
             return unauthorizedResponse(response);
         }
         DecodedJWT decodedJWT = JwtUtils.parseToken(token);
 
         String userId = decodedJWT.getSubject();
-        if(userId == null ){
+        if (userId == null) {
             return unauthorizedResponse(response);
         }
 
 //        将用户id保存到请求头中
         ServerHttpRequest newRequest = exchange.getRequest().mutate().header("userId", userId.toString()).build();
-        log.info("{} id通过了请求token认证",userId);
+        log.info("{} id通过了请求token认证", userId);
 
         exchange.mutate().request(newRequest);
 //        验证成功，执行下一个filter
@@ -80,6 +80,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
 
     /**
      * 用来指定这个filter优先级，越小优先级越高
+     *
      * @return
      */
     @Override
