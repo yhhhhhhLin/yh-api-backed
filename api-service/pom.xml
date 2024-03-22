@@ -21,6 +21,7 @@
         <module>gpt-service</module>
         <module>api-pay</module>
         <module>scheduled-service</module>
+        <module>api-template-generator</module>
     </modules>
 
     <properties>

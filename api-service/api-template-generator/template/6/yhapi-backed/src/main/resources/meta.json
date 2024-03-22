@@ -1,0 +1,482 @@
+{
+  "name": "springboot模板",
+  "description": "springboot模板",
+  "basePackage": "xyz.linyh",
+  "baseArtifact": "artifactName",
+  "version": "1.0",
+  "author": "linyh",
+  "createTime": "Thu Mar 21 21:29:36 CST 2024",
+  "fileConfig": {
+    "inputRootPath": "F:/AllIdeaProject/yh-api-backed/api-service/api-template-generator/template/6/yhapi-backed",
+    "outputRootPath": "D:/test/#{projectName}",
+    "files": [
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/user/UserUpdateRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/user/UserUpdateRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/constant/CommonConstant.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/constant/CommonConstant.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/service/impl/PostServiceImpl.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/service/impl/PostServiceImpl.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/service/UserService.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/service/UserService.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/common/ResultUtils.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/common/ResultUtils.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/resources/banner.txt",
+        "outputPath": "src/main/resources/banner.txt",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/aop/LogInterceptor.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/aop/LogInterceptor.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/entity/User.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/entity/User.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/resources/mapper/PostMapper.xml.ftl",
+        "outputPath": "src/main/resources/mapper/PostMapper.xml",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/controller/UserController.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/controller/UserController.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/resources/mapper/UserMapper.xml.ftl",
+        "outputPath": "src/main/resources/mapper/UserMapper.xml",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/post/PostQueryRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/post/PostQueryRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/MyApplication.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/MyApplication.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/exception/GlobalExceptionHandler.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/exception/GlobalExceptionHandler.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/entity/Post.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/entity/Post.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/enums/PostReviewStatusEnum.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/enums/PostReviewStatusEnum.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/vo/PostVO.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/vo/PostVO.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/resources/application-prod.yml.ftl",
+        "outputPath": "src/main/resources/application-prod.yml",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/resources/application.yml.ftl",
+        "outputPath": "src/main/resources/application.yml",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/enums/PostGenderEnum.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/enums/PostGenderEnum.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/post/PostUpdateRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/post/PostUpdateRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "/README.md",
+        "outputPath": "/README.md",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/service/PostService.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/service/PostService.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/config/CorsConfig.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/config/CorsConfig.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needCors"
+      },
+      {
+        "inputPath": "sql/ddl.sql.ftl",
+        "outputPath": "sql/ddl.sql",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/post/PostAddRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/post/PostAddRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "/mvnw.cmd",
+        "outputPath": "/mvnw.cmd",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "/.gitignore",
+        "outputPath": "/.gitignore",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/constant/UserConstant.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/constant/UserConstant.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/common/DeleteRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/common/DeleteRequest.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "/pom.xml.ftl",
+        "outputPath": "/pom.xml",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/user/UserQueryRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/user/UserQueryRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "/mvnw",
+        "outputPath": "/mvnw",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/user/UserLoginRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/user/UserLoginRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/annotation/AuthCheck.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/annotation/AuthCheck.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/user/UserRegisterRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/user/UserRegisterRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/post/PostDoThumbRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/post/PostDoThumbRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/test/java/xyz/linyh/yhapi/service/UserServiceTest.java.ftl",
+        "outputPath": "src/test/java/#{basePackage}/#{baseArtifact}/service/UserServiceTest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/common/BaseResponse.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/common/BaseResponse.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/dto/user/UserAddRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/dto/user/UserAddRequest.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/common/PageRequest.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/common/PageRequest.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/mapper/UserMapper.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/mapper/UserMapper.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/model/vo/UserVO.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/model/vo/UserVO.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/mapper/PostMapper.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/mapper/PostMapper.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "doc/db.md",
+        "outputPath": "doc/db.md",
+        "type": "file",
+        "generateType": "static"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/exception/BusinessException.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/exception/BusinessException.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/aop/AuthInterceptor.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/aop/AuthInterceptor.java",
+        "type": "file",
+        "generateType": "dynamic"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/config/Knife4jConfig.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/config/Knife4jConfig.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needKnife4j"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/config/MyBatisPlusConfig.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/config/MyBatisPlusConfig.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needMybatisPlus"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/controller/PostController.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/controller/PostController.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needPostExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/service/impl/UserServiceImpl.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/service/impl/UserServiceImpl.java",
+        "type": "file",
+        "generateType": "dynamic",
+        "condition": "needUserExample"
+      },
+      {
+        "inputPath": "src/main/java/xyz/linyh/yhapi/common/ErrorCode.java.ftl",
+        "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/common/ErrorCode.java",
+        "type": "file",
+        "generateType": "dynamic"
+      }
+    ]
+  },
+  "modelConfig": {
+    "models": [
+      {
+        "fieldName": "needPostExample",
+        "type": "boolean",
+        "description": "是否需要post实例代码(创建post的数据库表)",
+        "defaultValue": true,
+        "abbr": "npe"
+      },
+      {
+        "fieldName": "needUserExample",
+        "type": "boolean",
+        "description": "是否需要user实例和一些权限校验代码(创建User的数据库表)",
+        "defaultValue": true,
+        "abbr": "nue"
+      },
+      {
+        "fieldName": "groupName",
+        "type": "String",
+        "description": "项目包名",
+        "defaultValue": "shop.linyh",
+        "abbr": "gn"
+      },
+      {
+        "fieldName": "artifactName",
+        "type": "String",
+        "description": "项目artifact名",
+        "defaultValue": "template",
+        "abbr": "an"
+      },
+      {
+        "fieldName": "projectName",
+        "type": "String",
+        "description": "项目名",
+        "defaultValue": "template",
+        "abbr": "pn"
+      },
+      {
+        "fieldName": "needCors",
+        "type": "boolean",
+        "description": "是否需要跨域文件",
+        "defaultValue": true,
+        "abbr": "nc"
+      },
+      {
+        "fieldName": "needBootWeb",
+        "type": "boolean",
+        "description": "是否需要springboot web依赖框架",
+        "defaultValue": true,
+        "abbr": "nbw"
+      },
+      {
+        "fieldName": "needBootAop",
+        "type": "boolean",
+        "description": "是否需要springboot aop依赖",
+        "defaultValue": true,
+        "abbr": "nba"
+      },
+      {
+        "fieldName": "needMybatisPlus",
+        "type": "boolean",
+        "description": "是否需要MybatisPlus依赖",
+        "defaultValue": true,
+        "abbr": "nmp"
+      },
+      {
+        "fieldName": "needMybatis",
+        "type": "boolean",
+        "description": "是否需要Mybatis依赖",
+        "defaultValue": true,
+        "abbr": "nm"
+      },
+      {
+        "fieldName": "needMysql",
+        "type": "boolean",
+        "description": "是否需要Mysql依赖",
+        "defaultValue": true,
+        "abbr": "nmsql"
+      },
+      {
+        "fieldName": "needRedis",
+        "type": "boolean",
+        "description": "是否需要Redis依赖",
+        "defaultValue": true,
+        "abbr": "nredis"
+      },
+      {
+        "fieldName": "needGson",
+        "type": "boolean",
+        "description": "是否需要Gson依赖",
+        "defaultValue": true,
+        "abbr": "ngson"
+      },
+      {
+        "fieldName": "needFastJson",
+        "type": "boolean",
+        "description": "是否需要FastJson依赖",
+        "defaultValue": true,
+        "abbr": "nFastJ"
+      },
+      {
+        "fieldName": "needHutool",
+        "type": "boolean",
+        "description": "是否需要Hutool依赖",
+        "defaultValue": true,
+        "abbr": "nhutool"
+      },
+      {
+        "fieldName": "needKnife4j",
+        "type": "boolean",
+        "description": "是否需要Knife4j依赖",
+        "defaultValue": true,
+        "abbr": "nKnife4j"
+      },
+      {
+        "fieldName": "needLombok",
+        "type": "boolean",
+        "description": "是否需要lombok依赖",
+        "defaultValue": true,
+        "abbr": "nLombok"
+      }
+    ]
+  }
+}

@@ -18,7 +18,6 @@ public class DubboAuditInterfaceServiceImpl implements DubboAuditInterfaceServic
     @Autowired
     private ApiinterfaceauditService apiinterfaceauditService;
 
-
     /**
      * 更新interface审核表的code和msg信息
      *
@@ -36,8 +35,6 @@ public class DubboAuditInterfaceServiceImpl implements DubboAuditInterfaceServic
         if (auditStatus.equals(AuditConstant.AUDIT_STATUS_PUBLISH) || auditStatus.equals(AuditConstant.AUDIT_STATUS_PROPLE_FAIL) || auditStatus.equals(AuditConstant.AUDIT_STATUS_PROPLE_SUCCESS)) {
             return;
         }
-
         apiinterfaceauditService.updateAuditInterfaceCodeAndMsg(auditId, code, msg);
-
     }
 }
