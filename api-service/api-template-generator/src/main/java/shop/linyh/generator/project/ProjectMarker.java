@@ -32,15 +32,18 @@ public class ProjectMarker {
 //                通过反射获取dataModel中的对应属性，判断是否需要生成
             String[] fileConditions = file.getCondition();
             boolean needFile = false;
-            if (fileConditions.length == 0) {
+            if (fileConditions==null || fileConditions.length == 0) {
                 needFile = true;
             } else {
                 for (String fileCondition : fileConditions) {
                     Field field = dataModel.getClass().getDeclaredField(fileCondition);
                     field.setAccessible(true);
                     boolean tempBool = (boolean) field.get(dataModel);
-                    if(tempBool){
-                        needFile = !needFile;
+                    if(!tempBool){
+                        needFile = false;
+                        break;
+                    }else{
+                        needFile = true;
                     }
                 }
             }

@@ -131,6 +131,4 @@ public class DataModel {
      * 作者名字
      */
     public String authorName;
-
-
 }

@@ -30,12 +30,13 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
 
         Meta meta = MetaManager.getMeta(tempPath + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "meta.json");
+        String timestamp = String.valueOf(System.currentTimeMillis());
         String outputPath = null;
         if (!osName.toLowerCase().startsWith("win")) {
             meta.getFileConfig().setInputRootPath("/template/boot/yhapi-backed");
-            outputPath = linuxProjectOutputPathPrefix + File.separator + userId + File.separator + "#{projectName}";
+            outputPath = linuxProjectOutputPathPrefix + File.separator + userId + File.separator +timestamp+File.separator+ "#{projectName}";
         } else {
-            outputPath = winProjectOutputPathPrefix + File.separator + userId + File.separator + "#{projectName}";
+            outputPath = winProjectOutputPathPrefix + File.separator + userId + File.separator +timestamp+File.separator+ "#{projectName}";
         }
         meta.getFileConfig().setOutputRootPath(outputPath);
 
