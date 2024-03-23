@@ -2,8 +2,7 @@ package ${groupName}.${artifactName}.common;
 
 /**
  * 错误码
- *
- *
+ * @author ${authorName}
  */
 public enum ErrorCode {
 

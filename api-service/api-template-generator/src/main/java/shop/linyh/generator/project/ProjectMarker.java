@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class ProjectMarker {
 
-    public static void genProject(Meta meta, DataModel dataModel) throws Exception {
+    public static String genProject(Meta meta, DataModel dataModel) throws Exception {
         String resourcePath = meta.getFileConfig().getInputRootPath();
-        String fileOutputRootPath = StrUtil.replace(meta.getFileConfig().getOutputRootPath(), "#{projectName}", String.format("%s", dataModel.getProjectName()));
+        String fileOutputRootPath = StrUtil.replace(meta.getFileConfig().getOutputRootPath(), "#{projectName}", String.format("%s", dataModel.getArtifactName()));
 //        将meta所有文件生成出来
         List<Meta.FileConfig.Files> files = meta.getFileConfig().getFiles();
         System.out.println(files);
@@ -30,14 +30,19 @@ public class ProjectMarker {
             String fileInputPath = resourcePath + File.separator + file.getInputPath();
             String fileOutputPath = fileOutputRootPath + File.separator + outPathBack;
 //                通过反射获取dataModel中的对应属性，判断是否需要生成
-            String fileCondition = file.getCondition();
+            String[] fileConditions = file.getCondition();
             boolean needFile = false;
-            if(StrUtil.isBlank(fileCondition)){
+            if (fileConditions.length == 0) {
                 needFile = true;
-            }else{
-                Field field = dataModel.getClass().getDeclaredField(fileCondition);
-                field.setAccessible(true);
-                needFile= (boolean) field.get(dataModel);
+            } else {
+                for (String fileCondition : fileConditions) {
+                    Field field = dataModel.getClass().getDeclaredField(fileCondition);
+                    field.setAccessible(true);
+                    boolean tempBool = (boolean) field.get(dataModel);
+                    if(tempBool){
+                        needFile = !needFile;
+                    }
+                }
             }
             if (file.getGenerateType().equals("dynamic")) {
 //                使用动态生成
@@ -52,6 +57,7 @@ public class ProjectMarker {
                 }
             }
         }
+        return fileOutputRootPath;
     }
 
 }

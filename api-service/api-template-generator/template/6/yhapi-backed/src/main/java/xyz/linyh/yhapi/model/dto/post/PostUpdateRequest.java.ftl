@@ -8,6 +8,7 @@ import java.io.Serializable;
  * 更新请求
  *
  * @TableName product
+ * @author ${authorName}
  */
 @Data
 public class PostUpdateRequest implements Serializable {

@@ -8,8 +8,7 @@ import java.io.Serializable;
 
 /**
  * 查询请求
- *
- *
+ * @author ${authorName}
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

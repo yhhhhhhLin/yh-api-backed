@@ -10,9 +10,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>${groupName}</groupId>
-    <artifactId>${artifactName}-backed</artifactId>
+    <artifactId>${artifactName}</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>${artifactName}-backed</name>
+    <name>${artifactName}</name>
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -60,7 +60,7 @@
             </dependency>
         </#if>
 
-        <#if needMybatis>
+        <#if needRedis>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>

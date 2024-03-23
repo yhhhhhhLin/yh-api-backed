@@ -8,5 +8,5 @@ public interface GeneratorService {
      * 根据dataModel里面的参数，生成项目文件
      * @param dataModel
      */
-    public void generate(DataModel dataModel);
+    public String generate(DataModel dataModel,Long userId);
 }

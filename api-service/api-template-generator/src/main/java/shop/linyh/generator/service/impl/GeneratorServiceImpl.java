@@ -16,8 +16,12 @@ import java.io.File;
 @Slf4j
 public class GeneratorServiceImpl implements GeneratorService {
 
+    String winProjectOutputPathPrefix = "D:/test";
+
+    String linuxProjectOutputPathPrefix = "/generated/boot";
+
     @Override
-    public void generate(DataModel dataModel) {
+    public String generate(DataModel dataModel, Long userId) {
 //        获取当前操作系统
         String osName = System.getProperty("os.name");
         String tempPath = "F:/AllIdeaProject/yh-api-backed/api-service/api-template-generator/template/6/yhapi-backed";
@@ -26,14 +30,20 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
 
         Meta meta = MetaManager.getMeta(tempPath + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "meta.json");
+        String outputPath = null;
         if (!osName.toLowerCase().startsWith("win")) {
             meta.getFileConfig().setInputRootPath("/template/boot/yhapi-backed");
-            meta.getFileConfig().setOutputRootPath("/generated/boot/#{projectName}");
+            outputPath = linuxProjectOutputPathPrefix + File.separator + userId + File.separator + "#{projectName}";
+        } else {
+            outputPath = winProjectOutputPathPrefix + File.separator + userId + File.separator + "#{projectName}";
         }
+        meta.getFileConfig().setOutputRootPath(outputPath);
 
         try {
-            ProjectMarker.genProject(meta, dataModel);
+            String fileOutputRootPath = ProjectMarker.genProject(meta, dataModel);
             log.info("生成文件成功");
+//            返回保存后的文件地址
+            return fileOutputRootPath;
         } catch (Exception e) {
             log.error("生成文件失败", e);
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "生成文件失败");

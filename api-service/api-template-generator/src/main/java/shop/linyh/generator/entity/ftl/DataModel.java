@@ -13,14 +13,14 @@ public class DataModel {
     /**
     * 是否需要post实例代码(创建post的数据库表)
     */
-    public boolean needPostExample  = true ;
+    public boolean needPostExample;
 
 
 
     /**
     * 是否需要user实例和一些权限校验代码(创建User的数据库表)
     */
-    public boolean needUserExample  = true ;
+    public boolean needUserExample;
 
 
 
@@ -48,84 +48,89 @@ public class DataModel {
     /**
     * 是否需要跨域文件
     */
-    public boolean needCors  = true ;
+    public boolean needCors;
 
 
 
     /**
     * 是否需要springboot web依赖框架
     */
-    public boolean needBootWeb  = true ;
+    public boolean needBootWeb;
 
 
 
     /**
     * 是否需要springboot aop依赖
     */
-    public boolean needBootAop  = true ;
+    public boolean needBootAop;
 
 
 
     /**
     * 是否需要MybatisPlus依赖
     */
-    public boolean needMybatisPlus  = true ;
+    public boolean needMybatisPlus;
 
 
 
     /**
     * 是否需要Mybatis依赖
     */
-    public boolean needMybatis  = true ;
+    public boolean needMybatis;
 
 
 
     /**
     * 是否需要Mysql依赖
     */
-    public boolean needMysql  = true ;
+    public boolean needMysql;
 
 
 
     /**
     * 是否需要Redis依赖
     */
-    public boolean needRedis  = true ;
+    public boolean needRedis;
 
 
 
     /**
     * 是否需要Gson依赖
     */
-    public boolean needGson  = true ;
+    public boolean needGson;
 
 
 
     /**
     * 是否需要FastJson依赖
     */
-    public boolean needFastJson  = true ;
+    public boolean needFastJson;
 
 
 
     /**
     * 是否需要Hutool依赖
     */
-    public boolean needHutool  = true ;
+    public boolean needHutool;
 
 
 
     /**
     * 是否需要Knife4j依赖
     */
-    public boolean needKnife4j  = true ;
+    public boolean needKnife4j;
 
 
 
     /**
     * 是否需要lombok依赖
     */
-    public boolean needLombok  = true ;
+    public boolean needLombok;
+
+    /**
+     * 作者名字
+     */
+    public String authorName;
 
 
 }

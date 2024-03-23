@@ -2,7 +2,7 @@ package ${groupName}.${artifactName}.common;
 
 /**
  * 返回工具类
- *
+ * @author ${authorName}
  *
  */
 public class ResultUtils {

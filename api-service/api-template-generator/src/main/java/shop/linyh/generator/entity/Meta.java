@@ -49,7 +49,7 @@ public class Meta {
             private String type;
             private String generateType;
 //        可以判断condition，然后在model里面找到对应的model，然后判断是否生成
-            private String condition;
+            private String[] condition;
             private List<Files> files;
         }
     }

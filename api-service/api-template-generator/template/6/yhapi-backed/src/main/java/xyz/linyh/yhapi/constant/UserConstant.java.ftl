@@ -2,8 +2,7 @@ package ${groupName}.${artifactName}.constant;
 
 /**
  * 用户常量
- *
- *
+ * @author ${authorName}
  */
 public interface UserConstant {
 

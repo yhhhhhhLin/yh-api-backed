@@ -54,7 +54,7 @@
         "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/aop/LogInterceptor.java",
         "type": "file",
         "generateType": "dynamic",
-        "condition": "needUserExample"
+        "condition": ["needUserExample","needBootAop"]
       },
       {
         "inputPath": "src/main/java/xyz/linyh/yhapi/model/entity/User.java.ftl",
@@ -318,7 +318,8 @@
         "inputPath": "src/main/java/xyz/linyh/yhapi/aop/AuthInterceptor.java.ftl",
         "outputPath": "src/main/java/#{basePackage}/#{baseArtifact}/aop/AuthInterceptor.java",
         "type": "file",
-        "generateType": "dynamic"
+        "generateType": "dynamic",
+        "condition": ["needUserExample","needBootAop"]
       },
       {
         "inputPath": "src/main/java/xyz/linyh/yhapi/config/Knife4jConfig.java.ftl",

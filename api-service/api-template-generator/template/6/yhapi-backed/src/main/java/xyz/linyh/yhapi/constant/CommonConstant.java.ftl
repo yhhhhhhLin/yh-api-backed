@@ -2,8 +2,7 @@ package ${groupName}.${artifactName}.constant;
 
 /**
  * 通用常量
- *
- *
+ * @author ${authorName}
  */
 public interface CommonConstant {
 
