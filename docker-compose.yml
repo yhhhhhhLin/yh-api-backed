@@ -8,6 +8,7 @@ services:
       - 28848:8848
     environment:
       - MODE=standalone
+    mem_limit: 512m
     volumes:
       - ./data/nacos/data:/home/nacos/data
       - ./data/nacos/logs:/home/nacos/logs
@@ -97,6 +98,24 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7532/ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+
+  generator:
+    image: 1583427850/yhapi-template-generator:5
+    networks:
+      - api-net
+    ports:
+      - 7533:7533
+    depends_on:
+      nacos:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7533/ping"]
       interval: 10s
       timeout: 10s
       retries: 10

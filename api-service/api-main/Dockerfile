@@ -13,5 +13,5 @@ COPY target/api-main-1.0-SNAPSHOT.jar /app/api-main-1.0-SNAPSHOT.jar
 EXPOSE 7529
 
 # 定义容器启动时执行的命令
-CMD ["java", "-jar", "api-main-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java", "-Xms140m","-Xmx170m","-jar", "api-main-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
 

@@ -9,4 +9,4 @@ COPY target/api-backed-gateway-1.0-SNAPSHOT.jar /app/api-backed-gateway-1.0-SNAP
 EXPOSE 9529
 
 # 定义容器启动时执行的命令
-CMD ["java", "-jar", "api-backed-gateway-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java","-Xms150m","-Xmx180m", "-jar", "api-backed-gateway-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]

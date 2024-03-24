@@ -18,7 +18,7 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     String winProjectOutputPathPrefix = "D:/test";
 
-    String linuxProjectOutputPathPrefix = "/generated/boot";
+    String linuxProjectOutputPathPrefix = "/app/generated/boot";
 
     @Override
     public String generate(DataModel dataModel, Long userId) {
@@ -26,14 +26,14 @@ public class GeneratorServiceImpl implements GeneratorService {
         String osName = System.getProperty("os.name");
         String tempPath = "F:/AllIdeaProject/yh-api-backed/api-service/api-template-generator/template/6/yhapi-backed";
         if (!osName.toLowerCase().startsWith("win")) {
-            tempPath = "/template/boot/yhapi-backed";
+            tempPath = "/app/template/6//yhapi-backed";
         }
 
         Meta meta = MetaManager.getMeta(tempPath + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "meta.json");
         String timestamp = String.valueOf(System.currentTimeMillis());
         String outputPath = null;
         if (!osName.toLowerCase().startsWith("win")) {
-            meta.getFileConfig().setInputRootPath("/template/boot/yhapi-backed");
+            meta.getFileConfig().setInputRootPath("/app/template/6//yhapi-backed");
             outputPath = linuxProjectOutputPathPrefix + File.separator + userId + File.separator +timestamp+File.separator+ "#{projectName}";
         } else {
             outputPath = winProjectOutputPathPrefix + File.separator + userId + File.separator +timestamp+File.separator+ "#{projectName}";

@@ -11,4 +11,4 @@ RUN apk --no-cache add iputils
 EXPOSE 7531
 
 # 定义容器启动时执行的命令
-CMD ["java", "-jar", "api-pay-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java","-Xms150m","-Xmx180m", "-jar", "api-pay-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]

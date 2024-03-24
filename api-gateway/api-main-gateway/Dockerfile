@@ -9,4 +9,4 @@ COPY target/api-main-gateway-1.0-SNAPSHOT.jar /app/api-main-gateway-1.0-SNAPSHOT
 EXPOSE 8081
 
 # 定义容器启动时执行的命令
-CMD ["java", "-jar", "api-main-gateway-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java", "-Xms150m","-Xmx180m","-jar", "api-main-gateway-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]

@@ -3,12 +3,16 @@ FROM openjdk:17-alpine
 WORKDIR /app
 
 # 复制项目 JAR 文件到镜像中
+
+#复制模板文件
+COPY ./template /app/template
+
 COPY target/api-template-generator-1.0-SNAPSHOT.jar /app/api-template-generator-1.0-SNAPSHOT.jar
 RUN apk --no-cache add curl
 RUN apk --no-cache add iputils
 
 # 暴露应用程序的端口（如果有需要的话）
-EXPOSE 7531
+EXPOSE 7533
 
 # 定义容器启动时执行的命令
-CMD ["java", "-jar", "api-template-generator-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java","-Xms150m","-Xmx180m", "-jar", "api-template-generator-1.0-SNAPSHOT.jar","--spring.profiles.active=prod"]
