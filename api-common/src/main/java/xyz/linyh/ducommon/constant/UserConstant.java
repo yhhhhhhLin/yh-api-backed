@@ -35,5 +35,7 @@ public interface UserConstant {
 
     String SAVE_AVATAR_LINUX_PRE_PATH = "/home/img/apiAvatar";
 
+    String USER_AVATAR = "userAvatar";
+
     // endregion
 }

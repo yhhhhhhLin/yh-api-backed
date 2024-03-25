@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * @TableName usercredits
  */
-@TableName(value ="UserCredits")
+@TableName(value ="userCredits")
 @EqualsAndHashCode
 @Data
 public class UserCredits implements Serializable {

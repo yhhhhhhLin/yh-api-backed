@@ -206,33 +206,18 @@ create table userCredits
     comment '用户剩余积分表';
 
 SET GLOBAL sql_mode = (SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));
-INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey,
-                        createTime, updateTime, isDelete, credits)
-VALUES (1, 'root', 'root',
-        'https://cn.bing.com/images/search?view=detailV2&ccid=qziNmxyw&id=1E81246A717B63ACACD809FAA09D269FF34BBF84&thid=OIP.qziNmxywXqaT7lHXOgLJqgAAAA&mediaurl=https%3a%2f%2fp.qqan.com%2fup%2f2020-7%2f2020072017382224891.jpg&exph=400&expw=400&q=%e5%a4%b4%e5%83%8f&simid=607995953255237553&FORM=IRPRST&ck=9091D49B62444EACC536D2505651DB08&selectedIndex=15',
-        0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'testak', 'testsk', '2023-09-04 19:03:38',
-        '2024-01-21 22:57:16', 0, 100);
-
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime,
-                                    isDelete)
-VALUES (1, '获得100积分', 1, 100, '无', 1, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime,
-                                    isDelete)
-VALUES (2, '获得1100积分', 9.9, 1100, '无', 9.9, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime,
-                                    isDelete)
-VALUES (3, '获得3500积分', 27.9, 3500, '无', 27.9, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime,
-                                    isDelete)
-VALUES (4, '获得5000积分', 40, 5000, '无', 40, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
 
 
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '100积分', 100, 100, '无', 100, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (2, '1100积分', 990, 1100, '无', 990, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (3, '3500积分', 2790, 3500, '无', 2790, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (4, '5000积分', 4000, 5000, '无', 4000, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739598686180085762, '10000积分', 10000, 10000, 'TODO', 10000, '2023-12-26 18:47:03', '2023-12-26 18:56:43', 1);
-INSERT INTO api_pay.creditproducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739601214343081985, '10000积分', 7000, 10000, 'TODO', 7000, '2023-12-26 18:57:04', '2023-12-26 18:57:04', 0);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1, '100积分', 100, 100, '无', 100, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (2, '1100积分', 990, 1100, '无', 990, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (3, '3500积分', 2790, 3500, '无', 2790, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (4, '5000积分', 4000, 5000, '无', 4000, '2023-12-26 15:49:52', '2023-12-26 15:49:52', 0);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739598686180085762, '10000积分', 10000, 10000, 'TODO', 10000, '2023-12-26 18:47:03', '2023-12-26 18:56:43', 1);
+INSERT INTO api_pay.creditProducts (id, description, price, integral, picture, discountPrice, createTime, updateTime, isDelete) VALUES (1739601214343081985, '10000积分', 7000, 10000, 'TODO', 7000, '2023-12-26 18:57:04', '2023-12-26 18:57:04', 0);
+
+
+
+INSERT INTO yhapi.user (id, userName, userAccount, userAvatar, gender, userRole, userPassword, accessKey, secretKey, createTime, updateTime, isDelete, credits) VALUES (1, '管理员', 'root', '30745b030e1640a89887daaa3c818539.gif', 0, 'admin', '8d2edc95f411c2b98e66c0010ff54d3a', 'd51e072104fdfc684219556f6eeec27fd9acc4655fc8d3300ff73ee0eafaac2b', '3190986f792e47b29557cb3ab026fe7b01c73c5c2e7d7d2f2ba3e3917d937dba', '2023-09-04 19:03:38', '2024-03-22 15:54:21', 0, 866);
 
 
 

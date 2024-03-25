@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * @TableName productsorder
  */
-@TableName(value ="ProductsOrder")
+@TableName(value ="productsOrder")
 @Data
 @EqualsAndHashCode
 public class ProductsOrder implements Serializable {

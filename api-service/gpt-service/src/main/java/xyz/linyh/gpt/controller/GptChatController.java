@@ -50,6 +50,10 @@ public class GptChatController {
             }
 
             GPTStreamResponse response = JSONUtil.toBean(message, GPTStreamResponse.class);
+//            防止超出指针
+            if (response.getChoices().isEmpty()) {
+                return null;
+            }
             if (response.getChoices().get(0).getFinish_reason() == null) {
                 System.out.println(response.getChoices().get(0));
                 return ServerSentEvent.builder(response.getChoices().get(0)).build();

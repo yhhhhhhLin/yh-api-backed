@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,16 +131,14 @@ public class UserController {
             user = userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getId, userId));
         }
 
-        File loginUserAvatar = userService.getLoginUserAvatar(user);
         byte[] bytes = new byte[0];
-        try (FileInputStream inputStream = new FileInputStream(loginUserAvatar);) {
+        try (InputStream inputStream = userService.getLoginUserAvatar(user)) {
             bytes = new byte[inputStream.available()];
             inputStream.read(bytes, 0, inputStream.available());
         } catch (IOException e) {
             log.error("读取文件失败", e);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件打开错误");
         }
-
         return bytes;
 
 

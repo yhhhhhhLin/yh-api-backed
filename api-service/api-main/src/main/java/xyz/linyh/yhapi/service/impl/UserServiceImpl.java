@@ -23,6 +23,7 @@ import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.user.vo.UserProfileVo;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.mapper.UserMapper;
+import xyz.linyh.yhapi.service.OssService;
 import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
@@ -30,6 +31,7 @@ import xyz.linyh.yhapi.utils.NonCollidingAccessKeyGenerator;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import static xyz.linyh.ducommon.constant.RedisConstant.USER_ID_PREFIX;
@@ -52,6 +54,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private OssService ossService;
     /**
      * 盐值，混淆密码
      */
@@ -351,39 +356,59 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return userProfileVo;
     }
 
+//    @Override
+//    @Transactional
+//    public boolean saveUserAvatars(MultipartFile file, User user) {
+////        为头像生成一个唯一文件名
+//        String fileNamePre = IdUtil.simpleUUID();
+//        String fileName = file.getOriginalFilename();
+//        String suffix = fileName.substring(fileName.lastIndexOf("."));
+//        String avatarPath = fileNamePre + suffix;
+//
+////        把旧的覆盖掉
+//        if (user.getUserAvatar() != null) {
+//            File avatarAbsPath = getAvatarAbsPath(user.getUserAvatar());
+//            if (avatarAbsPath.exists() && avatarAbsPath.isFile()) {
+//                avatarAbsPath.delete();
+//            }
+//        }
+//
+//        String result = saveFileToDisk(avatarPath, file);
+//        if (!StringUtils.isNotBlank(result)) {
+//            log.info("文件保存失败，抛出异常，使用事务");
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件保存失败");
+//        }
+//
+//        return this.update(Wrappers.<User>lambdaUpdate()
+//                .eq(User::getId, user.getId())
+//                .set(User::getUserAvatar, avatarPath));
+//    }
+//
+
+
     @Override
     @Transactional
     public boolean saveUserAvatars(MultipartFile file, User user) {
-//        为头像生成一个唯一文件名
-        String fileNamePre = IdUtil.simpleUUID();
-        String fileName = file.getOriginalFilename();
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
-        String avatarPath = fileNamePre + suffix;
 
-//        把旧的覆盖掉
-        if (user.getUserAvatar() != null) {
-            File avatarAbsPath = getAvatarAbsPath(user.getUserAvatar());
-            if (avatarAbsPath.exists() && avatarAbsPath.isFile()) {
-                avatarAbsPath.delete();
-            }
-        }
-
-        String result = saveFileToDisk(avatarPath, file);
-        if (!StringUtils.isNotBlank(result)) {
-            log.info("文件保存失败，抛出异常，使用事务");
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件保存失败");
-        }
+        String avatarPath = ossService.uploadImage(file, user.getId(), USER_AVATAR);
 
         return this.update(Wrappers.<User>lambdaUpdate()
                 .eq(User::getId, user.getId())
                 .set(User::getUserAvatar, avatarPath));
     }
+//    @Override
+//    public File getLoginUserAvatar(User user) {
+//
+//        String userAvatar = user.getUserAvatar();
+//        return getAvatarAbsPath(userAvatar);
+//    }
+
 
     @Override
-    public File getLoginUserAvatar(User user) {
-
+    public InputStream getLoginUserAvatar(User user) {
         String userAvatar = user.getUserAvatar();
-        return getAvatarAbsPath(userAvatar);
+        return ossService.getImage(userAvatar);
+
     }
 
     @Override
@@ -391,7 +416,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if(userId == null || addCredit == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户id和要增加的积分不能为空");
         }
-        return this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).setSql("credit = credit" + addCredit));
+        return this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).setSql("credits = credits" + addCredit));
     }
 
     /**

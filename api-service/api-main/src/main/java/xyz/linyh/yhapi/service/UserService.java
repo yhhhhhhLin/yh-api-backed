@@ -9,6 +9,7 @@ import xyz.linyh.model.user.vo.UserProfileVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.InputStream;
 
 /**
  * 用户服务
@@ -138,7 +139,7 @@ public interface UserService extends IService<User> {
      * @param user
      * @return
      */
-    File getLoginUserAvatar(User user);
+    InputStream getLoginUserAvatar(User user);
 
     /**
      * 增加用户积分

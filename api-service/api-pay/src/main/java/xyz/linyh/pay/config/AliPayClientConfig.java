@@ -47,6 +47,9 @@ public class AliPayClientConfig {
     @Value("${pay.alipay.sandbox.gatewayUrl}")
     public String gatewayUrl;
 
+    @Value("${pay.alipay.sandbox.privateKey}")
+    public String privateKey;
+
     // 支付宝网关
     public String log_path = "F:\\AllIdeaProject\\alipay-test\\src\\main\\resources\\log";
 
@@ -105,12 +108,17 @@ public class AliPayClientConfig {
      */
     private String getPrivateKey() {
         String privateKey = "";
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\alipay\\sandbox\\customDefinitionPrivateKey.txt"))) {
-            privateKey = br.readLine();
+//        判断当前系统，如果系统是windows，则从文件中获取私钥
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            try (BufferedReader br = new BufferedReader(new FileReader("D:\\alipay\\sandbox\\customDefinitionPrivateKey.txt"))) {
+                privateKey = br.readLine();
 
-        } catch (Exception e) {
-            System.out.println("获取privateKey出现错误了");
+            } catch (Exception e) {
+                System.out.println("获取privateKey出现错误了");
 
+            }
+        }else{
+            privateKey = this.privateKey;
         }
 
         return privateKey;

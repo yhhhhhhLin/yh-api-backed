@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * @TableName CreditOrder
  */
-@TableName(value ="CreditOrder")
+@TableName(value ="creditOrder")
 @Data
 @EqualsAndHashCode
 public class CreditOrder implements Serializable {
