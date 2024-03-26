@@ -1,10 +1,7 @@
 FROM openjdk:17-alpine
-# 设置工作目录
 WORKDIR /app
 
-# 复制项目 JAR 文件到镜像中
 
-#复制模板文件
 COPY ./template /app/template
 
 COPY target/api-template-generator-1.0-SNAPSHOT.jar /app/api-template-generator-1.0-SNAPSHOT.jar

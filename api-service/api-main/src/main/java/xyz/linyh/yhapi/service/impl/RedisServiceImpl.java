@@ -3,6 +3,7 @@ package xyz.linyh.yhapi.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.RedisService;
 
 /**

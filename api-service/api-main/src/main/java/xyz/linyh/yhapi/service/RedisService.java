@@ -1,5 +1,7 @@
 package xyz.linyh.yhapi.service;
 
+import xyz.linyh.model.user.entitys.User;
+
 /**
  * 用来操作redis的服务
  *

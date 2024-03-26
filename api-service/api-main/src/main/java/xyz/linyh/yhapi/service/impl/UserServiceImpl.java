@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.constant.UserConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
@@ -225,6 +226,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public void saveUserToRedis(Long userId) {
+        log.info("------------------id为:{}用户更新用户缓存--------------",userId);
         User user = this.getById(userId);
         if (user == null || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -416,7 +418,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if(userId == null || addCredit == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户id和要增加的积分不能为空");
         }
-        return this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).setSql("credits = credits" + addCredit));
+        User user = JSONUtil.toBean(redisService.get(USER_ID_PREFIX + userId), User.class);
+        Integer oldCredits = user.getCredits();
+        this.update(Wrappers.<User>lambdaUpdate().eq(User::getId, userId).set(User::getCredits, oldCredits + addCredit));
+//        更新Redis缓存
+        this.saveUserToRedis(userId);
+
+        return true;
     }
 
     /**
