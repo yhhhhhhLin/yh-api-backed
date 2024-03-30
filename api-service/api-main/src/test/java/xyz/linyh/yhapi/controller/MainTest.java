@@ -4,6 +4,7 @@ import org.aspectj.weaver.ast.Var;
 import xyz.linyh.yhapi.controller.test.Generics;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainTest {
     public static void main(String[] args) throws Exception{
@@ -29,6 +30,7 @@ public class MainTest {
         field.setAccessible(true);
         field.set(stringGenerics, "456");
         System.out.println(stringGenerics.getName());
+        ThreadLocal<CopyOnWriteArrayList<Object>> copyOnWriteArrayListThreadLocal = ThreadLocal.withInitial(() -> new CopyOnWriteArrayList<>());
 
 
     }
