@@ -1,8 +1,5 @@
 package xyz.linyh.yhapi.service;
 
-import xyz.linyh.model.user.entitys.User;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,5 +53,5 @@ public interface RedisService {
      */
     boolean addHashFieldValueNum(String interfaceIdAndCallCountKey, Long interfaceInfoId);
 
-    String getHashValue(String key, String field);
+    int getIntHashValue(String key, String field);
 }

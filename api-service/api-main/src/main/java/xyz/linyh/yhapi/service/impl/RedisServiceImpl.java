@@ -71,8 +71,17 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public String getHashValue(String key, String field) {
-        return (String)redisTemplate.opsForHash().get(key, field);
+    public int getIntHashValue(String key, String field) {
+        Object result = redisTemplate.opsForHash().get(key, field);
+        if (result == null) {
+            return 0;
+        }
+        if (result instanceof String) {
+            return Integer.parseInt((String) result);
+        } else if (result instanceof Integer) {
+            return (int) result;
+        }
+        return 0;
     }
 
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
+import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
@@ -108,7 +110,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
                         .setSql("remNum = remNum-1,allNum = allNum+1");
                 updateResult = this.update(wrapper);
 //                更新redis
-                redisService.addHashFieldValueNum(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY,interfaceInfoId);
+                redisService.addHashFieldValueNum(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY, interfaceInfoId);
 
                 break;
             case UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_CREDITS:
@@ -139,7 +141,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     public InterfaceInfoInvokePayType isInvokeAndGetPayType(Long interfaceInfoId, Long userId, Integer pointsRequired) {
         Boolean canInvoke = false;
         InterfaceInfoInvokePayType interfaceInfoInvokePayType = new InterfaceInfoInvokePayType();
-        if(pointsRequired==0){
+        if (pointsRequired == 0) {
             interfaceInfoInvokePayType.setPayType(UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_FREE);
             interfaceInfoInvokePayType.setPayAmount(0);
             return interfaceInfoInvokePayType;
@@ -197,14 +199,14 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public List<InterfaceInfoVO> analyzeAllInterfaceInfo(Integer current, Integer total, String status) {
 
-        List<InterfaceInfoVO> interfaceAnalyze = userinterfaceinfoMapper.getInterfaceAnalyze(current-1, total, null,status);
+        List<InterfaceInfoVO> interfaceAnalyze = userinterfaceinfoMapper.getInterfaceAnalyze(current - 1, total, null, status);
         return interfaceAnalyze;
 
     }
 
     @Override
-    public List<InterfaceInfoVO> analyzeSelfInterfaceInfo(Integer current ,Integer total, Long userId,String status) {
-        return userinterfaceinfoMapper.getInterfaceAnalyze(current - 1, total, userId,status);
+    public List<InterfaceInfoVO> analyzeSelfInterfaceInfo(Integer current, Integer total, Long userId, String status) {
+        return userinterfaceinfoMapper.getInterfaceAnalyze(current - 1, total, userId, status);
     }
 
 
@@ -282,10 +284,17 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      */
     @Override
     public InterfaceInfoVO getInterfaceWithRemNumByInterfaceId(Long userId, Long interfaceId) {
-        InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
-        String count = redisService.getHashValue(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY,interfaceId.toString());
-        userinterfaceinfo.setAllNum(Integer.parseInt(count));
-        return userinterfaceinfo;
+//        InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
+        Interfaceinfo interfaceinfo = interfaceinfoService.getOne(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getId, interfaceId));
+        try {
+            InterfaceInfoVO userinterfaceinfo = new InterfaceInfoVO();
+            BeanUtils.copyProperties(interfaceinfo, userinterfaceinfo);
+            int count = redisService.getIntHashValue(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY, interfaceId.toString());
+            userinterfaceinfo.setAllNum(count);
+            return userinterfaceinfo;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "获取接口信息失败");
+        }
     }
 
     @Override
