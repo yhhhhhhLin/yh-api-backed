@@ -1,10 +1,15 @@
 package xyz.linyh.yhapi.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.RedisService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author lin
@@ -52,5 +57,23 @@ public class RedisServiceImpl implements RedisService {
     public Boolean update(String key, String value) {
         return null;
     }
+
+    @Override
+    public boolean addHash(Map<Long, Integer> idAndCount) {
+        redisTemplate.opsForHash().putAll(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY, idAndCount);
+        return true;
+    }
+
+    @Override
+    public boolean addHashFieldValueNum(String interfaceIdAndCallCountKey, Long interfaceInfoId) {
+        redisTemplate.opsForHash().increment(interfaceIdAndCallCountKey, interfaceInfoId, 1);
+        return true;
+    }
+
+    @Override
+    public String getHashValue(String key, String field) {
+        return (String)redisTemplate.opsForHash().get(key, field);
+    }
+
 
 }

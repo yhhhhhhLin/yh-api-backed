@@ -8,6 +8,7 @@ import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lin
@@ -87,4 +88,10 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @return
      */
     Integer getInterfaceRemCount(Long id, Long interfaceId);
+
+    /**
+     * 查询有调用次数的所有接口和对应调用次数
+     * @return
+     */
+    Map<Long, Integer> listAllInterfaceCallCount();
 }

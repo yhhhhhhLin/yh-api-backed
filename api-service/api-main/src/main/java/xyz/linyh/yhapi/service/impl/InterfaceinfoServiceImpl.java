@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
+import xyz.linyh.ducommon.constant.InterfaceRedisConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
@@ -28,10 +29,13 @@ import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
+import xyz.linyh.yhapi.service.RedisService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static xyz.linyh.ducommon.constant.InterfaceRedisConstant.*;
 
 /**
  * @author lin
@@ -244,9 +248,10 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), "uri", interfaceInfoQueryRequest.getUri());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), "host", interfaceInfoQueryRequest.getHost());
         queryWrapper.eq(interfaceInfoQueryRequest.getStatus() != null, "status", interfaceInfoQueryRequest.getStatus());
-
         return this.page(new Page<>(current, size), queryWrapper);
     }
+
+
 
     @Override
     @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)

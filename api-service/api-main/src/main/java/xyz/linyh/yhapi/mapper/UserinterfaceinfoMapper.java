@@ -6,6 +6,7 @@ import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lin
@@ -47,6 +48,12 @@ public interface UserinterfaceinfoMapper extends BaseMapper<UserInterfaceinfo> {
      * @return
      */
     InterfaceInfoVO getInterfaceCountByInterfaceIdAndUserId(@Param("interfaceId") Long interfaceId, @Param("userId") Long userId);
+
+    /**
+     * 查询所有接口的调用次数
+     * @return
+     */
+    Map<Long, Integer> listAllInterfaceCallCount();
 }
 
 

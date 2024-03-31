@@ -45,7 +45,6 @@
     </select>
 
     <select id="getSelfInterfaceCount" resultType="xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO">
-        --         找出这个某个用户的所有接口
         select tt.id,
                tt.name,
                tt.method,
@@ -84,6 +83,13 @@
         where i.id=#{interfaceId}
           and ui.interfaceId=#{interfaceId}
           and ui.userId=#{userId}
+    </select>
+
+    <select id="listAllInterfaceCallCount" resultType="java.util.Map">
+        select interfaceId,sum(allNum) as allNum
+        from userInterfaceInfo
+        where isDelete=0
+        group by interfaceId;
     </select>
 
 </mapper>

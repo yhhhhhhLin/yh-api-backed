@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.common.ResultUtils;
+import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
@@ -19,10 +20,12 @@ import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.model.userinterfaceinfo.entitys.UserInterfaceinfo;
 import xyz.linyh.yhapi.mapper.UserinterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
+import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -43,6 +46,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisService redisService;
 
 
     /**
@@ -101,6 +107,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
                         .eq(UserInterfaceinfo::getInterfaceId, interfaceInfoId)
                         .setSql("remNum = remNum-1,allNum = allNum+1");
                 updateResult = this.update(wrapper);
+//                更新redis
+                redisService.addHashFieldValueNum(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY,interfaceInfoId);
+
                 break;
             case UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_CREDITS:
                 Integer payAmount = payType.getPayAmount();
@@ -273,8 +282,9 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
      */
     @Override
     public InterfaceInfoVO getInterfaceWithRemNumByInterfaceId(Long userId, Long interfaceId) {
-
         InterfaceInfoVO userinterfaceinfo = userinterfaceinfoMapper.getInterfaceCountByInterfaceId(interfaceId, userId);
+        String count = redisService.getHashValue(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY,interfaceId.toString());
+        userinterfaceinfo.setAllNum(Integer.parseInt(count));
         return userinterfaceinfo;
     }
 
@@ -291,6 +301,11 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
 
             return allNum;
         }
+    }
+
+    @Override
+    public Map<Long, Integer> listAllInterfaceCallCount() {
+        return userinterfaceinfoMapper.listAllInterfaceCallCount();
     }
 
 }

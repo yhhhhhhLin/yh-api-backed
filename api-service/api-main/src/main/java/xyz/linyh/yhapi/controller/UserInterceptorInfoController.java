@@ -233,6 +233,7 @@ public class UserInterceptorInfoController {
             return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
         }
 
+
         InterfaceInfoVO userInterfaceInfo = userInterfaceinfoService.getInterfaceWithRemNumByInterfaceId(user.getId(), interfaceId);
         return ResultUtils.success(userInterfaceInfo);
     }

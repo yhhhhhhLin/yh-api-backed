@@ -23,12 +23,11 @@ public class DubboUserinterfaceinfoServiceImpl implements DubboUserinterfaceinfo
     @Override
     public BaseResponse invokeOk(Long interfaceInfoId, Long userId ,InterfaceInfoInvokePayType payType) {
         try {
-            BaseResponse baseResponse = userinterfaceinfoService.invokeOk(interfaceInfoId, userId,payType);
+            return userinterfaceinfoService.invokeOk(interfaceInfoId, userId,payType);
         } catch (Exception e) {
             log.info("DubboUserinterfaceinfoServiceImpl错误");
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**

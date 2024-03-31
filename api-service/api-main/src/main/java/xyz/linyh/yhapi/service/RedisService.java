@@ -2,6 +2,9 @@ package xyz.linyh.yhapi.service;
 
 import xyz.linyh.model.user.entitys.User;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 用来操作redis的服务
  *
@@ -42,4 +45,16 @@ public interface RedisService {
      * @return
      */
     Boolean update(String key, String value);
+
+    boolean addHash(Map<Long, Integer> idAndCount);
+
+    /**
+     * 增加redis中hash的value
+     * @param interfaceIdAndCallCountKey
+     * @param interfaceInfoId
+     * @return
+     */
+    boolean addHashFieldValueNum(String interfaceIdAndCallCountKey, Long interfaceInfoId);
+
+    String getHashValue(String key, String field);
 }
