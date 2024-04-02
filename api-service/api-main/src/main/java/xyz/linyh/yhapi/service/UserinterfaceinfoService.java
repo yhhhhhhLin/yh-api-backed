@@ -94,4 +94,11 @@ public interface UserinterfaceinfoService extends IService<UserInterfaceinfo> {
      * @return
      */
     Map<Long, Integer> listAllInterfaceCallCount();
+
+    /**
+     * 批量对所有接口增加调用次数，如果不存在就创建
+     * @param allInterfaceUserAddCount
+     * @return
+     */
+    boolean batchAddUserInterfaceCallCount(Map<Map<Long,Long>,Integer> allInterfaceUserAddCount);
 }

@@ -43,7 +43,9 @@ public interface RedisService {
      */
     Boolean update(String key, String value);
 
-    boolean addHash(Map<Long, Integer> idAndCount);
+    boolean addHash(String hashKey,Map<Long, Integer> idAndCount);
+
+    boolean addHash(String hashKey,String field,Integer value);
 
     /**
      * 增加redis中hash的value
@@ -54,4 +56,10 @@ public interface RedisService {
     boolean addHashFieldValueNum(String interfaceIdAndCallCountKey, Long interfaceInfoId);
 
     int getIntHashValue(String key, String field);
+
+    /**
+     * 查询redis中，所有接口中每个用户新增的调用次数
+     * @return
+     */
+    Map getAllInterfaceCallCount();
 }

@@ -203,6 +203,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             try {
 //                                redis分布式锁上锁
                                 redissonLockUtil.redissonDistributedLocks(("gateway_" + user.getUserAccount()).intern(), () -> {
+//                                    TODO 如果是只有积分消费，可以改为直接更新用户积分，调用次数直接更新redis，后面再同步到mysql，可以减少mysql磁盘io
                                     dubboUserinterfaceinfoService.invokeOk(interfaceinfo.getId(), user.getId(),payType);
                                 }, "接口调用失败");
 //                                dubboUserinterfaceinfoService.invokeOk(interfaceInfoId,userId);

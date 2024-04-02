@@ -28,6 +28,7 @@ import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -315,6 +316,21 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public Map<Long, Integer> listAllInterfaceCallCount() {
         return userinterfaceinfoMapper.listAllInterfaceCallCount();
+    }
+
+    @Override
+    public boolean batchAddUserInterfaceCallCount(Map<Map<Long,Long>,Integer> allInterfaceUserAddCount) {
+        Set<Map<Long, Long>> interfaceIdAndUserIdSet = allInterfaceUserAddCount.keySet();
+        for (Map<Long, Long> interfaceIdAndUserId : interfaceIdAndUserIdSet) {
+            for (Long interfaceId : interfaceIdAndUserId.keySet()) {
+                Long userId = interfaceIdAndUserId.get(interfaceId);
+                Integer addCount = allInterfaceUserAddCount.get(interfaceIdAndUserId);
+//                批量新增或
+//                this.saveOrUpdateBatch()
+            }
+
+        }
+        return false;
     }
 
 }

@@ -31,5 +31,5 @@ public interface RedisConstant {
     /**
      * 保存到redis中的每日访问量key前缀
      */
-    String INTERFACE_ID_AND_CALL_COUNT_KEY = "interface_id_and_count";
+    String INTERFACE_ID_AND_CALL_COUNT_KEY = "interface_id_and_count:";
 }
