@@ -39,9 +39,7 @@ import xyz.linyh.yhapigateway.utils.RedissonLockUtil;
 
 import javax.annotation.Resource;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
@@ -220,6 +218,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                     }
                 } else {
                     System.out.println(body);
+                    ArrayList<String> srcList = new ArrayList<>();
+                    ArrayList<String> distList = new ArrayList<>();
+                    Collections.copy(distList,srcList);
                     Flux<? extends DataBuffer> dataBufferFlux = Flux.from(body);
                     Flux<String> contentFlux = dataBufferFlux
                             .map(dataBuffer -> {

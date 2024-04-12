@@ -1,7 +1,5 @@
 package xyz.linyh.yhapi.service.impl;
 
-import cn.hutool.core.util.StrUtil;
-import jdk.jpackage.internal.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
@@ -10,13 +8,10 @@ import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.ErrorCode;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yhapi.service.RedisService;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author lin
