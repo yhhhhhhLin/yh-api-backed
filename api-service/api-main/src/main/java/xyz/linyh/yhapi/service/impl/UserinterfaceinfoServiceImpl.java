@@ -26,6 +26,7 @@ import xyz.linyh.yhapi.service.RedisService;
 import xyz.linyh.yhapi.service.UserService;
 import xyz.linyh.yhapi.service.UserinterfaceinfoService;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,6 +113,8 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
                 updateResult = this.update(wrapper);
 //                更新redis
                 redisService.addHashFieldValueNum(RedisConstant.INTERFACE_ID_AND_CALL_COUNT_KEY, interfaceInfoId);
+                BitSet bitSet = new BitSet();
+                bitSet.set(0,0);
 
                 break;
             case UserInterfaceInfoConstant.INTERFACE_INVOKE_PAY_TYPE_CREDITS:
