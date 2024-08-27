@@ -237,7 +237,17 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (size > 50) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
+//        return lambdaQuery()
+//                .like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getName()), Interfaceinfo::getName, interfaceInfoQueryRequest.getName())
+//                .like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getDescription()), Interfaceinfo::getDescription, interfaceInfoQueryRequest.getDescription())
+//                .eq(interfaceInfoQueryRequest.getUserId() != null, Interfaceinfo::getUserId, interfaceInfoQueryRequest.getUserId())
+//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getMethod()), Interfaceinfo::getMethod, interfaceInfoQueryRequest.getMethod())
+//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), Interfaceinfo::getUri, interfaceInfoQueryRequest.getUri())
+//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), Interfaceinfo::getHost, interfaceInfoQueryRequest.getHost())
+//                .eq(interfaceInfoQueryRequest.getStatus() != null, Interfaceinfo::getStatus, interfaceInfoQueryRequest.getStatus())
+//                .orderBy(StringUtils.isNotBlank(sortField),sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Interfaceinfo::getDescription)
+//                .page(new Page<>(current, size));
+//
         QueryWrapper<Interfaceinfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
@@ -306,9 +316,12 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "只能修改上下线的状态");
         }
 
-        boolean result = this.update(Wrappers.<Interfaceinfo>lambdaUpdate()
-                .eq(Interfaceinfo::getId, dto.getInterfaceId())
-                .set(Interfaceinfo::getStatus, dto.getStatus()));
+        boolean result = lambdaUpdate().eq(Interfaceinfo::getId, dto.getInterfaceId())
+                .set(Interfaceinfo::getStatus, dto.getStatus())
+                .update();
+//        boolean result = this.update(Wrappers.<Interfaceinfo>lambdaUpdate()
+//                .eq(Interfaceinfo::getId, dto.getInterfaceId())
+//                .set(Interfaceinfo::getStatus, dto.getStatus()));
         this.updateGatewayCache();
         return result;
     }
