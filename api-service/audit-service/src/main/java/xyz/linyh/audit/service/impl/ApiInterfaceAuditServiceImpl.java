@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.audit.mapper.ApiinterfaceauditMapper;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
 import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.ducommon.constant.AuditMQTopicConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
@@ -58,7 +58,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     @Override
     public void sendAuditInterfaceMsgToGpt(ApiInterfaceAudit audit) {
         if (audit == null || audit.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "审核内容或审核的内容id不能为空参数错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "审核内容或审核的内容id不能为空参数错误");
         }
 
 //       封装好发送给gpt的messages的list类型
@@ -70,7 +70,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         } catch (MessagingException e) {
 //           如果实在发送不过去，就先不管了
             log.info("生产者消息发送失败：{}", audit);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息发送出问题了");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "消息发送出问题了");
         }
     }
 
@@ -82,7 +82,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     @CacheEvict(cacheNames = RedisConstant.AUDIT_PAGE_CACHE_NAMES,allEntries = true)
     public void updateAuditInterfaceCodeAndMsg(Long auditId, Integer code, String msg) {
         if (auditId == null || code == null || msg == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
         LambdaUpdateWrapper<ApiInterfaceAudit> wrapper = new LambdaUpdateWrapper<>();
@@ -107,13 +107,13 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
     public ApiInterfaceAudit saveAuditInterface(ApiInterfaceAudit audit) {
 //        参数校验
         if (audit == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
 //        还需要校验uri只能唯一目前
         Interfaceinfo interfaceByUri = dubboInterfaceinfoService.getInterfaceByURI(audit.getUri(), audit.getMethod());
         if (interfaceByUri != null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口名称已经存在");
         }
 
         audit.setCreateTime(new Date());
@@ -171,10 +171,10 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         Long apiId = dubboInterfaceinfoService.addOrUpdateInterface(interfaceinfo);
         if (apiId == null) {
 //            抛出异常，事务管理
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "审核通过后，保存到真正的api文档里面失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "审核通过后，保存到真正的api文档里面失败");
         }
         if (apiId == 0) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "保存失败，可能有重复uri");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "保存失败，可能有重复uri");
         }
 
 //        保存id到数据库，更新审核状态
@@ -198,7 +198,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         } else {
             Boolean update = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_SHOULD_RE_AUDIT,userId);
             if (!update) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败,系统出错");
+                throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "修改接口状态失败,系统出错");
             }
             this.updateAuditInterfaceCodeAndMsg(auditId, status, reason);
         }
@@ -217,7 +217,7 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
 //        判断uri是否重复
         Interfaceinfo interfaceInfo = dubboInterfaceinfoService.getInterfaceByURI(apiInterfaceAudit.getUri(), apiInterfaceAudit.getMethod());
         if (interfaceInfo != null && !apiInterfaceAudit.getApiId().equals(interfaceInfo.getId())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名称已经存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口名称已经存在");
         }
 
 //        如果原本里面没有对应apiId，那么就新增，如果已经有那么就更新
@@ -234,13 +234,13 @@ public class ApiInterfaceAuditServiceImpl extends ServiceImpl<ApiinterfaceauditM
         }
 
         if (!saveOrUpdateResult) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "修改失败");
         }
 
 //        修改接口状态
         Boolean updateStatus = dubboInterfaceinfoService.updateInterfaceStatusById(apiInterfaceAudit.getApiId(), InterfaceInfoConstant.STATIC_AUDITING,userId);
         if (!updateStatus) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改接口状态失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "修改接口状态失败");
         }
 
 //        重新进行审核

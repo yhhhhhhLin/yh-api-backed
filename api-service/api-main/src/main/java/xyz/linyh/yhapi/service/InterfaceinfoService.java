@@ -3,7 +3,7 @@ package xyz.linyh.yhapi.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryBaseDto;
 import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -63,7 +63,7 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @param interfaceInfoQueryRequest
      * @return
      */
-    Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+    Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest);
 
     /**
      * 更新接口信息

@@ -7,7 +7,7 @@ import shop.linyh.generator.entity.ftl.DataModel;
 import shop.linyh.generator.meta.MetaManager;
 import shop.linyh.generator.project.ProjectMarker;
 import shop.linyh.generator.service.GeneratorService;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.exception.BusinessException;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             return fileOutputRootPath;
         } catch (Exception e) {
             log.error("生成文件失败", e);
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "生成文件失败");
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, "生成文件失败");
         }
 
     }

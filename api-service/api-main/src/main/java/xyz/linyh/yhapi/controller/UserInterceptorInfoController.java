@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryBaseDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoUpdateRequest;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
 import xyz.linyh.model.user.entitys.User;
@@ -55,7 +55,7 @@ public class UserInterceptorInfoController {
     @PostMapping("/add")
     public BaseResponse<Long> addInterfaceInfo(@RequestBody UserInterfaceInfoAddRequest userInterfaceInfoAddRequest, HttpServletRequest request) {
         if (userInterfaceInfoAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         UserInterfaceinfo userInterfaceInfo = new UserInterfaceinfo();
@@ -68,7 +68,7 @@ public class UserInterceptorInfoController {
         userInterfaceInfo.setUserId(loginUser.getId());
         boolean result = userInterfaceinfoService.save(userInterfaceInfo);
         if (!result) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR);
         }
 
         long newInterfaceInfoId = userInterfaceInfo.getId();
@@ -86,18 +86,18 @@ public class UserInterceptorInfoController {
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteInterfaceInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
         UserInterfaceinfo oldInterfaceInfo = userInterfaceinfoService.getById(id);
         if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可删除
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NO_AUTH_ERROR);
         }
         boolean b = userInterfaceinfoService.removeById(id);
         return ResultUtils.success(b);
@@ -115,7 +115,7 @@ public class UserInterceptorInfoController {
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest userInterfaceInfoUpdateRequest,
                                                      HttpServletRequest request) {
         if (userInterfaceInfoUpdateRequest == null || userInterfaceInfoUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         UserInterfaceinfo userInterfaceInfo = new UserInterfaceinfo();
         BeanUtils.copyProperties(userInterfaceInfoUpdateRequest, userInterfaceInfo);
@@ -126,11 +126,11 @@ public class UserInterceptorInfoController {
         // 判断是否存在
         UserInterfaceinfo oldInterfaceInfo = userInterfaceinfoService.getById(id);
         if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可修改
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NO_AUTH_ERROR);
         }
         boolean result = userInterfaceinfoService.updateById(userInterfaceInfo);
         return ResultUtils.success(result);
@@ -146,7 +146,7 @@ public class UserInterceptorInfoController {
     @GetMapping("/get")
     public BaseResponse<UserInterfaceinfo> getUserInterfaceInfoById(long id) {
         if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         UserInterfaceinfo userInterfaceInfo = userInterfaceinfoService.getById(id);
         return ResultUtils.success(userInterfaceInfo);
@@ -161,7 +161,7 @@ public class UserInterceptorInfoController {
      */
     @AuthCheck(mustRole = "admin")
     @GetMapping("/list")
-    public BaseResponse<Page<UserInterfaceinfo>> listInterfaceInfo(InterfaceInfoQueryRequest userInterfaceInfoQueryRequest) {
+    public BaseResponse<Page<UserInterfaceinfo>> listInterfaceInfo(InterfaceInfoQueryBaseDto userInterfaceInfoQueryRequest) {
         UserInterfaceinfo userInterfaceInfoQuery = new UserInterfaceinfo();
         if (userInterfaceInfoQueryRequest != null) {
             BeanUtils.copyProperties(userInterfaceInfoQueryRequest, userInterfaceInfoQuery);
@@ -181,9 +181,9 @@ public class UserInterceptorInfoController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<UserInterfaceinfo>> listPnterfaceInfoByPage(InterfaceInfoQueryRequest userInterfaceInfoQueryRequest, HttpServletRequest request) {
+    public BaseResponse<Page<UserInterfaceinfo>> listPnterfaceInfoByPage(InterfaceInfoQueryBaseDto userInterfaceInfoQueryRequest, HttpServletRequest request) {
         if (userInterfaceInfoQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         UserInterfaceinfo userInterfaceInfoQuery = new UserInterfaceinfo();
         BeanUtils.copyProperties(userInterfaceInfoQueryRequest, userInterfaceInfoQuery);
@@ -196,7 +196,7 @@ public class UserInterceptorInfoController {
 //        userInterfaceInfoQuery.setContent(null);
         // 限制爬虫
         if (size > 50) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         QueryWrapper<UserInterfaceinfo> queryWrapper = new QueryWrapper<>(userInterfaceInfoQuery);
 //        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
@@ -215,7 +215,7 @@ public class UserInterceptorInfoController {
     @GetMapping("/detailwithtotal")
     public BaseResponse<InterfaceInfoVO> getInterfaceAllDataByInterfaceId(HttpServletRequest request, Long interfaceId) {
         if (interfaceId == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "接口id不能为空");
         }
         User user = userService.getLoginUser(request);
 
@@ -225,12 +225,12 @@ public class UserInterceptorInfoController {
     @GetMapping("detailwithremnum")
     public BaseResponse<InterfaceInfoVO> getInterfaceByInterfaceIdAndUserId(Long interfaceId, HttpServletRequest request) {
         if (interfaceId == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "接口id不能为空");
         }
 
         User user = userService.getLoginUser(request);
         if (user == null) {
-            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 
 
@@ -247,7 +247,7 @@ public class UserInterceptorInfoController {
     @GetMapping("/remcountandcredits")
     public BaseResponse<RemCountAndCreditVO> getRemCountAndCredits(HttpServletRequest request, Long interfaceId) {
         if(interfaceId == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "接口id不能为空");
         }
         User user = userService.getLoginUser(request);
         Integer credits = user.getCredits();
@@ -266,20 +266,20 @@ public class UserInterceptorInfoController {
     @GetMapping("/experience")
     public BaseResponse<UserInterfaceinfo> getExperienceCount(HttpServletRequest request, Long id) {
         if (id == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "接口id不能为空");
         }
 
 //        获取用户
         User user = userService.getLoginUser(request);
         if (user == null) {
-            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 //        判断是否是首次体验
         UserInterfaceinfo userInterfaceinfo = userInterfaceinfoService.getOne(Wrappers.<UserInterfaceinfo>lambdaQuery().
                 eq(UserInterfaceinfo::getUserId, user.getId())
                 .eq(UserInterfaceinfo::getInterfaceId, id));
         if (userInterfaceinfo != null) {
-            return ResultUtils.error(ErrorCode.NO_AUTH_ERROR, "无法重复获取次数");
+            return ResultUtils.error(ErrorCodeEnum.NO_AUTH_ERROR, "无法重复获取次数");
         }
 //        增加调用次数
         Boolean isSave = userInterfaceinfoService.addCountIfNo(id, user.getId(), 10);

@@ -7,14 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
@@ -61,7 +60,7 @@ public class InterceptorInfoController {
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Long> addInterfaceInfo(@RequestBody InterfaceInfoAddRequest interfaceInfoAddRequest, HttpServletRequest request) {
         if (interfaceInfoAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         Interfaceinfo interfaceInfo = new Interfaceinfo();
         interfaceInfo.setStatus(1);
@@ -75,7 +74,7 @@ public class InterceptorInfoController {
         boolean result = interfaceinfoService.addInterfaceInfo(interfaceInfo);
 
         if (!result) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR);
         }
 
 //        刷新网关的缓存接口数据
@@ -95,7 +94,7 @@ public class InterceptorInfoController {
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest interfaceInfoUpdateRequest,
                                                      HttpServletRequest request) {
         if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         Interfaceinfo interfaceInfo = new Interfaceinfo();
@@ -123,7 +122,7 @@ public class InterceptorInfoController {
     @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
     public BaseResponse<Boolean> deleteInterfaceInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
@@ -147,7 +146,7 @@ public class InterceptorInfoController {
     public BaseResponse<Boolean> updateStatus(@RequestBody UpdateStatusDto dto, HttpServletRequest request) {
 //        判断参数是否正确
         if (dto == null || dto.getInterfaceId() <= 0 || dto.getStatus() == null || (dto.getStatus().equals(InterfaceInfoConstant.STATIC_USE) && dto.getStatus().equals(InterfaceInfoConstant.STATIC_NOT_USE))) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         User user = userService.getLoginUser(request);
@@ -166,7 +165,7 @@ public class InterceptorInfoController {
     @GetMapping("/get")
     public BaseResponse<Interfaceinfo> getInterfaceInfoById(long id) {
         if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         Interfaceinfo interfaceInfo = interfaceinfoService.getById(id);
 //        脱敏
@@ -187,7 +186,7 @@ public class InterceptorInfoController {
                                       HttpServletRequest request, HttpServletResponse response) {
 //        判断参数是否有效
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() == null || interfaceInfoInvokeRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
 //        判断接口是否有效
@@ -195,7 +194,7 @@ public class InterceptorInfoController {
                 .eq(Interfaceinfo::getId, interfaceInfoInvokeRequest.getId())
                 .eq(Interfaceinfo::getStatus, InterfaceInfoConstant.STATIC_USE));
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "不存在这个接口或接口已经下线");
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR, "不存在这个接口或接口已经下线");
         }
 
         User user = userService.getLoginUser(request);
@@ -218,7 +217,7 @@ public class InterceptorInfoController {
      */
     @AuthCheck(mustRole = "admin")
     @GetMapping("/list")
-    public BaseResponse<Page<Interfaceinfo>> listInterfaceInfo(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+    public BaseResponse<Page<Interfaceinfo>> listInterfaceInfo(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest) {
         Interfaceinfo interfaceInfoQuery = new Interfaceinfo();
         if (interfaceInfoQueryRequest != null) {
             BeanUtils.copyProperties(interfaceInfoQueryRequest, interfaceInfoQuery);
@@ -236,9 +235,9 @@ public class InterceptorInfoController {
      * @param interfaceInfoQueryRequest 查询条件
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<Interfaceinfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+    public BaseResponse<Page<Interfaceinfo>> listInterfaceInfoByPage(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest) {
         if (interfaceInfoQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         Page<Interfaceinfo> interfaceInfoPage = interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
         return ResultUtils.success(interfaceInfoPage);
@@ -249,9 +248,9 @@ public class InterceptorInfoController {
      * 条件查询
      */
     @GetMapping("/self")
-    public BaseResponse getSelfInterfaceInfo(InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
+    public BaseResponse getSelfInterfaceInfo(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest, HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null || interfaceInfoQueryRequest.getPageSize() == 0L || interfaceInfoQueryRequest.getCurrent() == 0L) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "查询参数不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "查询参数不能为空");
         }
 
         User user = userService.getLoginUser(request);

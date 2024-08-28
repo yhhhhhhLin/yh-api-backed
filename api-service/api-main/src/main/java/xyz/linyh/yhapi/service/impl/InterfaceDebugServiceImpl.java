@@ -4,7 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
 import xyz.linyh.model.interfaceinfo.dto.RequestHeaderParamsDto;
@@ -36,7 +36,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
 
 //       参数校验
         if (preUrl == null || method == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "需要url前缀和请求方式");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "需要url前缀和请求方式");
         }
 
 
@@ -46,7 +46,7 @@ public class InterfaceDebugServiceImpl implements InterfaceDebugService {
         } else if ("POST".equalsIgnoreCase(method)) {
             httpRequest = HttpRequest.post(preUrl + suffUrl);
         } else {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求方式错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "请求方式错误");
         }
 
 //        添加请求参数

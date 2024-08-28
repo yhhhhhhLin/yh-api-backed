@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.UserConstant;
 import xyz.linyh.model.pay.eneity.UserCredits;
@@ -25,7 +25,7 @@ public class CreditController {
     public BaseResponse getUserCharge(HttpServletRequest request) {
         String userId = request.getHeader(UserConstant.USER_Id);
         if (userId == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         UserCredits userCredit = userCreditsService.getById(String.valueOf(userId));
@@ -33,6 +33,6 @@ public class CreditController {
             return ResultUtils.success(userCredit);
         }
 
-        return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
+        return ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR);
     }
 }

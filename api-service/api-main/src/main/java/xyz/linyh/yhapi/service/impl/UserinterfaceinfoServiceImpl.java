@@ -10,7 +10,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.constant.UserInterfaceInfoConstant;
@@ -64,7 +64,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public void validInterfaceInfo(UserInterfaceinfo userInterfaceinfo, boolean add) {
         if (userInterfaceinfo == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         Long id = userInterfaceinfo.getId();
@@ -77,11 +77,11 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
         // 创建时，所有参数必须非空
         if (add) {
             if (userId <= 0 || remNum < 0 || allNum < 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+                throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
             }
         }
         if (id == null || id <= 0 || userId <= 0 || remNum < 0 || allNum < 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 //        if ((status!=0 && status!=1)) {
 //            throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -101,7 +101,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Transactional(rollbackFor = Exception.class)
     public BaseResponse invokeOk(Long interfaceInfoId, Long userId, InterfaceInfoInvokePayType payType) {
         if (interfaceInfoId == null || userId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "缺少接口id或用户id");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "缺少接口id或用户id");
         }
         boolean updateResult = false;
         switch (payType.getPayType()) {
@@ -151,7 +151,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
             return interfaceInfoInvokePayType;
         }
         if (interfaceInfoId == null || userId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         LambdaQueryWrapper<UserInterfaceinfo> wrapper = new LambdaQueryWrapper<>();
@@ -190,7 +190,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
             }
         }
         if (!canInvoke) {
-            throw new BusinessException(ErrorCode.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分调用");
+            throw new BusinessException(ErrorCodeEnum.NOT_INVOKE_NUM_ERROR, "没有调用次数或没有足够的积分调用");
         }
         return interfaceInfoInvokePayType;
     }
@@ -267,7 +267,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
     @Override
     public Boolean addCountIfNo(Long interfaceId, Long userId, Integer count) {
         if (interfaceId == null || userId == null || count == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "增加次数相关参数不能为可能");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "增加次数相关参数不能为可能");
         }
 
         UserInterfaceinfo userInterfaceinfo = new UserInterfaceinfo();
@@ -297,7 +297,7 @@ public class UserinterfaceinfoServiceImpl extends ServiceImpl<UserinterfaceinfoM
             userinterfaceinfo.setAllNum(count);
             return userinterfaceinfo;
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "获取接口信息失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "获取接口信息失败");
         }
     }
 

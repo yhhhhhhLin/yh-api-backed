@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.exception.BusinessException;
 
 import javax.annotation.Resource;
@@ -31,7 +31,7 @@ public class RedissonLockUtil {
      * @param errorMessage 错误消息
      * @return {@link T}
      */
-    public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier, ErrorCode errorCode, String errorMessage) {
+    public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier, ErrorCodeEnum errorCode, String errorMessage) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
@@ -39,7 +39,7 @@ public class RedissonLockUtil {
             }
             throw new BusinessException(errorCode.getCode(), errorMessage);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.error("unLock: " + Thread.currentThread().getId());
@@ -61,7 +61,7 @@ public class RedissonLockUtil {
      * @param args         args
      * @return {@link T}
      */
-    public <T> T redissonDistributedLocks(long waitTime, long leaseTime, TimeUnit unit, String lockName, Supplier<T> supplier, ErrorCode errorCode, String errorMessage, Object... args) {
+    public <T> T redissonDistributedLocks(long waitTime, long leaseTime, TimeUnit unit, String lockName, Supplier<T> supplier, ErrorCodeEnum errorCode, String errorMessage, Object... args) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(waitTime, leaseTime, unit)) {
@@ -69,7 +69,7 @@ public class RedissonLockUtil {
             }
             throw new BusinessException(errorCode.getCode(), errorMessage);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.info("unLock: " + Thread.currentThread().getId());
@@ -89,7 +89,7 @@ public class RedissonLockUtil {
      * @param time         时间
      * @return {@link T}
      */
-    public <T> T redissonDistributedLocks(long time, TimeUnit unit, String lockName, Supplier<T> supplier, ErrorCode errorCode, String errorMessage) {
+    public <T> T redissonDistributedLocks(long time, TimeUnit unit, String lockName, Supplier<T> supplier, ErrorCodeEnum errorCode, String errorMessage) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(time, unit)) {
@@ -97,7 +97,7 @@ public class RedissonLockUtil {
             }
             throw new BusinessException(errorCode.getCode(), errorMessage);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.info("unLock: " + Thread.currentThread().getId());
@@ -115,7 +115,7 @@ public class RedissonLockUtil {
      * @param errorCode 错误代码
      * @return {@link T}
      */
-    public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier, ErrorCode errorCode) {
+    public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier, ErrorCodeEnum errorCode) {
         return redissonDistributedLocks(lockName, supplier, errorCode, errorCode.getMessage());
     }
 
@@ -128,7 +128,7 @@ public class RedissonLockUtil {
      * @return {@link T}
      */
     public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier, String errorMessage) {
-        return redissonDistributedLocks(lockName, supplier, ErrorCode.OPERATION_ERROR, errorMessage);
+        return redissonDistributedLocks(lockName, supplier, ErrorCodeEnum.OPERATION_ERROR, errorMessage);
     }
 
     /**
@@ -139,7 +139,7 @@ public class RedissonLockUtil {
      * @return {@link T}
      */
     public <T> T redissonDistributedLocks(String lockName, Supplier<T> supplier) {
-        return redissonDistributedLocks(lockName, supplier, ErrorCode.OPERATION_ERROR);
+        return redissonDistributedLocks(lockName, supplier, ErrorCodeEnum.OPERATION_ERROR);
     }
 
     /**
@@ -150,7 +150,7 @@ public class RedissonLockUtil {
      * @param errorCode    错误代码
      * @param errorMessage 错误消息
      */
-    public void redissonDistributedLocks(String lockName, Runnable runnable, ErrorCode errorCode, String errorMessage) {
+    public void redissonDistributedLocks(String lockName, Runnable runnable, ErrorCodeEnum errorCode, String errorMessage) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
@@ -159,7 +159,7 @@ public class RedissonLockUtil {
                 throw new BusinessException(errorCode.getCode(), errorMessage);
             }
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.info("lockName:{},unLockId:{} ", lockName, Thread.currentThread().getId());
@@ -175,7 +175,7 @@ public class RedissonLockUtil {
      * @param runnable  可运行
      * @param errorCode 错误代码
      */
-    public void redissonDistributedLocks(String lockName, Runnable runnable, ErrorCode errorCode) {
+    public void redissonDistributedLocks(String lockName, Runnable runnable, ErrorCodeEnum errorCode) {
         redissonDistributedLocks(lockName, runnable, errorCode, errorCode.getMessage());
     }
 
@@ -187,7 +187,7 @@ public class RedissonLockUtil {
      * @param errorMessage 错误消息
      */
     public void redissonDistributedLocks(String lockName, Runnable runnable, String errorMessage) {
-        redissonDistributedLocks(lockName, runnable, ErrorCode.OPERATION_ERROR, errorMessage);
+        redissonDistributedLocks(lockName, runnable, ErrorCodeEnum.OPERATION_ERROR, errorMessage);
     }
 
     /**
@@ -197,7 +197,7 @@ public class RedissonLockUtil {
      * @param runnable 可运行
      */
     public void redissonDistributedLocks(String lockName, Runnable runnable) {
-        redissonDistributedLocks(lockName, runnable, ErrorCode.OPERATION_ERROR, ErrorCode.OPERATION_ERROR.getMessage());
+        redissonDistributedLocks(lockName, runnable, ErrorCodeEnum.OPERATION_ERROR, ErrorCodeEnum.OPERATION_ERROR.getMessage());
     }
 
 
@@ -212,7 +212,7 @@ public class RedissonLockUtil {
      * @param errorCode    错误代码
      * @param errorMessage 错误消息
      */
-    public void redissonDistributedLocks(long waitTime, long leaseTime, TimeUnit unit, String lockName, Runnable runnable, ErrorCode errorCode, String errorMessage) {
+    public void redissonDistributedLocks(long waitTime, long leaseTime, TimeUnit unit, String lockName, Runnable runnable, ErrorCodeEnum errorCode, String errorMessage) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(waitTime, leaseTime, unit)) {
@@ -221,7 +221,7 @@ public class RedissonLockUtil {
                 throw new BusinessException(errorCode.getCode(), errorMessage);
             }
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.info("unLock: " + Thread.currentThread().getId());
@@ -240,7 +240,7 @@ public class RedissonLockUtil {
      * @param errorCode    错误代码
      * @param errorMessage 错误消息
      */
-    public void redissonDistributedLocks(long time, TimeUnit unit, String lockName, Runnable runnable, ErrorCode errorCode, String errorMessage) {
+    public void redissonDistributedLocks(long time, TimeUnit unit, String lockName, Runnable runnable, ErrorCodeEnum errorCode, String errorMessage) {
         RLock rLock = redissonClient.getLock(lockName);
         try {
             if (rLock.tryLock(time, unit)) {
@@ -249,7 +249,7 @@ public class RedissonLockUtil {
                 throw new BusinessException(errorCode.getCode(), errorMessage);
             }
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, e.getMessage());
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, e.getMessage());
         } finally {
             if (rLock.isHeldByCurrentThread()) {
                 log.info("unLock: " + Thread.currentThread().getId());

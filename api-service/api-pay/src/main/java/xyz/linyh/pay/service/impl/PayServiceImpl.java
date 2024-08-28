@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.pay.eneity.CreditOrder;
@@ -33,17 +33,17 @@ public class PayServiceImpl implements PayService {
 
 //        0. 参数校验
         if (StrUtil.isBlank(orderId)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单号不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单号不能为空");
         }
 
 //        1. 查询订单是否存在，并且订单状态需要为待支付
         CreditOrder creditOrder = creditOrderService.getOne(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getOrderNo, orderId));
         if (creditOrder == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单不存在");
         }
 
         if (!PayConstant.ORDER_STATIC_UNPAID.equals(creditOrder.getStatus())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不是待支付订单");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单不是待支付订单");
         }
 
 //        2. 发送付款请求
@@ -77,7 +77,7 @@ public class PayServiceImpl implements PayService {
             return response.getBody();
         } catch (AlipayApiException e) {
             log.error("支付宝支付失败", e);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "支付宝支付失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "支付宝支付失败");
         }
 
     }

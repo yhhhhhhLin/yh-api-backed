@@ -1,6 +1,6 @@
 package xyz.linyh.ducommon.exception;
 
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 
 /**
  * 自定义异常类
@@ -16,12 +16,12 @@ public class BusinessException extends RuntimeException {
         this.code = code;
     }
 
-    public BusinessException(ErrorCode errorCode) {
+    public BusinessException(ErrorCodeEnum errorCode) {
         super(errorCode.getMessage());
         this.code = errorCode.getCode();
     }
 
-    public BusinessException(ErrorCode errorCode, String message) {
+    public BusinessException(ErrorCodeEnum errorCode, String message) {
         super(message);
         this.code = errorCode.getCode();
     }

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.UserProfileConstant;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
@@ -38,7 +38,7 @@ public class UserProfileController {
     @GetMapping("/user/profile/{account}")
     public BaseResponse getUserProfile(@PathVariable String account, HttpServletRequest request) {
         if (account == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
         User user = userService.getLoginUser(request);
@@ -56,7 +56,7 @@ public class UserProfileController {
     @GetMapping("/user/business-list")
     public BaseResponse getBusinessList(String type, Long userId,Integer page, Integer size) {
         if (type == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
         switch (type) {

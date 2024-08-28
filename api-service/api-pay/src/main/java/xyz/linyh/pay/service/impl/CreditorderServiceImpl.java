@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.dubboapi.service.DubboUserService;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.AlipayConstant;
 import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
@@ -44,16 +44,16 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
     public CreditOrder createCreditOrder(CreateCreditOrderDto dto, Long userId) {
 //        0. 参数校验
         if (dto == null || dto.getProductId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "创建订单需要携带产品id等等参数");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "创建订单需要携带产品id等等参数");
         }
         if (dto.getNum() < 1 || dto.getNum() >= 999) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "创建订单需要携带数量,并且需要合法");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "创建订单需要携带数量,并且需要合法");
         }
 
 //        1. 获取商品判断商品是否存在
         CreditProducts creditProduct = creditProductsService.getById(dto.getProductId());
         if (creditProduct == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "商品不存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "商品不存在");
         }
 
 //        2. 根据请求参数创建订单数据
@@ -72,7 +72,7 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         creditOrder.setUpdateTime(LocalDateTime.now().toEpochSecond(java.time.ZoneOffset.of("+8")));
         boolean saveResult = this.save(creditOrder);
         if (!saveResult) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "创建订单失败");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "创建订单失败");
         }
         return creditOrder;
     }
@@ -82,13 +82,13 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
     public boolean updateOrderStatusAndOpt(Map<String, String> params) {
 //        0. 参数校验
         if (params == null || params.isEmpty()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "更新订单状态需要携带参数");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "更新订单状态需要携带参数");
         }
 
         String orderNum = params.get(AlipayConstant.ALI_PAY_ORDER_NUM);
         CreditOrder creditOrder = this.getOne(Wrappers.<CreditOrder>lambdaQuery().eq(CreditOrder::getOrderNo, orderNum));
         if (creditOrder == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单不存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单不存在");
         }
 
         Long orderTotal = creditOrder.getTotal();
@@ -96,7 +96,7 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
         double value = Double.parseDouble(strPrice);
         int intPrice = (int) value*100;
         if (orderTotal != intPrice) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单金额不一致");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单金额不一致");
         }
 
         if (params.get(AlipayConstant.ALI_PAY_ORDER_RESULT).equals(AlipayConstant.PAY_RESULT_SUCCESS)) {
@@ -106,7 +106,7 @@ public class CreditorderServiceImpl extends ServiceImpl<CreditOrderMapper, Credi
 //            增加用户积分
             boolean addCreditResult = dubboUserService.addUserCredit(creditOrder.getUserId(), Integer.parseInt(creditOrder.getAddPoints().toString()));
             if (!addCreditResult) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "增加用户积分失败");
+                throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "增加用户积分失败");
             }
         } else {
             log.error("支付失败");

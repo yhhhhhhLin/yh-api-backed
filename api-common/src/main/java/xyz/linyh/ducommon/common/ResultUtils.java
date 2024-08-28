@@ -25,7 +25,7 @@ public class ResultUtils {
      * @param errorCode
      * @return
      */
-    public static BaseResponse error(ErrorCode errorCode) {
+    public static BaseResponse error(ErrorCodeEnum errorCode) {
         return new BaseResponse<>(errorCode);
     }
 
@@ -46,7 +46,7 @@ public class ResultUtils {
      * @param errorCode
      * @return
      */
-    public static BaseResponse error(ErrorCode errorCode, String message) {
+    public static BaseResponse error(ErrorCodeEnum errorCode, String message) {
         return new BaseResponse(errorCode.getCode(), null, message);
     }
 }

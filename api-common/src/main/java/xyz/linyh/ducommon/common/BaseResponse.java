@@ -50,7 +50,7 @@ public class BaseResponse<T> implements Serializable {
         return result;
     }
 
-    public BaseResponse(ErrorCode errorCode) {
+    public BaseResponse(ErrorCodeEnum errorCode) {
         this(errorCode.getCode(), null, errorCode.getMessage());
     }
 }

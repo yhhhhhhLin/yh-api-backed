@@ -1,4 +1,4 @@
-package xyz.linyh.ducommon.common;
+package xyz.linyh.model.apiweatherInterface.dtos;
 
 import lombok.Data;
 import xyz.linyh.ducommon.constant.CommonConstant;
@@ -9,7 +9,7 @@ import xyz.linyh.ducommon.constant.CommonConstant;
  *
  */
 @Data
-public class PageRequest {
+public class PageBaseDto {
 
     /**
      * 当前页号

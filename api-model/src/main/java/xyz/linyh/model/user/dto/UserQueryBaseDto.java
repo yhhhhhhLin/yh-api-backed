@@ -2,7 +2,7 @@ package xyz.linyh.model.user.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import xyz.linyh.ducommon.common.PageRequest;
+import xyz.linyh.model.apiweatherInterface.dtos.PageBaseDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +14,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserQueryRequest extends PageRequest implements Serializable {
+public class UserQueryBaseDto extends PageBaseDto implements Serializable {
     /**
      * id
      */

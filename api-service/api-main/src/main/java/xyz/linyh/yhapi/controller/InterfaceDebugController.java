@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.model.interfaceinfo.dto.DebugParamsDto;
 import xyz.linyh.yhapi.service.InterfaceDebugService;
@@ -32,7 +32,7 @@ public class InterfaceDebugController {
     @PostMapping("/invoke")
     public BaseResponse<String> debug(@RequestBody DebugParamsDto dto) {
         if (dto == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
         log.info("debug:{}", dto);
         String result = interfaceDebugService.invokeDebug(dto.getGetRequestParams(), dto.getHeaderRequestParams(), dto.getPreUrl(), dto.getSuffUrl(), dto.getMethod(), dto.getPostValue());

@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 import xyz.linyh.dubboapi.service.DubboInterfaceinfoService;
 import xyz.linyh.dubboapi.service.DubboUserService;
 import xyz.linyh.dubboapi.service.DubboUserinterfaceinfoService;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
@@ -119,7 +119,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
         if (URIAndInterface == null || URIAndInterface.size() <= 0) {
             log.info("无法获取接口（没有此接口或已经下线）");
-            return setErrorResponse(response, ErrorCode.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
+            return setErrorResponse(response, ErrorCodeEnum.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
         }
 
 //        6. 判断请求接口是否存在
@@ -127,7 +127,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
         if (mapInterface == null) {
             log.info("无法获取接口（没有此接口或已经下线）");
-            return setErrorResponse(response, ErrorCode.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
+            return setErrorResponse(response, ErrorCodeEnum.PARAMS_ERROR, "无法获取接口（没有此接口或接口下线)");
         }
 
 
@@ -146,7 +146,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     }
 
 
-    private Mono<Void> setErrorResponse(ServerHttpResponse response, ErrorCode errorCode, String msg) {
+    private Mono<Void> setErrorResponse(ServerHttpResponse response, ErrorCodeEnum errorCode, String msg) {
         return response.writeWith(Mono.just(JSONUtil.toJsonStr(ResultUtils.error(errorCode.getCode(), msg)))
                 .map(str -> response.bufferFactory().wrap(str.getBytes())));
     }
@@ -234,7 +234,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                     contentFlux.subscribe(content -> log.info("错误信息为:{}",content));
 
                 DefaultDataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
-                String json = JSONUtil.toJsonStr(ResultUtils.error(ErrorCode.SYSTEM_ERROR.getCode(), "接口调用服务出错(可能参数错误)"));
+                String json = JSONUtil.toJsonStr(ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR.getCode(), "接口调用服务出错(可能参数错误)"));
                 DataBuffer dataBuffer = dataBufferFactory.wrap(json.getBytes());
                 Flux<DataBuffer> just = Flux.just(dataBuffer);
                 return super.writeWith(just);
@@ -271,7 +271,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     Boolean signAuth(String sign, String timeS, User user) {
 
         if (user == null) {
-            throw new RuntimeException(ErrorCode.NO_AUTH_ERROR.getMessage());
+            throw new RuntimeException(ErrorCodeEnum.NO_AUTH_ERROR.getMessage());
         }
         String secretKey = user.getSecretKey();
 //        通过加密算法加密生成然后和sign比较

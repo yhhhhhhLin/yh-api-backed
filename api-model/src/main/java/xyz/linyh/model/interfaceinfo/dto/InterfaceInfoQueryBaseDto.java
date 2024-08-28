@@ -2,7 +2,7 @@ package xyz.linyh.model.interfaceinfo.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import xyz.linyh.ducommon.common.PageRequest;
+import xyz.linyh.model.apiweatherInterface.dtos.PageBaseDto;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
+public class InterfaceInfoQueryBaseDto extends PageBaseDto implements Serializable {
 
     /**
      * 接口id

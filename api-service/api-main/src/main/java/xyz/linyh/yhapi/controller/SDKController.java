@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.sdkfile.entitys.Sdkfile;
@@ -56,7 +56,7 @@ public class SDKController {
 //            获取用户的id
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
-            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 
         String fileType = file.getContentType();
@@ -70,7 +70,7 @@ public class SDKController {
         try {
             inputStream = file.getInputStream();
         } catch (IOException e) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "获取文件输入流失败");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "获取文件输入流失败");
         }
 
 //            给文件生成一个不会重复的文件名，保存到磁盘中
@@ -110,7 +110,7 @@ public class SDKController {
             return ResultUtils.success(bytes);
 
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "获取文件输出流失败");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "获取文件输出流失败");
         }
     }
 

@@ -10,7 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.SdkFileConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.sdkfile.entitys.Sdkfile;
@@ -89,12 +89,12 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
     @Override
     public Resource getSdkById(String name) {
         if (name == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "filename不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "filename不能为空");
         }
 
         Sdkfile one = this.getOne(Wrappers.<Sdkfile>lambdaQuery().eq(Sdkfile::getName, name));
         if (one == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "找不到这个文件名的sdk");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "找不到这个文件名的sdk");
         }
 
         Path filePath = Paths.get(getFilPrePath()).resolve(one.getName());
@@ -116,7 +116,7 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
         String saveFileName = IdUtil.randomUUID();
         String pathPre = getFilPrePath();
         if (originalFilename == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件名不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "文件名不能为空");
         }
 //        获取文件名后缀
         String[] split = originalFilename.split("\\.");
@@ -166,7 +166,7 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "保存文件失败");
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, "保存文件失败");
         }
 
         return true;
@@ -184,7 +184,7 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
 //        1. 查询数据获取文件保存到磁盘的位置
         Sdkfile sdkfile = this.getOne(Wrappers.<Sdkfile>lambdaQuery().eq(Sdkfile::getName, name));
         if (sdkfile == null && sdkfile.getFilePath() == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "找不到对应sdk文件");
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR, "找不到对应sdk文件");
         }
 
 //        找到磁盘对应地址的文件
@@ -192,7 +192,7 @@ public class SdkfileServiceImpl extends ServiceImpl<SdkfileMapper, Sdkfile>
 //        判断对应位置是否有对应文件
         File file = new File(filePath);
         if (!file.exists()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "磁盘中没有对应文件");
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR, "磁盘中没有对应文件");
         }
 
 //        对应文件下载次数加1

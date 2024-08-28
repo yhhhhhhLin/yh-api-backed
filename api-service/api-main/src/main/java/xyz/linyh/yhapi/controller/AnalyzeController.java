@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAnalyzeDto;
 import xyz.linyh.model.interfaceinfo.vo.InterfaceInfoVO;
@@ -39,7 +39,7 @@ public class AnalyzeController {
     @GetMapping("/all")
     public BaseResponse analyzeAllInterfaceInfo(InterfaceInfoAnalyzeDto dto) {
         if (dto == null || dto.getTotal() == null || dto.getCurrent() == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "需要输入一次展示多少个数据");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "需要输入一次展示多少个数据");
         }
 
         List<InterfaceInfoVO> interfaceInfoVOS = userinterfaceinfoService.analyzeAllInterfaceInfo(dto.getCurrent(), dto.getTotal(), null);
@@ -57,7 +57,7 @@ public class AnalyzeController {
     @GetMapping("/self")
     public BaseResponse<List<InterfaceInfoVO>> analyzeSelfInterfaceInfo(InterfaceInfoAnalyzeDto dto, HttpServletRequest request) {
         if (dto == null || dto.getTotal() == null || dto.getCurrent() == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "需要输入一次展示多少个数据");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "需要输入一次展示多少个数据");
         }
 
         User user = userService.getLoginUser(request);

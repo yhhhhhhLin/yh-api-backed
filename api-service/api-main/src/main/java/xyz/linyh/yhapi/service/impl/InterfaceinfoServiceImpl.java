@@ -13,15 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
-import xyz.linyh.ducommon.constant.InterfaceRedisConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryRequest;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryBaseDto;
 import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -29,13 +28,10 @@ import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
-import xyz.linyh.yhapi.service.RedisService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static xyz.linyh.ducommon.constant.InterfaceRedisConstant.*;
 
 /**
  * @author lin
@@ -60,7 +56,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     public void validInterfaceInfoParams(Interfaceinfo interfaceInfo, boolean add) {
 
         if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         String name = interfaceInfo.getName();
@@ -77,17 +73,17 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
 //        在uri里面不能包含空格
         if (interfaceInfo.getUri() != null && interfaceInfo.getUri().contains(" ")) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能包含空格");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口地址不能包含空格");
         }
 
         // 创建时，所有参数必须非空
         if (add) {
             if (StringUtils.isAnyBlank(name, method, description, uri, requestHeader, responseHeader)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+                throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
             }
         }
         if (StringUtils.isNotBlank(name) && name.length() > 255) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "内容过长");
         }
 
     }
@@ -96,7 +92,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     @Override
     public Interfaceinfo getInterfaceInfoByURI(String interfaceURI, String method) {
         if (interfaceURI == null || method == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         Interfaceinfo interfaceinfo = this.getOne(Wrappers.<Interfaceinfo>lambdaQuery()
                 .eq(Interfaceinfo::getUri, interfaceURI)
@@ -161,7 +157,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     @Override
     public String invokeInterface(User user, Interfaceinfo interfaceInfo, InterfaceInfoInvokeRequest interfaceInfoInvokeRequest) {
         if (user == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口执行者id不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口执行者id不能为空");
         }
         apiClient.setAccessKey(user.getAccessKey());
         apiClient.setSecretKey(user.getSecretKey());
@@ -220,14 +216,14 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 //        判断接口uri不能重复
         List<Interfaceinfo> dbInterfaceInfos = this.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getUri, interfaceInfo.getUri()));
         if (dbInterfaceInfos != null && dbInterfaceInfos.size() > 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能重复");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口地址不能重复");
         }
         return this.save(interfaceInfo);
     }
 
     @Override
     @Cacheable(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,key = "#root.args[0].current+'_'+#root.args[0].pageSize+'_'+T(java.util.Objects).hash(#root.args[0])")
-    public Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+    public Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         String sortField = interfaceInfoQueryRequest.getSortField();
@@ -235,7 +231,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
         // 限制爬虫
         if (size > 50) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 //        return lambdaQuery()
 //                .like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getName()), Interfaceinfo::getName, interfaceInfoQueryRequest.getName())
@@ -267,7 +263,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
     public boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo) {
         if (interfaceInfo == null || interfaceInfo.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口数据或id不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口数据或id不能为空");
         }
         validInterfaceInfo(interfaceInfo.getId(), user);
 //        判断数据库中是否有重复的uri
@@ -276,7 +272,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                         .eq(Interfaceinfo::getUri, interfaceInfo.getUri())
                         .ne(Interfaceinfo::getId, interfaceInfo.getId()));
         if (dbInterfaceInfo != null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口地址不能重复");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口地址不能重复");
         }
         return this.updateById(interfaceInfo);
     }
@@ -290,17 +286,17 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     @Override
     public Interfaceinfo validInterfaceInfo(Long interfaceInfoId, User user) {
         if (interfaceInfoId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口id不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口id不能为空");
         }
 //        判断接口是否存在
         Interfaceinfo oldInterfaceInfo = this.getById(interfaceInfoId);
         if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "接口不存在");
+            throw new BusinessException(ErrorCodeEnum.NOT_FOUND_ERROR, "接口不存在");
         }
 
         //判断用户是否有权限修改这个接口 仅本人或管理员可修改
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !"admin".equals(user.getUserRole())) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NO_AUTH_ERROR);
         }
         return oldInterfaceInfo;
     }
@@ -313,7 +309,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         Interfaceinfo interfaceinfo = this.validInterfaceInfo(dto.getInterfaceId(), user);
 
         if (!InterfaceInfoConstant.STATIC_NOT_USE.equals(interfaceinfo.getStatus()) && !InterfaceInfoConstant.STATIC_USE.equals(interfaceinfo.getStatus())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "只能修改上下线的状态");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "只能修改上下线的状态");
         }
 
         boolean result = lambdaUpdate().eq(Interfaceinfo::getId, dto.getInterfaceId())

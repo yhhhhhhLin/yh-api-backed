@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.PayConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
@@ -49,10 +49,10 @@ public class OrderController {
                                      @RequestParam("orderType") String orderType,
                                      HttpServletRequest request) {
         if (StrUtil.isEmpty(orderType)) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
         if (current <= 0 || pageSize <= 0) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
         Long userId = UserUtils.getLoginUserId(request);
@@ -65,7 +65,7 @@ public class OrderController {
                 List<Object> objects = null;
                 return ResultUtils.success(objects);
             default:
-                return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+                return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
 
@@ -82,7 +82,7 @@ public class OrderController {
                                      @RequestParam("orderType") String orderType,
                                      HttpServletRequest request) {
         if (StrUtil.isEmpty(orderType) || StrUtil.isEmpty(id)) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
 
         Long userId = UserUtils.getLoginUserId(request);
@@ -104,7 +104,7 @@ public class OrderController {
     public BaseResponse deleteOrderById(@RequestParam("id") String id,
                                         HttpServletRequest request) {
         if (StrUtil.isEmpty(id)) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "参数错误");
         }
         Long userId = UserUtils.getLoginUserId(request);
         creditOrderService.deleteCreditOrderByUserIdAndId(id,userId);
@@ -123,7 +123,7 @@ public class OrderController {
 
         Long userId = UserUtils.getLoginUserId(request);
         if (userId <= 0L) {
-            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "用户未登录,获取不到用户id");
+            return ResultUtils.error(ErrorCodeEnum.NOT_LOGIN_ERROR, "用户未登录,获取不到用户id");
         }
 
         CreditOrder creditOrder = creditOrderService.createCreditOrder(dto, userId);
@@ -139,7 +139,7 @@ public class OrderController {
     @GetMapping("/credit/pay")
     public String payOrder(@RequestParam("orderNum") String orderNum, String type) {
         if (StrUtil.isBlank(orderNum) || StrUtil.isBlank(type)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单号和支付方式不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "订单号和支付方式不能为空");
         }
 
         switch (type) {
@@ -156,7 +156,7 @@ public class OrderController {
 //        1. 进行参数校验判断是否合法
         boolean checkResult = AlipaySignature.rsaCheckV1(params, AliPayClientConfig.static_alipay_public_key, AliPayClientConfig.static_charset, AliPayClientConfig.static_sign_type);
         if (!checkResult) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "验签失败");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "验签失败");
         }
         System.out.println(params);
         creditOrderService.updateOrderStatusAndOpt(params);

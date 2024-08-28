@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.model.pay.dto.CreditProductDto;
@@ -59,7 +59,7 @@ public class CreditProductsController {
     @CacheEvict(cacheNames = RedisConstant.CREDIT_PRODUCT_CACHE_NAMES,allEntries = true)
     public BaseResponse delProduct(@PathVariable String productId) {
         if (productId == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         boolean result = creditProductsService.removeById(productId);
@@ -67,7 +67,7 @@ public class CreditProductsController {
         if (result) {
             return ResultUtils.success("true");
         } else {
-            return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR);
         }
 
     }
@@ -83,7 +83,7 @@ public class CreditProductsController {
     public BaseResponse updateProduct(@RequestBody UpdateCreditProductDto dto) {
 
         if (dto == null || dto.getCreditId() == null || dto.getIntegral() == null || dto.getDescription() == null || dto.getPrice() == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         CreditProducts creditProducts = new CreditProducts();
@@ -98,7 +98,7 @@ public class CreditProductsController {
         if (result) {
             return ResultUtils.success("true");
         } else {
-            return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
+            return ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR);
         }
 
     }

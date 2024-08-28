@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import xyz.linyh.audit.service.ApiinterfaceauditService;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.AuditConstant;
 import xyz.linyh.model.apiaudit.dto.AuditStatusDto;
@@ -39,7 +39,7 @@ public class AuditInterfaceController {
     @PostMapping
     public BaseResponse addAudit(@RequestBody ApiInterfaceAudit audit, HttpServletRequest request) {
         if (audit == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "audit参数不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "audit参数不能为空");
         }
 
         Long userId = getLoginUserId(request);
@@ -63,7 +63,7 @@ public class AuditInterfaceController {
     public BaseResponse<Page<ApiInterfaceAudit>> listAudit(ListAuditDto dto, HttpServletRequest request) {
 //        参数校验
         if (dto == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "dto参数不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "dto参数不能为空");
         }
         dto.check();
 
@@ -81,7 +81,7 @@ public class AuditInterfaceController {
     @PutMapping
     public BaseResponse<Object> updateAudit(@RequestBody UpdateInterfaceAuditDto dto, HttpServletRequest request) {
         if (dto == null || dto.getId() == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "请求参数或id不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "请求参数或id不能为空");
         }
 
         ApiInterfaceAudit apiInterfaceAudit = new ApiInterfaceAudit();
@@ -125,7 +125,7 @@ public class AuditInterfaceController {
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Boolean> auditInterface(@RequestBody AuditStatusDto dto,HttpServletRequest request) {
         if (dto == null || dto.getStatus() == null || dto.getAuditId() == null) {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status或auditId参数不能为空");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "status或auditId参数不能为空");
         }
 
         Long userId = getLoginUserId(request);
@@ -135,7 +135,7 @@ public class AuditInterfaceController {
         } else if (AuditConstant.AUDIT_STATUS_PROPLE_FAIL.equals(dto.getStatus())) {
             apiinterfaceauditService.rejectInterfaceAudit(dto.getAuditId(), dto.getStatus(), dto.getDescription(),userId);
         } else {
-            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "status参数错误");
+            return ResultUtils.error(ErrorCodeEnum.PARAMS_ERROR, "status参数错误");
         }
 
         return ResultUtils.success(true);

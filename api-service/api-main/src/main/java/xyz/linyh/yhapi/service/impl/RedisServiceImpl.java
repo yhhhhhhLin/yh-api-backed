@@ -5,7 +5,7 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.yhapi.service.RedisService;
@@ -126,7 +126,7 @@ public class RedisServiceImpl implements RedisService {
             return interfaceUserAddCount;
         } catch (Exception e) {
             System.out.println(e);
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "持久化用户调用次数失败查询失败");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "持久化用户调用次数失败查询失败");
         }
     }
 

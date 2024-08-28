@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import xyz.linyh.ducommon.annotation.AuthCheck;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.DeleteRequest;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.utils.JwtUtils;
@@ -24,8 +24,6 @@ import xyz.linyh.model.user.vo.UserVO;
 import xyz.linyh.yhapi.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -53,7 +51,7 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
@@ -76,12 +74,12 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = userService.userLogin(userAccount, userPassword, request);
         String token = JwtUtils.generateToken(String.valueOf(user.getId()));
@@ -100,7 +98,7 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
         if (request == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         boolean result = userService.userLogout(request);
         return ResultUtils.success(result);
@@ -123,7 +121,7 @@ public class UserController {
     @GetMapping(value = "/get/login/avatar", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     public byte[] getLoginUserAvatar(Long userId) {
         if (userId == null || userId <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         User user = userService.getLoginUser(userId);
@@ -137,7 +135,7 @@ public class UserController {
             inputStream.read(bytes, 0, inputStream.available());
         } catch (IOException e) {
             log.error("读取文件失败", e);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "文件打开错误");
+            throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "文件打开错误");
         }
         return bytes;
 
@@ -158,13 +156,13 @@ public class UserController {
     @PostMapping("/add")
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest, HttpServletRequest request) {
         if (userAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = new User();
         BeanUtils.copyProperties(userAddRequest, user);
         boolean result = userService.save(user);
         if (!result) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR);
         }
         return ResultUtils.success(user.getId());
     }
@@ -179,7 +177,7 @@ public class UserController {
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         Boolean b = userService.removeUserById(deleteRequest.getId());
 
@@ -197,7 +195,7 @@ public class UserController {
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = new User();
         BeanUtils.copyProperties(userUpdateRequest, user);
@@ -212,7 +210,7 @@ public class UserController {
     @PostMapping("/userupdate")
     public BaseResponse<Boolean> updateUserAny(@RequestBody AnyUserUpdateRequest anyUserUpdateRequest, HttpServletRequest request) {
         if (anyUserUpdateRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = userService.getLoginUser(request);
         Boolean result = userService.updateUserBySelf(user.getId(), anyUserUpdateRequest);
@@ -229,7 +227,7 @@ public class UserController {
     @PostMapping("/update/avatar")
     public BaseResponse updateAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null || StringUtils.isEmpty(file.getOriginalFilename())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         User user = userService.getLoginUser(request);
@@ -251,7 +249,7 @@ public class UserController {
     @GetMapping("/get")
     public BaseResponse<UserVO> getUserById(int id, HttpServletRequest request) {
         if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = userService.getById(id);
         UserVO userVO = new UserVO();
@@ -277,7 +275,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/list")
-    public BaseResponse<List<UserVO>> listUser(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+    public BaseResponse<List<UserVO>> listUser(UserQueryBaseDto userQueryRequest, HttpServletRequest request) {
         User userQuery = new User();
         if (userQueryRequest != null) {
             BeanUtils.copyProperties(userQueryRequest, userQuery);
@@ -300,7 +298,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<UserVO>> listUserByPage(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+    public BaseResponse<Page<UserVO>> listUserByPage(UserQueryBaseDto userQueryRequest, HttpServletRequest request) {
         long current = 1;
         long size = 10;
         User userQuery = new User();

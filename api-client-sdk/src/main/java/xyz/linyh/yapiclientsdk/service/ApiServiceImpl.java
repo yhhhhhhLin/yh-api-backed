@@ -10,7 +10,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yapiclientsdk.exception.ClientErrorCode;
 import xyz.linyh.yapiclientsdk.exception.ClientException;
@@ -109,7 +109,7 @@ public class ApiServiceImpl implements ApiService{
 
         try {
 
-            if(baseResponse.getCode()== ErrorCode.SUCCESS.getCode()){
+            if(baseResponse.getCode()== ErrorCodeEnum.SUCCESS.getCode()){
                 return JSONUtil.toJsonStr(baseResponse.getData());
             }else{
                 return baseResponse.getMessage();

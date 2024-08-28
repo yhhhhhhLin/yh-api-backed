@@ -1,6 +1,5 @@
 package xyz.linyh.yhapi.service.impl;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -14,8 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import xyz.linyh.ducommon.common.ErrorCode;
-import xyz.linyh.ducommon.constant.RedisConstant;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.constant.UserConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.interfaceinfo.InterfaceAllCountAndCallCount;
@@ -67,17 +65,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "用户账号过短");
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "用户密码过短");
         }
         // 密码和校验密码相同
         if (!userPassword.equals(checkPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "两次输入的密码不一致");
         }
         synchronized (userAccount.intern()) {
             // 账户不能重复
@@ -85,7 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             queryWrapper.eq("userAccount", userAccount);
             long count = userMapper.selectCount(queryWrapper);
             if (count > 0) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
+                throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "账号重复");
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -96,7 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             user.setUserName("平台用户");
             boolean saveResult = this.save(user);
             if (!saveResult) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
+                throw new BusinessException(ErrorCodeEnum.SYSTEM_ERROR, "注册失败，数据库错误");
             }
 //            重置密钥
 
@@ -108,13 +106,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "账号错误");
         }
         if (userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "密码错误");
         }
         // 2. 加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -126,7 +124,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 用户不存在
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态 改为生成token返回给前端
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
@@ -144,12 +142,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         String userId = request.getHeader(USER_Id);
         if (userId == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 //        查询数据库获取对应用户
         User user = getUserByToken(USER_ID_PREFIX + userId);
         if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 
         return user;
@@ -164,7 +162,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getLoginUser(Long userId) {
         if (userId == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
 
         String json = redisService.get(USER_ID_PREFIX + userId);
@@ -193,7 +191,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public boolean userLogout(HttpServletRequest request) {
         if (request.getSession().getAttribute(USER_LOGIN_STATE) == null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR, "未登录");
         }
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
@@ -213,7 +211,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getUserByAk(String accessKey) {
         if (accessKey == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
         User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccessKey, accessKey));
         return user;
@@ -229,7 +227,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         log.info("------------------id为:{}用户更新用户缓存--------------",userId);
         User user = this.getById(userId);
         if (user == null || userId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         //        保存到redis中
@@ -245,13 +243,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getUserByToken(String token) {
         if (token == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         String json = redisService.get(token);
         User user = JSONUtil.toBean(json, User.class);
         if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
         return user;
     }
@@ -290,7 +288,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public Boolean updateUserBySelf(Long userId, AnyUserUpdateRequest anyUserUpdateRequest) {
         if (userId == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            throw new BusinessException(ErrorCodeEnum.NOT_LOGIN_ERROR);
         }
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(User::getId, userId)
@@ -316,7 +314,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public Boolean updateUserAkSk(Long id) {
         if (id == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
 
         Map map = null;
@@ -344,7 +342,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         User profileUserInfo = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserAccount, account));
         if (profileUserInfo == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "用户不存在");
         }
 
         if (profileUserInfo.getId().equals(user.getId())) {
@@ -416,7 +414,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public boolean addUserCredit(Long userId, Integer addCredit) {
         if(userId == null || addCredit == null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户id和要增加的积分不能为空");
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR,"用户id和要增加的积分不能为空");
         }
         User user = JSONUtil.toBean(redisService.get(USER_ID_PREFIX + userId), User.class);
         Integer oldCredits = user.getCredits();

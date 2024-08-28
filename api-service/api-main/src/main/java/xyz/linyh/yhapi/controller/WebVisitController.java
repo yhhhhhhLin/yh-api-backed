@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.linyh.ducommon.common.BaseResponse;
-import xyz.linyh.ducommon.common.ErrorCode;
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.model.visit.vo.VisitsResultVO;
@@ -64,7 +64,7 @@ public class WebVisitController {
             }
         });
         if (result == null) {
-            return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "获取数据失败");
+            return ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR, "获取数据失败");
         }
 
 //        将数据进行包装

@@ -5,7 +5,7 @@ package xyz.linyh.ducommon.common;
  *
  *
  */
-public enum ErrorCode {
+public enum ErrorCodeEnum {
 
     SUCCESS(0, "ok"),
     PARAMS_ERROR(40000, "请求参数错误"),
@@ -27,7 +27,7 @@ public enum ErrorCode {
      */
     private final String message;
 
-    ErrorCode(int code, String message) {
+    ErrorCodeEnum(int code, String message) {
         this.code = code;
         this.message = message;
     }

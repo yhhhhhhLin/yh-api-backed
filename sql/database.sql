@@ -44,6 +44,25 @@ create table yhapi.interfaceInfo
     comment '接口信息表';
 
 
+create table yhapi.dscInfo
+(
+    schemaName varchar(255)                       null comment '数据库名称',
+    dscType    tinyint                            null comment '数据库类型',
+    url        varchar(255)                       null comment '连接地址',
+    username   varchar(255)                       null comment '用户名',
+    password   varchar(255)                       null comment '密码',
+    userId     int                                null comment '用户id',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP null comment '更新时间',
+    isDelete   tinyint                            null comment '是否删除',
+    status     tinyint                            null comment '状态（0不可用，1可用)',
+    id         int auto_increment
+        primary key
+)
+    comment '数据库连接表';
+
+
+
 
 create table yhapi.userInterfaceinfo
 (
