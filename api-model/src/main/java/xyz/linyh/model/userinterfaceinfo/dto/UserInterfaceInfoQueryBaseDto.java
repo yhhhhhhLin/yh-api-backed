@@ -3,7 +3,7 @@ package xyz.linyh.model.userinterfaceinfo.dto;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import xyz.linyh.model.apiweatherInterface.dtos.PageBaseDto;
+import xyz.linyh.model.base.dtos.PageBaseDto;
 
 import java.io.Serializable;
 

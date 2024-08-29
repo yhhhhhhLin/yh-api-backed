@@ -8,6 +8,8 @@ import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 
+import java.util.List;
+
 /**
  * @author lin
  * @description 针对表【interfaceinfo(接口信息表)】的数据库操作Service
@@ -94,6 +96,8 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
      * @return
      */
     Interfaceinfo saveOrUpdateInterface(Interfaceinfo interfaceinfo);
+
+    List<Interfaceinfo> listByDscId(Long dscId);
 
 
     /**

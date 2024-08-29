@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class AddOrUpdateDscInfoDto{
 
+    private Long id;
+
     /**
      * 数据源类型
      */

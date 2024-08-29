@@ -42,6 +42,15 @@ public class Interfaceinfo implements Serializable {
     private String getRequestParams;
 
     /**
+     * 接口类型 -->interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
+    /**
+     * 数据源id 没有的话为-1
+     */
+    private Integer dscId;
+    /**
      * 接口描述
      */
     private String description;

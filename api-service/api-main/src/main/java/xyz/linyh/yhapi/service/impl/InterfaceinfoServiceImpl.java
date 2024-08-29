@@ -330,6 +330,13 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         return interfaceinfo;
     }
 
+    @Override
+    public List<Interfaceinfo> listByDscId(Long dscId) {
+        return lambdaQuery()
+                .eq(Interfaceinfo::getDscId, dscId)
+                .list();
+    }
+
 
     private Boolean haveParamsOrBody(List<GRequestParamsDto> getRequestParams, String requestParams) {
 

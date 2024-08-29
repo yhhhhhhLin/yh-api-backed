@@ -1,4 +1,4 @@
-package xyz.linyh.model.apiweatherInterface.dtos;
+package xyz.linyh.model.base.dtos;
 
 import lombok.Data;
 import xyz.linyh.ducommon.constant.CommonConstant;

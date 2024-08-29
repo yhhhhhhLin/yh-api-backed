@@ -2,7 +2,7 @@ package xyz.linyh.model.user.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import xyz.linyh.model.apiweatherInterface.dtos.PageBaseDto;
+import xyz.linyh.model.base.dtos.PageBaseDto;
 
 import java.io.Serializable;
 import java.util.Date;
