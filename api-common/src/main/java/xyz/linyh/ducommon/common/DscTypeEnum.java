@@ -26,4 +26,8 @@ public enum DscTypeEnum {
     public String getDscTypeName() {
         return dscTypeName;
     }
+
+    public static DscTypeEnum getDscTypeEnum(Integer code) {
+        return DscTypeEnum.values()[code];
+    }
 }
