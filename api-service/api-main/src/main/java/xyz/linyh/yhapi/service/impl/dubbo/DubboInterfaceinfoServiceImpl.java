@@ -77,4 +77,5 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
         interfaceinfoService.updateGatewayCache();
         return true;
     }
+    
 }

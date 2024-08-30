@@ -5,9 +5,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.model.base.dtos.IdDto;
 import xyz.linyh.model.datasource.dtos.AddOrUpdateDscInfoDto;
+import xyz.linyh.model.datasource.dtos.ListColumnsDto;
 import xyz.linyh.model.datasource.dtos.ListDscInfoDto;
 import xyz.linyh.model.datasource.entitys.DscInfo;
+import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 import xyz.linyh.model.datasource.vos.DscInfoVo;
+
+import java.util.List;
 
 /**
  * @author linzz
@@ -31,4 +35,11 @@ public interface DscInfoService extends IService<DscInfo> {
     BaseResponse<DscInfoVo> getDscInfoById(IdDto dto);
 
     BaseResponse<Page<DscInfoVo>> listPage(ListDscInfoDto dto);
+
+    /**
+     * 获取对应表的所有字段
+     * @param dto
+     * @return
+     */
+    List<ColumnBriefVO> listColumns(ListColumnsDto dto);
 }

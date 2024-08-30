@@ -2,6 +2,8 @@ package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.model.base.dtos.CheckNameDto;
+import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAddRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryBaseDto;
 import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
@@ -55,10 +57,10 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
 
     /**
      * 添加接口信息
-     * @param interfaceInfo
+     * @param interfaceInfoAddRequest
      * @return
      */
-    boolean addInterfaceInfo(Interfaceinfo interfaceInfo);
+    Long addInterfaceInfo(InterfaceInfoAddRequest interfaceInfoAddRequest);
 
     /**
      * 分页查询所有接口信息
@@ -98,6 +100,8 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
     Interfaceinfo saveOrUpdateInterface(Interfaceinfo interfaceinfo);
 
     List<Interfaceinfo> listByDscId(Long dscId);
+
+    Boolean checkName(CheckNameDto dto);
 
 
     /**

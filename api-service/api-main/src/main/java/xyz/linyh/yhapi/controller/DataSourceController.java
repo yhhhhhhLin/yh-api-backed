@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.UserConstant;
 import xyz.linyh.model.base.dtos.IdDto;
 import xyz.linyh.model.datasource.dtos.AddOrUpdateDscInfoDto;
+import xyz.linyh.model.datasource.dtos.ListColumnsDto;
 import xyz.linyh.model.datasource.dtos.ListDscInfoDto;
+import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 import xyz.linyh.model.datasource.vos.DscInfoVo;
 import xyz.linyh.yhapi.service.DscInfoService;
 
@@ -48,5 +51,12 @@ public class DataSourceController {
     @GetMapping("/list")
     public BaseResponse<Page<DscInfoVo>> listDsc(@RequestBody ListDscInfoDto dto) {
         return dscInfoService.listPage(dto);
+    }
+
+    @GetMapping("/columns")
+    public BaseResponse listColumns(@RequestBody ListColumnsDto dto) {
+        ColumnBriefVO columnBriefVO = dscInfoService.listColumns(dto);
+        return ResultUtils.success(columnBriefVO);
+
     }
 }

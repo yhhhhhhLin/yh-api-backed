@@ -1,6 +1,7 @@
 package xyz.linyh.model.interfaceinfo.dto;
 
 import lombok.Data;
+import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
 
 import java.io.Serializable;
 
@@ -16,7 +17,6 @@ public class InterfaceInfoAddRequest implements Serializable {
      * 接口名称
      */
     private String name;
-
 
     /**
      * 请求方法
@@ -63,6 +63,19 @@ public class InterfaceInfoAddRequest implements Serializable {
      * 响应信息
      */
     private String responseHeader;
+
+    /**
+     * 如果是数据源api 数据源api信息
+     */
+    private AddDataSourceApiDto dataSourceApiParams;
+
+    /**
+     * 接口类型-->InterfaceTypeEnum
+     */
+    private Integer interfaceType = 1;
+
+    private Long userId;
+
 
 
     private static final long serialVersionUID = 1L;

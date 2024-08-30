@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.BaseResponse;
+import xyz.linyh.ducommon.common.DscTypeEnum;
 import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.base.dtos.IdDto;
 import xyz.linyh.model.datasource.dtos.AddOrUpdateDscInfoDto;
+import xyz.linyh.model.datasource.dtos.ListColumnsDto;
 import xyz.linyh.model.datasource.dtos.ListDscInfoDto;
 import xyz.linyh.model.datasource.entitys.DscInfo;
+import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 import xyz.linyh.model.datasource.vos.DscInfoVo;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.utils.PageResultUtil;
@@ -91,6 +94,19 @@ public class DscinfoServiceImpl extends ServiceImpl<DscInfoMapper, DscInfo>
         });
 
         return ResultUtils.success(result);
+    }
+
+    @Override
+    public List<ColumnBriefVO> listColumns(ListColumnsDto dto) {
+        DscInfo dscInfo = lambdaQuery().eq(DscInfo::getId, dto.getDscId())
+                .one();
+        if(dscInfo == null){
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "数据源id错误");
+        }
+
+        DataSourceClient client = DataSourceClientFactory.getClient(dscInfo.getDscType(), dscInfo.getUrl(), dscInfo.getUsername(), dscInfo.getPassword());
+        List<ColumnBriefVO> columnBriefVOS = client.listColumns(dto.getSchemaName(), dto.getTableName());
+        return columnBriefVOS;
     }
 
     private String getSchemaUrl(String url) {

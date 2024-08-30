@@ -9,24 +9,34 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.ErrorCodeEnum;
+import xyz.linyh.ducommon.common.InterfaceTypeEnum;
 import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
-import xyz.linyh.model.interfaceinfo.dto.GRequestParamsDto;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
-import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoQueryBaseDto;
-import xyz.linyh.model.interfaceinfo.dto.UpdateStatusDto;
+import xyz.linyh.ducommon.utils.TimeUtils;
+import xyz.linyh.model.base.dtos.CheckNameDto;
+import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
+import xyz.linyh.model.datasource.entitys.DscInfo;
+import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
+import xyz.linyh.yhapi.datasource.DataSourceClient;
+import xyz.linyh.yhapi.factory.DataSourceClientFactory;
+import xyz.linyh.yhapi.factory.GenSqlFactory;
+import xyz.linyh.yhapi.helper.GenSql;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
+import xyz.linyh.yhapi.service.DscInfoService;
+import xyz.linyh.yhapi.service.InterfaceInfoDispatchInfoService;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 
 import java.util.HashMap;
@@ -45,6 +55,12 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Autowired
     private InterfaceinfoMapper interfaceinfoMapper;
+
+    @Autowired
+    private InterfaceInfoDispatchInfoService interfaceInfoDispatchInfoService;
+
+    @Autowired
+    private DscInfoService dscInfoService;
 
     /**
      * 对接口信息进行校验
@@ -175,7 +191,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 response = apiClient.request(interfaceInfo.getUri(), interfaceInfo.getMethod());
             } catch (Exception e) {
 
-                log.error("发送请求失败,response为:{},{}",e.getMessage(),e);
+                log.error("发送请求失败,response为:{},{}", e.getMessage(), e);
             }
         } else {
 
@@ -200,7 +216,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 response = apiClient.request(interfaceInfo.getUri(), interfaceParams);
 
             } catch (Exception e) {
-                log.error("发送请求失败,{}",e.getMessage(),e);
+                log.error("发送请求失败,{}", e.getMessage(), e);
             }
         }
 
@@ -211,18 +227,51 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
-    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
-    public boolean addInterfaceInfo(Interfaceinfo interfaceInfo) {
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
+    @Transactional
+    public Long addInterfaceInfo(InterfaceInfoAddRequest interfaceInfoAddRequest) {
+        Interfaceinfo interfaceInfo = new Interfaceinfo();
+        interfaceInfo.setStatus(1);
+        BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
+        // 校验参数是否正确
+        this.validInterfaceInfoParams(interfaceInfo, true);
+
 //        判断接口uri不能重复
         List<Interfaceinfo> dbInterfaceInfos = this.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getUri, interfaceInfo.getUri()));
-        if (dbInterfaceInfos != null && dbInterfaceInfos.size() > 0) {
+        if (dbInterfaceInfos != null && !dbInterfaceInfos.isEmpty()) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口地址不能重复");
         }
-        return this.save(interfaceInfo);
+
+        this.save(interfaceInfo);
+
+//        如果是数据源api，需要创建对应查询数据源的sql语句和调度信息
+        Integer interfaceType = interfaceInfoAddRequest.getInterfaceType();
+        if (interfaceType.equals(InterfaceTypeEnum.DATABASE_INTERFACE.getCode())) {
+            AddDataSourceApiDto dataSourceApiParams = interfaceInfoAddRequest.getDataSourceApiParams();
+            Long dscId = dataSourceApiParams.getDscId();
+            DscInfo dscInfo = dscInfoService.getById(dscId);
+
+//          创建调度信息
+            interfaceInfoDispatchInfoService.createDispatchInfo(interfaceInfo.getId(), dataSourceApiParams.getDispatchInfo());
+
+//            判断调度时间是否在当前时间之前，如果在当前时间之前，那么直接创建今天的数据
+            String specTime = dataSourceApiParams.getDispatchInfo().getSpecTime();
+            if (TimeUtils.isTimeBeforeNow(specTime, "HH:mm")) {
+                DataSourceClient client = DataSourceClientFactory.getClient(dscInfo.getDscType(), dscInfo.getUrl(), dscInfo.getUsername(), dscInfo.getPassword());
+                GenSql gensql = GenSqlFactory.getGensql(dscInfo.getDscType());
+                String sql = gensql.createSql(dscInfo, dataSourceApiParams.getSearchColumns());
+                client.executeSql(dscInfo, sql);
+            }
+        }
+
+//        刷新网关的缓存接口数据
+        updateGatewayCache();
+
+        return interfaceInfo.getId();
     }
 
     @Override
-    @Cacheable(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,key = "#root.args[0].current+'_'+#root.args[0].pageSize+'_'+T(java.util.Objects).hash(#root.args[0])")
+    @Cacheable(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, key = "#root.args[0].current+'_'+#root.args[0].pageSize+'_'+T(java.util.Objects).hash(#root.args[0])")
     public Page<Interfaceinfo> selectInterfaceInfoByPage(InterfaceInfoQueryBaseDto interfaceInfoQueryRequest) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
@@ -258,9 +307,8 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
 
-
     @Override
-    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
     public boolean updateInterfaceInfo(User user, Interfaceinfo interfaceInfo) {
         if (interfaceInfo == null || interfaceInfo.getId() == null) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口数据或id不能为空");
@@ -302,7 +350,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     }
 
     @Override
-    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
     public boolean updateInterfaceInfoStatus(UpdateStatusDto dto, User user) {
 
 //        判断这个接口只能是管理员或接口拥有着可以修改
@@ -324,7 +372,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
 
     @Override
-    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES,allEntries = true)
+    @CacheEvict(cacheNames = RedisConstant.INTERFACE_PAGE_CACHE_NAMES, allEntries = true)
     public Interfaceinfo saveOrUpdateInterface(Interfaceinfo interfaceinfo) {
         boolean result = this.saveOrUpdate(interfaceinfo);
         return interfaceinfo;
@@ -335,6 +383,29 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         return lambdaQuery()
                 .eq(Interfaceinfo::getDscId, dscId)
                 .list();
+    }
+
+    /**
+     * 校验uri是否重复 返回false表示没重复
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public Boolean checkName(CheckNameDto dto) {
+        List<Interfaceinfo> interfaceInfos = lambdaQuery()
+                .eq(Interfaceinfo::getUri, dto.getName())
+                .list();
+
+        if (interfaceInfos.isEmpty()) {
+            return false;
+        }
+
+        if (dto.getId() != null) {
+            Interfaceinfo interfaceinfo = interfaceInfos.get(0);
+            return interfaceinfo.getId().equals(dto.getId());
+        }
+        return false;
     }
 
 

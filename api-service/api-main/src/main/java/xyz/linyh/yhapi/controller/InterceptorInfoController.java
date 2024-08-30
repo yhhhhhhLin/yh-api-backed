@@ -18,6 +18,7 @@ import xyz.linyh.ducommon.common.ResultUtils;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokeParams;
 import xyz.linyh.model.interfaceinfo.InterfaceInfoInvokePayType;
 import xyz.linyh.model.interfaceinfo.dto.*;
@@ -62,26 +63,13 @@ public class InterceptorInfoController {
         if (interfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
-        Interfaceinfo interfaceInfo = new Interfaceinfo();
-        interfaceInfo.setStatus(1);
-        BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
-        // 校验参数是否正确
-        interfaceinfoService.validInterfaceInfoParams(interfaceInfo, true);
 
         User loginUser = userService.getLoginUser(request);
-        interfaceInfo.setUserId(loginUser.getId());
+        interfaceInfoAddRequest.setUserId(loginUser.getId());
 
-        boolean result = interfaceinfoService.addInterfaceInfo(interfaceInfo);
+        Long interfaceInfoId = interfaceinfoService.addInterfaceInfo(interfaceInfoAddRequest);
 
-        if (!result) {
-            throw new BusinessException(ErrorCodeEnum.OPERATION_ERROR);
-        }
-
-//        刷新网关的缓存接口数据
-        interfaceinfoService.updateGatewayCache();
-
-        long newInterfaceInfoId = interfaceInfo.getId();
-        return ResultUtils.success(newInterfaceInfoId);
+        return ResultUtils.success(interfaceInfoId);
     }
 
     /**
@@ -258,6 +246,12 @@ public class InterceptorInfoController {
         Page<Interfaceinfo> interfaceinfoPage = interfaceinfoService.selectInterfaceInfoByPage(interfaceInfoQueryRequest);
 
         return ResultUtils.success(interfaceinfoPage);
+    }
+
+    @PostMapping("/check")
+    public BaseResponse<Boolean> checkApiName(@RequestBody CheckNameDto dto){
+        Boolean result = interfaceinfoService.checkName(dto);
+        return ResultUtils.success(result);
     }
 
 
