@@ -1,7 +1,10 @@
 package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
+
+import java.util.List;
 
 /**
  * @author linzz
@@ -10,4 +13,7 @@ import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
  */
 public interface DscInterfaceColumnService extends IService<DscInterfaceColumn> {
 
+    List<DscInterfaceColumn> listByInterfaceInfoIds(List<Long> interfaceInfoIds);
+
+    Boolean saveBatch(List<ColumnBriefVO> searchColumns);
 }

@@ -20,7 +20,7 @@ public class DscInfo extends BaseEntity implements Serializable {
      * 
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 数据库名称

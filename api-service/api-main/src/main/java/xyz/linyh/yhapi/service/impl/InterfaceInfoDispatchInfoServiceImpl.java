@@ -8,6 +8,9 @@ import xyz.linyh.model.interfaceInfoDispatchInfo.entitys.InterfaceInfoDispatchIn
 import xyz.linyh.yhapi.mapper.InterfaceInfoDispatchInfoMapper;
 import xyz.linyh.yhapi.service.InterfaceInfoDispatchInfoService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author linzz
  * @description 针对表【interfaceinfodispatchinfo(数据源接口调度信息)】的数据库操作Service实现
@@ -24,6 +27,17 @@ public class InterfaceInfoDispatchInfoServiceImpl extends ServiceImpl<InterfaceI
         interfaceInfoDispatchInfo.setInterfaceInfoId(interfaceId);
         interfaceInfoDispatchInfo.setStatus(1);
         return save(interfaceInfoDispatchInfo);
+    }
+
+    @Override
+    public List<InterfaceInfoDispatchInfo> listByInterfaceInfoIds(List<Long> interfaceInfoIds) {
+        if(interfaceInfoIds == null || interfaceInfoIds.isEmpty()){
+            return new ArrayList<>(0);
+        }
+
+        return lambdaQuery()
+                .in(InterfaceInfoDispatchInfo::getInterfaceInfoId, interfaceInfoIds)
+                .list();
     }
 }
 

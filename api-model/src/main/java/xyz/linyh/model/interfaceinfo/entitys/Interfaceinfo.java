@@ -49,7 +49,7 @@ public class Interfaceinfo implements Serializable {
     /**
      * 数据源id 没有的话为-1
      */
-    private Integer dscId;
+    private Long dscId;
     /**
      * 接口描述
      */

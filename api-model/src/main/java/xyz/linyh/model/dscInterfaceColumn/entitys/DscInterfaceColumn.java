@@ -19,12 +19,12 @@ public class DscInterfaceColumn implements Serializable {
      * 
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 接口id
      */
-    private Integer interfaceInfoId;
+    private Long interfaceInfoId;
 
     /**
      * schemaName

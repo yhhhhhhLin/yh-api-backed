@@ -113,7 +113,9 @@ create table interfaceInfoDispatchInfo
     column_name     int null,
     dispatchPeriod  tinyint null comment '调度周期code',
     specTime        varchar(255) null comment '具体时间',
-    status          tinyint  default 1 not null comment '状态',
+    successTime     varchar(255) null comment '成功执行时间',
+    status
+                    tinyint  default 1 not null comment '状态',
     createTime      datetime default current_timestamp null,
     updateTime      datetime default current_timestamp null,
     isDelete        tinyint null

@@ -15,6 +15,7 @@ import xyz.linyh.model.datasource.vos.DscInfoVo;
 import xyz.linyh.yhapi.service.DscInfoService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/dsc")
@@ -54,8 +55,8 @@ public class DataSourceController {
     }
 
     @GetMapping("/columns")
-    public BaseResponse listColumns(@RequestBody ListColumnsDto dto) {
-        ColumnBriefVO columnBriefVO = dscInfoService.listColumns(dto);
+    public BaseResponse<List<ColumnBriefVO>> listColumns(@RequestBody ListColumnsDto dto) {
+        List<ColumnBriefVO> columnBriefVO = dscInfoService.listColumns(dto);
         return ResultUtils.success(columnBriefVO);
 
     }

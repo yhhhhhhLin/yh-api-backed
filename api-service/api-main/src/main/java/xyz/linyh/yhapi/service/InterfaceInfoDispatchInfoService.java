@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import xyz.linyh.model.interfaceInfoDispatchInfo.dtos.DispatchInfoDto;
 import xyz.linyh.model.interfaceInfoDispatchInfo.entitys.InterfaceInfoDispatchInfo;
 
+import java.util.List;
+
 /**
  * @author linzz
  * @description 针对表【interfaceinfodispatchinfo(数据源接口调度信息)】的数据库操作Service
@@ -12,4 +14,6 @@ import xyz.linyh.model.interfaceInfoDispatchInfo.entitys.InterfaceInfoDispatchIn
 public interface InterfaceInfoDispatchInfoService extends IService<InterfaceInfoDispatchInfo> {
 
     Boolean createDispatchInfo(Long interfaceId, DispatchInfoDto dispatchInfoDto);
+
+    List<InterfaceInfoDispatchInfo> listByInterfaceInfoIds(List<Long> interfaceInfoIds);
 }

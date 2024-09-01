@@ -32,7 +32,12 @@ public class InterfaceInfoDispatchInfo implements Serializable {
     private Integer dispatchPeriod;
 
     /**
-     * 具体时间
+     * 执行成功时间 yyyy-MM-dd HH:mm
+     */
+    private String successTime;
+
+    /**
+     * 具体时间 HH:mm
      */
     private String specTime;
 

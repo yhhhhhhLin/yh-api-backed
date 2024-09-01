@@ -2,6 +2,7 @@ package xyz.linyh.yhapi.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.linyh.ducommon.common.InterfaceTypeEnum;
 import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoAddRequest;
 import xyz.linyh.model.interfaceinfo.dto.InterfaceInfoInvokeRequest;
@@ -102,6 +103,8 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
     List<Interfaceinfo> listByDscId(Long dscId);
 
     Boolean checkName(CheckNameDto dto);
+
+    List<Interfaceinfo> listByInterfaceType(InterfaceTypeEnum interfaceTypeEnum);
 
 
     /**

@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class ColumnBriefVO {
+
+    private Long interfaceInfoId;
     private String schemaName;
     private String tableName;
     private String columnName;

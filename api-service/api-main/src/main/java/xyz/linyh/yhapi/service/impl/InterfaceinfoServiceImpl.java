@@ -25,6 +25,7 @@ import xyz.linyh.ducommon.utils.TimeUtils;
 import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
 import xyz.linyh.model.datasource.entitys.DscInfo;
+import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -36,6 +37,7 @@ import xyz.linyh.yhapi.factory.GenSqlFactory;
 import xyz.linyh.yhapi.helper.GenSql;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.DscInfoService;
+import xyz.linyh.yhapi.service.DscInterfaceColumnService;
 import xyz.linyh.yhapi.service.InterfaceInfoDispatchInfoService;
 import xyz.linyh.yhapi.service.InterfaceinfoService;
 
@@ -58,6 +60,9 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Autowired
     private InterfaceInfoDispatchInfoService interfaceInfoDispatchInfoService;
+
+    @Autowired
+    private  DscInterfaceColumnService dscInterfaceColumnService;
 
     @Autowired
     private DscInfoService dscInfoService;
@@ -244,25 +249,20 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
         this.save(interfaceInfo);
 
-//        如果是数据源api，需要创建对应查询数据源的sql语句和调度信息
+//        如果是数据源api
         Integer interfaceType = interfaceInfoAddRequest.getInterfaceType();
         if (interfaceType.equals(InterfaceTypeEnum.DATABASE_INTERFACE.getCode())) {
             AddDataSourceApiDto dataSourceApiParams = interfaceInfoAddRequest.getDataSourceApiParams();
-            Long dscId = dataSourceApiParams.getDscId();
-            DscInfo dscInfo = dscInfoService.getById(dscId);
-
 //          创建调度信息
             interfaceInfoDispatchInfoService.createDispatchInfo(interfaceInfo.getId(), dataSourceApiParams.getDispatchInfo());
 
-//            判断调度时间是否在当前时间之前，如果在当前时间之前，那么直接创建今天的数据
-            String specTime = dataSourceApiParams.getDispatchInfo().getSpecTime();
-            if (TimeUtils.isTimeBeforeNow(specTime, "HH:mm")) {
-                DataSourceClient client = DataSourceClientFactory.getClient(dscInfo.getDscType(), dscInfo.getUrl(), dscInfo.getUsername(), dscInfo.getPassword());
-                GenSql gensql = GenSqlFactory.getGensql(dscInfo.getDscType());
-                String sql = gensql.createSql(dscInfo, dataSourceApiParams.getSearchColumns());
-                client.executeSql(dscInfo, sql);
-            }
+//            保存查询列信息
+            dscInterfaceColumnService.saveBatch(dataSourceApiParams.getSearchColumns());
+
+//            TODO 数据源接口输入和输出参数需要改为选中的所有列信息
         }
+
+//        TODO 数据源api 按照创建用户的id为每个用户生成一个调用的token,这样就可以保证不同用户之间可以有重复的接口
 
 //        刷新网关的缓存接口数据
         updateGatewayCache();
@@ -406,6 +406,13 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             return interfaceinfo.getId().equals(dto.getId());
         }
         return false;
+    }
+
+    @Override
+    public List<Interfaceinfo> listByInterfaceType(InterfaceTypeEnum interfaceTypeEnum) {
+        return lambdaQuery()
+                .eq(Interfaceinfo::getInterfaceType, interfaceTypeEnum)
+                .list();
     }
 
 
