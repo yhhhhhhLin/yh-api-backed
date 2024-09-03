@@ -2,16 +2,24 @@ package xyz.linyh.yhapi.helper;
 
 import org.apache.commons.lang3.StringUtils;
 import xyz.linyh.model.datasource.entitys.DscInfo;
-import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class GenSql {
+
+    private final String TABLE_NAME_FIX = "yh_api";
+
     public String createSql(DscInfo dscInfo, List<DscInterfaceColumn> dscInterfaceColumns) {
-//        TODO 表名加上日期
-        String resultTableName = "abc";
+//        TODO
+        String schemaName = dscInfo.getSchemaName();
+        DscInterfaceColumn dscInterfaceColumn = dscInterfaceColumns.get(0);
+        String tableName = dscInterfaceColumn.getTableName();
+        String nowDate = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
+        String resultTableName = String.format("%s.%s", schemaName, tableName + TABLE_NAME_FIX + "_" + nowDate);
 //        1. 创建删除表语句
         String dropTableSql = createDropTableSql(resultTableName);
 

@@ -7,9 +7,11 @@ import java.util.List;
 
 public class MysqlGenSql extends GenSql{
 
+    private final  String DROP_TABLE_SQL_TEMPLATE = "DROP TABLE IF EXISTS `%s`;";
+
     @Override
     protected String createDropTableSql(String tableName) {
-        return "";
+        return String.format(DROP_TABLE_SQL_TEMPLATE, tableName);
     }
 
     @Override
