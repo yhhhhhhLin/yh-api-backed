@@ -20,6 +20,8 @@ public abstract class GenSql {
         String tableName = dscInterfaceColumn.getTableName();
         String nowDate = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmss"));
         String resultTableName = String.format("%s.%s", schemaName, tableName + TABLE_NAME_FIX + "_" + nowDate);
+
+//        TODO 表名和字段名增加别名
 //        1. 创建删除表语句
         String dropTableSql = createDropTableSql(resultTableName);
 
@@ -30,7 +32,7 @@ public abstract class GenSql {
         String createTableSql = createCreateTableSql(resultTableName, dscInterfaceColumns);
 
 //        4. 创建插入表语句
-        String insertSql = createInsertSql(resultTableName, selectSql);
+        String insertSql = createInsertSql(resultTableName, dscInterfaceColumns);
 
 //        5. 将所有sql语句合并到一起通过分号分割返回
         List<String> sqlList = Arrays.asList(dropTableSql, createTableSql, insertSql);
@@ -43,5 +45,5 @@ public abstract class GenSql {
 
     protected abstract String createCreateTableSql(String tableName, List<DscInterfaceColumn> columns);
 
-    protected abstract String createInsertSql(String tableName, String selectSql);
+    protected abstract String createInsertSql(String tableName, List<DscInterfaceColumn> columns);
 }
