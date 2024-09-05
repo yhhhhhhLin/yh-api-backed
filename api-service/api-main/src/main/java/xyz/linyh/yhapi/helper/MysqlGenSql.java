@@ -73,5 +73,6 @@ public class MysqlGenSql extends GenSql{
         List<DscInterfaceColumn> allColumns = supplyBasicColumns(columns);
 
 //        return String.join(INSERT_TABLE_SQL_TEMPLATE, tableName, selectSql);
+        return null;
     }
 }
