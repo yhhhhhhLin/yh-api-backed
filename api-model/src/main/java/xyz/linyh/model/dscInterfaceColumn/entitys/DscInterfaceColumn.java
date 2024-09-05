@@ -37,9 +37,24 @@ public class DscInterfaceColumn implements Serializable {
     private String tableName;
 
     /**
+     * 表别名 t0,t1...
+     */
+    private String tableAlias;
+
+    /**
      * 
      */
     private String columnName;
+
+    /**
+     * comment
+     */
+    private String columnComment;
+
+    /**
+     * 字段别名 to_columnName t1_columnName
+     */
+    private String columnAlias;
 
     /**
      * 

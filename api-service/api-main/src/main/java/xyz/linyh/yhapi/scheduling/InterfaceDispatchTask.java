@@ -43,7 +43,8 @@ public class InterfaceDispatchTask {
     @Autowired
     private DscInfoService dscInfoService;
 
-    @Scheduled(cron = "0 */1 * * * ?")
+//    TODO
+//    @Scheduled(cron = "0 */1 * * * ?")
     public void createTableTask() {
 //        监控所有调度信息，如果到达指定时间就执行调度信息内容
 //        1. 获取所有状态正常的数据源接口

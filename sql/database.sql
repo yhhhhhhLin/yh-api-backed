@@ -100,6 +100,9 @@ create table yhapi.dscInterfaceColumn
     tableName       varchar(255) null comment 'tableName',
     columnName      varchar(255) null,
     columnType      varchar(255) null,
+    tableAlias      varchar(255) null comment '表别名',
+    columnAlias      varchar(255) null comment '行别名',
+    columnComment      varchar(255) null comment 'comment',
     createTime      datetime default current_timestamp null,
     updateTime      datetime default current_timestamp null,
     isDelete        tinyint null
