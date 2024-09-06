@@ -75,6 +75,19 @@ create table yhapi.interfaceInfo
         unique (id)
 ) comment '接口信息表';
 
+create table yhapi.apiTokenRel
+(
+    id          int auto_increment
+        primary key,
+    interfaceId int                                not null comment '接口id',
+    token       varchar(255)                       null comment '接口对应token',
+    userId      int                                null comment '用户id',
+    createTime  datetime default current_timestamp null,
+    updateTime  datetime default current_timestamp null,
+    isDelete    tinyint                            null
+)
+    comment '接口和token关联表';
+
 
 create table yhapi.dscInfo
 (

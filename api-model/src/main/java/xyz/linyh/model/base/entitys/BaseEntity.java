@@ -1,5 +1,6 @@
 package xyz.linyh.model.base.entitys;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,7 +10,7 @@ public class BaseEntity {
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 创建时间
@@ -24,6 +25,7 @@ public class BaseEntity {
     /**
      * 是否删除
      */
+    @TableLogic
     private Integer isDelete;
 
 }

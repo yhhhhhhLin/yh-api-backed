@@ -2,6 +2,7 @@ package xyz.linyh.yhapi.service.impl;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -21,7 +22,10 @@ import xyz.linyh.ducommon.constant.CommonConstant;
 import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
+import xyz.linyh.ducommon.utils.DatasourceApiTokenUtils;
+import xyz.linyh.ducommon.utils.JwtUtils;
 import xyz.linyh.ducommon.utils.TimeUtils;
+import xyz.linyh.model.apitoken.entitys.ApiTokenRel;
 import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
 import xyz.linyh.model.datasource.entitys.DscInfo;
@@ -36,10 +40,7 @@ import xyz.linyh.yhapi.factory.DataSourceClientFactory;
 import xyz.linyh.yhapi.factory.GenSqlFactory;
 import xyz.linyh.yhapi.helper.GenSql;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
-import xyz.linyh.yhapi.service.DscInfoService;
-import xyz.linyh.yhapi.service.DscInterfaceColumnService;
-import xyz.linyh.yhapi.service.InterfaceInfoDispatchInfoService;
-import xyz.linyh.yhapi.service.InterfaceinfoService;
+import xyz.linyh.yhapi.service.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,9 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
     @Autowired
     private DscInfoService dscInfoService;
+
+    @Autowired
+    private ApiTokenRelService apiTokenRelService;
 
     /**
      * 对接口信息进行校验
@@ -259,10 +263,23 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 //            保存查询列信息
             dscInterfaceColumnService.saveBatch(dataSourceApiParams.getSearchColumns());
 
-//            TODO 数据源接口输入和输出参数需要改为选中的所有列信息
-        }
 
-//        TODO 数据源api 按照创建用户的id为每个用户生成一个调用的token,这样就可以保证不同用户之间可以有重复的接口
+//            数据源接口输入和输出参数需要改为选中的所有列信息
+            HashMap<String, String> paramAndTypeMap = new HashMap<>();
+            dataSourceApiParams.getSearchColumns().forEach(column->{
+                paramAndTypeMap.put(column.getColumnAlias(), column.getColumnType());
+            });
+            interfaceInfo.setRequestParams(JSON.toJSONString(paramAndTypeMap));
+//        数据源api 按照创建用户的id为每个用户生成一个调用的token,这样就可以保证不同用户之间可以有重复的接口
+//            调用的时候先按照token解析出对应的用户，然后根据接口url判断是这个用户的哪个接口然后调用
+            String datasourceToken = DatasourceApiTokenUtils.generateToken(interfaceInfo.getUserId().toString());
+            ApiTokenRel apiTokenRel = new ApiTokenRel();
+            apiTokenRel.setInterfaceId(interfaceInfo.getId());
+            apiTokenRel.setToken(datasourceToken);
+            apiTokenRel.setUserId(interfaceInfo.getUserId());
+            apiTokenRelService.save(apiTokenRel);
+            saveOrUpdateInterface(interfaceInfo);
+        }
 
 //        刷新网关的缓存接口数据
         updateGatewayCache();
