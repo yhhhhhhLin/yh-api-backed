@@ -63,6 +63,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+//        TODO 如果是数据源api，需要判断token是否合法，然后从token中获取对应用户id，根据用户id和数据源uri凭借查询数据库sql，然后返回，不需要跳转
 
         ServerHttpResponse response = exchange.getResponse();
 

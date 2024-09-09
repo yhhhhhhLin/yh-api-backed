@@ -245,7 +245,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         // 校验参数是否正确
         this.validInterfaceInfoParams(interfaceInfo, true);
 
-//        判断接口uri不能重复
+//        判断接口uri不能重复 TODO 增加token后优化成单个用户之间不能重复就可以
         List<Interfaceinfo> dbInterfaceInfos = this.list(Wrappers.<Interfaceinfo>lambdaQuery().eq(Interfaceinfo::getUri, interfaceInfo.getUri()));
         if (dbInterfaceInfos != null && !dbInterfaceInfos.isEmpty()) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口地址不能重复");
@@ -257,12 +257,11 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         Integer interfaceType = interfaceInfoAddRequest.getInterfaceType();
         if (interfaceType.equals(InterfaceTypeEnum.DATABASE_INTERFACE.getCode())) {
             AddDataSourceApiDto dataSourceApiParams = interfaceInfoAddRequest.getDataSourceApiParams();
-//          创建调度信息
-            interfaceInfoDispatchInfoService.createDispatchInfo(interfaceInfo.getId(), dataSourceApiParams.getDispatchInfo());
-
 //            保存查询列信息
             dscInterfaceColumnService.saveBatch(dataSourceApiParams.getSearchColumns());
 
+//          创建调度信息
+            interfaceInfoDispatchInfoService.createDispatchInfo(interfaceInfo.getId(), dataSourceApiParams.getDispatchInfo());
 
 //            数据源接口输入和输出参数需要改为选中的所有列信息
             HashMap<String, String> paramAndTypeMap = new HashMap<>();
@@ -299,17 +298,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (size > 50) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR);
         }
-//        return lambdaQuery()
-//                .like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getName()), Interfaceinfo::getName, interfaceInfoQueryRequest.getName())
-//                .like(StringUtils.isNotBlank(interfaceInfoQueryRequest.getDescription()), Interfaceinfo::getDescription, interfaceInfoQueryRequest.getDescription())
-//                .eq(interfaceInfoQueryRequest.getUserId() != null, Interfaceinfo::getUserId, interfaceInfoQueryRequest.getUserId())
-//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getMethod()), Interfaceinfo::getMethod, interfaceInfoQueryRequest.getMethod())
-//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), Interfaceinfo::getUri, interfaceInfoQueryRequest.getUri())
-//                .eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), Interfaceinfo::getHost, interfaceInfoQueryRequest.getHost())
-//                .eq(interfaceInfoQueryRequest.getStatus() != null, Interfaceinfo::getStatus, interfaceInfoQueryRequest.getStatus())
-//                .orderBy(StringUtils.isNotBlank(sortField),sortOrder.equals(CommonConstant.SORT_ORDER_ASC), Interfaceinfo::getDescription)
-//                .page(new Page<>(current, size));
-//
+
         QueryWrapper<Interfaceinfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);

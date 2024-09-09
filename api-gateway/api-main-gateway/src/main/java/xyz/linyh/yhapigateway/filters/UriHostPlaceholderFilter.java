@@ -45,6 +45,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
     @Override
     public GatewayFilter apply(Config config) {
         return new OrderedGatewayFilter((exchange, chain) -> {
+//            TODO 改为普通api需要修改uri，数据源不需要修改uri，直接生成查询sql查询对应数据库就可以了
             String routeId = exchange.getAttribute(GATEWAY_PREDICATE_MATCHED_PATH_ROUTE_ID_ATTR);
             String uri = exchange.getRequest().getHeaders().getFirst("uri");
             String method = exchange.getRequest().getMethod().toString();
