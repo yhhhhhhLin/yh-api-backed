@@ -50,34 +50,35 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
             String uri = exchange.getRequest().getHeaders().getFirst("uri");
             String method = exchange.getRequest().getMethod().toString();
 
-            if(uri==null){
+            if (uri == null) {
                 return chain.filter(exchange);
             }
 //            获取缓存里面所有的路由信息
             Map<String, Interfaceinfo> routes = routeService.getRoutes();
 
-            if(routes==null || routes.isEmpty()){
+            if (routes == null || routes.isEmpty()) {
                 return chain.filter(exchange);
             }
 
             Interfaceinfo interfaceinfo = routes.get(uri);
-            if(interfaceinfo==null){
+            if (interfaceinfo == null) {
                 return chain.filter(exchange);
             }
 
 //            获取真正要跳转的地址
             String host = interfaceinfo.getHost();
-            log.info("真正要跳转的地址为:{}",host);;
+            log.info("真正要跳转的地址为:{}", host);
+            ;
 
             System.out.println(exchange.getRequest().getQueryParams());
 
 //            todo 可能还需要对地址格式进行判断
             URI newUrl = null;
-            String modUrl = host+uri;
+            String modUrl = host + uri;
             try {
                 String query = exchange.getRequest().getURI().getQuery();
-                if(!StrUtil.isBlank(query)){
-                    modUrl = modUrl+"?"+query;
+                if (!StrUtil.isBlank(query)) {
+                    modUrl = modUrl + "?" + query;
 
                 }
 //                需要补get请求参数到后面
@@ -88,7 +89,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
 
             exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newUrl);
 
-            log.info("修改后的请求地址为:{}",newUrl);
+            log.info("修改后的请求地址为:{}", newUrl);
             return chain.filter(exchange);
         }, config.getOrder());
     }

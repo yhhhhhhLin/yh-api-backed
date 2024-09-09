@@ -133,7 +133,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
 
 //       判断用户是否有调用次数调用某一个接口
-        InterfaceInfoInvokePayType payType = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId(),mapInterface.getPointsRequired());
+        InterfaceInfoInvokePayType payType = dubboUserinterfaceinfoService.isInvoke(mapInterface.getId(), user.getId(), mapInterface.getPointsRequired());
         if ("0".equals(payType.getPayType())) {
             log.info("用户没有调用次数");
         }
@@ -142,7 +142,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         Mono<Void> filter = chain.filter(exchange);
 
 
-        return handleResponse(exchange, chain, mapInterface, user,payType);
+        return handleResponse(exchange, chain, mapInterface, user, payType);
 //        这个是异步的方法，需要全部过滤都结束才会转发到对应的服务上 所以无法通过filter来获取响应结果
     }
 
@@ -164,7 +164,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * @param chain
      * @return
      */
-    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, Interfaceinfo interfaceinfo, User user,InterfaceInfoInvokePayType payType) {
+    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, Interfaceinfo interfaceinfo, User user, InterfaceInfoInvokePayType payType) {
         log.info("gateway 获取到返回值");
         ServerHttpResponse originalResponse = exchange.getResponse();
         // 保存数据的工厂
@@ -203,7 +203,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 //                                redis分布式锁上锁
                                 redissonLockUtil.redissonDistributedLocks(("gateway_" + user.getUserAccount()).intern(), () -> {
 //                                    TODO 如果是只有积分消费，可以改为直接更新用户积分，调用次数直接更新redis，后面再同步到mysql，可以减少mysql磁盘io
-                                    dubboUserinterfaceinfoService.invokeOk(interfaceinfo.getId(), user.getId(),payType);
+                                    dubboUserinterfaceinfoService.invokeOk(interfaceinfo.getId(), user.getId(), payType);
                                 }, "接口调用失败");
 //                                dubboUserinterfaceinfoService.invokeOk(interfaceInfoId,userId);
                             } catch (Exception e) {
@@ -221,7 +221,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                     System.out.println(body);
                     ArrayList<String> srcList = new ArrayList<>();
                     ArrayList<String> distList = new ArrayList<>();
-                    Collections.copy(distList,srcList);
+                    Collections.copy(distList, srcList);
                     Flux<? extends DataBuffer> dataBufferFlux = Flux.from(body);
                     Flux<String> contentFlux = dataBufferFlux
                             .map(dataBuffer -> {
@@ -232,31 +232,29 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             });
 
                     // 使用 subscribe 输出每个 DataBuffer 的内容
-                    contentFlux.subscribe(content -> log.info("错误信息为:{}",content));
+                    contentFlux.subscribe(content -> log.info("错误信息为:{}", content));
 
-                DefaultDataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
-                String json = JSONUtil.toJsonStr(ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR.getCode(), "接口调用服务出错(可能参数错误)"));
-                DataBuffer dataBuffer = dataBufferFactory.wrap(json.getBytes());
-                Flux<DataBuffer> just = Flux.just(dataBuffer);
-                return super.writeWith(just);
-            }
+                    DefaultDataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
+                    String json = JSONUtil.toJsonStr(ResultUtils.error(ErrorCodeEnum.SYSTEM_ERROR.getCode(), "接口调用服务出错(可能参数错误)"));
+                    DataBuffer dataBuffer = dataBufferFactory.wrap(json.getBytes());
+                    Flux<DataBuffer> just = Flux.just(dataBuffer);
+                    return super.writeWith(just);
+                }
 
                 return super.writeWith(body);
-        }
+            }
 
-        @Override
-        public Mono<Void> writeAndFlushWith (Publisher < ? extends Publisher<? extends DataBuffer>>body){
-            return writeWith(Flux.from(body).flatMapSequential(p -> p));
-        }
-    }
-
-    ;
+            @Override
+            public Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
+                return writeWith(Flux.from(body).flatMapSequential(p -> p));
+            }
+        };
         return chain.filter(exchange.mutate().
 
-    response(response).
+                response(response).
 
-    build());
-}
+                build());
+    }
 
     @DubboReference
     private DubboUserService dubboUserService;

@@ -63,7 +63,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
     private InterfaceInfoDispatchInfoService interfaceInfoDispatchInfoService;
 
     @Autowired
-    private  DscInterfaceColumnService dscInterfaceColumnService;
+    private DscInterfaceColumnService dscInterfaceColumnService;
 
     @Autowired
     private DscInfoService dscInfoService;
@@ -265,7 +265,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
 
 //            数据源接口输入和输出参数需要改为选中的所有列信息
             HashMap<String, String> paramAndTypeMap = new HashMap<>();
-            dataSourceApiParams.getSearchColumns().forEach(column->{
+            dataSourceApiParams.getSearchColumns().forEach(column -> {
                 paramAndTypeMap.put(column.getColumnAlias(), column.getColumnType());
             });
             interfaceInfo.setRequestParams(JSON.toJSONString(paramAndTypeMap));

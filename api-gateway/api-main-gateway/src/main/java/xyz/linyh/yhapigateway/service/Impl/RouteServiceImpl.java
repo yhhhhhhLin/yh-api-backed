@@ -19,6 +19,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 
 /**
  * 用来对数据库里面的路由进行操作
+ *
  * @author lin
  */
 @Component
@@ -39,9 +40,9 @@ public class RouteServiceImpl implements RouteService {
      * 获取数据库里面的所有路由信息
      */
     @Override
-    public Map<String,Interfaceinfo> getRouteDefinitions() {
+    public Map<String, Interfaceinfo> getRouteDefinitions() {
 //        判断缓存里面是否有信息，如果有就直接返回
-        if(routes.size()>0){
+        if (routes.size() > 0) {
             return routes;
 
         }
@@ -49,18 +50,19 @@ public class RouteServiceImpl implements RouteService {
         List<Interfaceinfo> interfaceinfos = dubboInterfaceinfoService.getAllInterface();
 //        将路由信息保存到hashmap中
         for (Interfaceinfo interfaceinfo : interfaceinfos) {
-            routes.put(String.valueOf(interfaceinfo.getUri()),interfaceinfo);
+            routes.put(String.valueOf(interfaceinfo.getUri()), interfaceinfo);
         }
         return routes;
     }
 
 
     @Override
-    public Map<String,Interfaceinfo> getRoutes(){
+    public Map<String, Interfaceinfo> getRoutes() {
         return routes;
     }
 
 //    如果后端服务对路由进行修改，调用这里面的接口实现修改路由中缓存数据
+
     /**
      * 后端新增了接口，gateway需要重新刷新缓存中的接口
      *
@@ -75,7 +77,7 @@ public class RouteServiceImpl implements RouteService {
         List<Interfaceinfo> interfaceinfos = dubboInterfaceinfoService.getAllInterface();
 //        将路由信息保存到hashmap中
         for (Interfaceinfo interfaceinfo : interfaceinfos) {
-            routes.put(String.valueOf(interfaceinfo.getUri()),interfaceinfo);
+            routes.put(String.valueOf(interfaceinfo.getUri()), interfaceinfo);
         }
         log.info("刷新的缓存中的接口数据成功");
         String responseData = "{ \"key\": \"value\" }";

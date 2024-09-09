@@ -249,7 +249,7 @@ public class InterceptorInfoController {
     }
 
     @PostMapping("/check")
-    public BaseResponse<Boolean> checkApiName(@RequestBody CheckNameDto dto){
+    public BaseResponse<Boolean> checkApiName(@RequestBody CheckNameDto dto) {
         Boolean result = interfaceinfoService.checkName(dto);
         return ResultUtils.success(result);
     }

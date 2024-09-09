@@ -16,6 +16,7 @@ public class ThreadPoolConfig {
     public ThreadPoolExecutor genSourceTableExecutor() {
         ThreadPoolExecutor service = new ThreadPoolExecutor(1, 2, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10), new ThreadFactory() {
             private AtomicInteger num = new AtomicInteger(0);
+
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "GEN_SOURCE_TABLE_EXECUTOR_" + num.getAndIncrement());

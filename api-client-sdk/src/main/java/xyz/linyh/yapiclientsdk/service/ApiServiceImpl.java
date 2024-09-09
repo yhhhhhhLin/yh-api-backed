@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class ApiServiceImpl implements ApiService{
+public class ApiServiceImpl implements ApiService {
 
 //    public static final String GATEWAY_PRE_PATH = InterfaceInfoConstant.GATEWAY_PATH;
 
@@ -30,32 +30,32 @@ public class ApiServiceImpl implements ApiService{
      * @param
      * @return
      */
-    public String request(String baseUrl,String uri, String accessKey, String sign, InterfaceParams interfaceParams) {
+    public String request(String baseUrl, String uri, String accessKey, String sign, InterfaceParams interfaceParams) {
 
-        if(StrUtil.isBlank(baseUrl)) {
+        if (StrUtil.isBlank(baseUrl)) {
             throw new ClientException(ClientErrorCode.PARAMS_ERROR, "baseUrl不能为空");
         }
 
 
-        if(interfaceParams==null){
-            throw new ClientException(ClientErrorCode.PARAMS_ERROR,"interfaceParams不能为空");
+        if (interfaceParams == null) {
+            throw new ClientException(ClientErrorCode.PARAMS_ERROR, "interfaceParams不能为空");
         }
 
-        HashMap<String, String> headers = addHeader(sign, accessKey,uri);
+        HashMap<String, String> headers = addHeader(sign, accessKey, uri);
 
 //        2. 发送到真实请求
 //        判断是get请求还是post请求 发送携带参数请求
 
 //        判断是否有请求参数
         Boolean hasParams = false;
-        if(interfaceParams!=null && interfaceParams.getRequestParams()!=null && interfaceParams.getRequestParams().size()>0){
-            hasParams=true;
+        if (interfaceParams != null && interfaceParams.getRequestParams() != null && interfaceParams.getRequestParams().size() > 0) {
+            hasParams = true;
         }
 
 //        判断是否有请求体
         Boolean hasBody = false;
-        if(interfaceParams!=null && interfaceParams.getRequestBody()!=null &&interfaceParams.getRequestBody().size()>0){
-            hasBody=true;
+        if (interfaceParams != null && interfaceParams.getRequestBody() != null && interfaceParams.getRequestBody().size() > 0) {
+            hasBody = true;
         }
 
 //        发送请求
@@ -65,27 +65,27 @@ public class ApiServiceImpl implements ApiService{
         try {
 
             HttpResponse response = null;
-            if("GET".equals(interfaceParams.getRequestMethod().toUpperCase())){
-                if(hasParams){
+            if ("GET".equals(interfaceParams.getRequestMethod().toUpperCase())) {
+                if (hasParams) {
 //                    String res = HttpUtil.get(GATEWAY_PRE_PATH + uri, requestParams);
-                    response = HttpRequest.get(baseUrl+uri).form(requestParams)
+                    response = HttpRequest.get(baseUrl + uri).form(requestParams)
                             .addHeaders(headers).execute();
                     body = response.body();
-                }else{
-                    response = HttpRequest.get(baseUrl+uri)
+                } else {
+                    response = HttpRequest.get(baseUrl + uri)
                             .addHeaders(headers).execute();
                     body = response.body();
                 }
-            }else if("POST".equals(interfaceParams.getRequestMethod().toUpperCase())){
+            } else if ("POST".equals(interfaceParams.getRequestMethod().toUpperCase())) {
                 HttpRequest req = HttpRequest.post(baseUrl + uri);
-                if(hasParams){
+                if (hasParams) {
                     req = req.form(requestParams);
                 }
-                if(hasBody){
+                if (hasBody) {
                     req = req.body(JSONUtil.toJsonStr(interfaceParams.getRequestBody()));
                 }
                 response = req.addHeaders(headers).execute();
-                body=response.body();
+                body = response.body();
             }
             return getReturnMsg(response);
 
@@ -97,26 +97,26 @@ public class ApiServiceImpl implements ApiService{
     }
 
     private String getReturnMsg(HttpResponse response) {
-        if(response==null){
+        if (response == null) {
             return "系统异常";
         }
 
         BaseResponse baseResponse = JSONUtil.toBean(response.body(), BaseResponse.class);
 
-        if(response.getStatus()!= HttpStatus.HTTP_OK){
-            return "系统出错(可能是提供服务的服务器失联):"+response.body();
+        if (response.getStatus() != HttpStatus.HTTP_OK) {
+            return "系统出错(可能是提供服务的服务器失联):" + response.body();
         }
 
         try {
 
-            if(baseResponse.getCode()== ErrorCodeEnum.SUCCESS.getCode()){
+            if (baseResponse.getCode() == ErrorCodeEnum.SUCCESS.getCode()) {
                 return JSONUtil.toJsonStr(baseResponse.getData());
-            }else{
+            } else {
                 return baseResponse.getMessage();
             }
 
         } catch (HttpException e) {
-            log.info("发送请求到接口相应值转为实体类出错:{}",e.getMessage());
+            log.info("发送请求到接口相应值转为实体类出错:{}", e.getMessage());
         }
 
 
@@ -132,26 +132,26 @@ public class ApiServiceImpl implements ApiService{
      * @param sign
      * @return
      */
-    public String request(String baseUrl,String uri,String method, String accessKey, String sign) {
-        if(StrUtil.isBlank(baseUrl)) {
-            throw new ClientException(ClientErrorCode.PARAMS_ERROR,"baseUrl不能为空");
+    public String request(String baseUrl, String uri, String method, String accessKey, String sign) {
+        if (StrUtil.isBlank(baseUrl)) {
+            throw new ClientException(ClientErrorCode.PARAMS_ERROR, "baseUrl不能为空");
         }
 
-        HashMap<String, String> headers = addHeader(sign, accessKey,uri);
+        HashMap<String, String> headers = addHeader(sign, accessKey, uri);
         HttpResponse response = null;
         String body = null;
         try {
-            if("GET".equals(method.toUpperCase())){
-                response = HttpRequest.get(baseUrl+uri)
+            if ("GET".equals(method.toUpperCase())) {
+                response = HttpRequest.get(baseUrl + uri)
                         .addHeaders(headers).execute();
                 body = response.body();
 
-            }else if("POST".equals(method.toUpperCase())){
-                response = HttpRequest.post(baseUrl+ uri).addHeaders(headers).execute();
+            } else if ("POST".equals(method.toUpperCase())) {
+                response = HttpRequest.post(baseUrl + uri).addHeaders(headers).execute();
                 body = response.body();
 
-            }else{
-                throw new ClientException(ClientErrorCode.PARAMS_ERROR,"不能支持post和get意外的请求方法");
+            } else {
+                throw new ClientException(ClientErrorCode.PARAMS_ERROR, "不能支持post和get意外的请求方法");
             }
             return getReturnMsg(response);
 
@@ -162,15 +162,15 @@ public class ApiServiceImpl implements ApiService{
 
     }
 
-    public HashMap<String, String> addHeader(String sign,String accessKey,String uri){
+    public HashMap<String, String> addHeader(String sign, String accessKey, String uri) {
         HashMap<String, String> headers = new HashMap<String, String>();
 //        1. 添加请求头
 //        1.1 添加时间戳
-        String timeS = String.valueOf(System.currentTimeMillis()/1000);
-        headers.put("timeS",timeS);
-        headers.put("uri",uri);
+        String timeS = String.valueOf(System.currentTimeMillis() / 1000);
+        headers.put("timeS", timeS);
+        headers.put("uri", uri);
 //        1.2 添加签名认证
-        headers.put("sign",sign);
+        headers.put("sign", sign);
         headers.put("accessKey", accessKey);
         headers.put("randomNum", RandomUtil.randomNumbers(2));
         return headers;
