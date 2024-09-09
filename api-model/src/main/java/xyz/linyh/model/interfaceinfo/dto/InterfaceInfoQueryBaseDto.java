@@ -73,6 +73,11 @@ public class InterfaceInfoQueryBaseDto extends PageBaseDto implements Serializab
     private Integer status;
 
     /**
+     * 数据源类型 --> interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
+    /**
      * 接口创建者id
      */
     private Long userId;

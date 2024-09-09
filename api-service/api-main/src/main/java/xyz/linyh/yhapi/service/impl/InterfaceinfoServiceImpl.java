@@ -319,6 +319,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getMethod()), "method", interfaceInfoQueryRequest.getMethod());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getUri()), "uri", interfaceInfoQueryRequest.getUri());
         queryWrapper.eq(StringUtils.isNotBlank(interfaceInfoQueryRequest.getHost()), "host", interfaceInfoQueryRequest.getHost());
+        queryWrapper.eq(interfaceInfoQueryRequest.getInterfaceType() != null, "interfaceType", interfaceInfoQueryRequest.getInterfaceType());
         queryWrapper.eq(interfaceInfoQueryRequest.getStatus() != null, "status", interfaceInfoQueryRequest.getStatus());
         return this.page(new Page<>(current, size), queryWrapper);
     }
