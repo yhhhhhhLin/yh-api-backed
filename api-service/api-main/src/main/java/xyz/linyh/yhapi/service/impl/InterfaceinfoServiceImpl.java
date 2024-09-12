@@ -184,6 +184,7 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (user == null) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口执行者id不能为空");
         }
+//        TODO clint增加数据源类型参数
         apiClient.setAccessKey(user.getAccessKey());
         apiClient.setSecretKey(user.getSecretKey());
 

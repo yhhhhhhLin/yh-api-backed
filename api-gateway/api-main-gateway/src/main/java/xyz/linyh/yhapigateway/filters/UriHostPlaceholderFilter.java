@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.stereotype.Component;
+import xyz.linyh.ducommon.common.InterfaceTypeEnum;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.yhapigateway.service.RouteService;
 
@@ -41,10 +42,19 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
 
     String PREFIX = "/interface";
 
+    String INTERFACE_TYPE_HEADER = "interface_type";
+
 
     @Override
     public GatewayFilter apply(Config config) {
         return new OrderedGatewayFilter((exchange, chain) -> {
+//            TODO sdk和interfaceController里增加请求头，可以用来判断是那种类型的接口
+            String interfaceType = exchange.getRequest().getHeaders().getFirst(INTERFACE_TYPE_HEADER);
+//            if(InterfaceTypeEnum.DATABASE_INTERFACE.equals(interfaceType)){
+//
+//            }else{
+//
+//            }
 //            TODO 改为普通api需要修改uri，数据源不需要修改uri，直接生成查询sql查询对应数据库就可以了
             String routeId = exchange.getAttribute(GATEWAY_PREDICATE_MATCHED_PATH_ROUTE_ID_ATTR);
             String uri = exchange.getRequest().getHeaders().getFirst("uri");
