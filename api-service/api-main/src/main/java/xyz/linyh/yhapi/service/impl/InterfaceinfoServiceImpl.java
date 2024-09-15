@@ -184,9 +184,10 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         if (user == null) {
             throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口执行者id不能为空");
         }
-//        TODO clint增加数据源类型参数
+//        clint增加数据源类型参数
         apiClient.setAccessKey(user.getAccessKey());
         apiClient.setSecretKey(user.getSecretKey());
+        apiClient.setInterfaceType(interfaceInfoInvokeRequest.getInterfaceType());
 
         String response = null;
 //        请求参数
@@ -220,7 +221,8 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 interfaceParams.setRequestBody(bodyParams);
             }
             interfaceParams.setRequestMethod(interfaceInfo.getMethod());
-//            发送请求 添加请求头 todo
+            interfaceParams.setInterfaceType(interfaceInfo.getInterfaceType());
+//            发送请求 添加请求头
             try {
                 log.info("请求接口参数为:{}", interfaceParams);
                 response = apiClient.request(interfaceInfo.getUri(), interfaceParams);

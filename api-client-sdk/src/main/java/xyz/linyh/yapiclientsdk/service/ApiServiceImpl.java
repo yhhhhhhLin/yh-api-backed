@@ -18,6 +18,9 @@ import xyz.linyh.yapiclientsdk.exception.ClientException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author linzz
+ */
 @Service
 @Slf4j
 public class ApiServiceImpl implements ApiService {
@@ -41,7 +44,7 @@ public class ApiServiceImpl implements ApiService {
             throw new ClientException(ClientErrorCode.PARAMS_ERROR, "interfaceParams不能为空");
         }
 
-        HashMap<String, String> headers = addHeader(sign, accessKey, uri);
+        HashMap<String, String> headers = addHeader(sign, accessKey, uri, interfaceParams.getInterfaceType());
 
 //        2. 发送到真实请求
 //        判断是get请求还是post请求 发送携带参数请求
@@ -132,12 +135,12 @@ public class ApiServiceImpl implements ApiService {
      * @param sign
      * @return
      */
-    public String request(String baseUrl, String uri, String method, String accessKey, String sign) {
+    public String request(String baseUrl, String uri, String method, Integer interfaceTypeCode, String accessKey, String sign) {
         if (StrUtil.isBlank(baseUrl)) {
             throw new ClientException(ClientErrorCode.PARAMS_ERROR, "baseUrl不能为空");
         }
 
-        HashMap<String, String> headers = addHeader(sign, accessKey, uri);
+        HashMap<String, String> headers = addHeader(sign, accessKey, uri, interfaceTypeCode);
         HttpResponse response = null;
         String body = null;
         try {
@@ -162,13 +165,14 @@ public class ApiServiceImpl implements ApiService {
 
     }
 
-    public HashMap<String, String> addHeader(String sign, String accessKey, String uri) {
+    public HashMap<String, String> addHeader(String sign, String accessKey, String uri, Integer interfaceTypeCode) {
         HashMap<String, String> headers = new HashMap<String, String>();
 //        1. 添加请求头
 //        1.1 添加时间戳
         String timeS = String.valueOf(System.currentTimeMillis() / 1000);
         headers.put("timeS", timeS);
         headers.put("uri", uri);
+        headers.put("interfaceTypeCode", String.valueOf(interfaceTypeCode));
 //        1.2 添加签名认证
         headers.put("sign", sign);
         headers.put("accessKey", accessKey);

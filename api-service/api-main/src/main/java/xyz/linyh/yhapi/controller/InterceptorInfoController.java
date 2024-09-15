@@ -191,6 +191,7 @@ public class InterceptorInfoController {
         InterfaceInfoInvokeParams interfaceInfoInvokeParams = new InterfaceInfoInvokeParams();
         InterfaceInfoInvokePayType payType = userinterfaceinfoService.isInvokeAndGetPayType(interfaceInfoInvokeRequest.getId(), user.getId(), interfaceInfo.getPointsRequired());
         interfaceInfoInvokeParams.setPayType(payType);
+        interfaceInfoInvokeParams.setInterfaceType(interfaceInfo.getInterfaceType());
 
 //        添加请求参数 并发送请求到网关
         BeanUtils.copyProperties(interfaceInfoInvokeRequest, interfaceInfoInvokeParams);

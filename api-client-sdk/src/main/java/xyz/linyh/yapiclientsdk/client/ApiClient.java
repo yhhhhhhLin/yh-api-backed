@@ -21,6 +21,11 @@ public class ApiClient {
 
     private String baseUrl;
 
+    /**
+     * 接口类型 --> interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
     public ApiClient(String accessKey, String secretKey, String baseUrl) {
         this.accessKey = accessKey;
 //        判断baseUrl最后一个是否是/ 如果是/那么就删除
@@ -82,6 +87,6 @@ public class ApiClient {
 
         String sign = MyDigestUtils.getDigest(secretKey);
 
-        return apiService.request(baseUrl, uri, method, accessKey, sign);
+        return apiService.request(baseUrl, uri, method, interfaceType, accessKey, sign);
     }
 }

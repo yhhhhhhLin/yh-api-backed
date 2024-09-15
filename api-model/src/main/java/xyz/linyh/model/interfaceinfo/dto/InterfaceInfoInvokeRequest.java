@@ -24,6 +24,11 @@ public class InterfaceInfoInvokeRequest implements Serializable {
      */
     private String requestParams;
 
+    /**
+     * 接口类型 interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
 
     /**
      * get请求参数

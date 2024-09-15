@@ -11,27 +11,32 @@ import java.util.Map;
 public class InterfaceParams {
 
     /**
-     *     请求参数
+     * 请求参数
      */
-    private Map<String,Object> requestParams;
+    private Map<String, Object> requestParams;
 
     /**
-     *      请求体参数
+     * 请求体参数
      */
-    private Map<String,Object> requestBody;
+    private Map<String, Object> requestBody;
 
     /**
-     *     请求头
+     * 请求头
      */
-    private Map<String,Object> requestHeader;
+    private Map<String, Object> requestHeader;
 
     /**
-     *     请求方法
+     * 请求方法
      */
     private String requestMethod;
 
     /**
-     *     请求uri
+     * 接口类型 --> interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
+    /**
+     * 请求uri
      */
     private String requestURI;
 

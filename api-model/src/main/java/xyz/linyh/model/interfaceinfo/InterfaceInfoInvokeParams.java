@@ -9,4 +9,9 @@ public class InterfaceInfoInvokeParams extends InterfaceInfoInvokeRequest {
      * 支付类型(1:免费体验次数，2：积分兑换)
      */
     private InterfaceInfoInvokePayType payType;
+
+    /**
+     * 接口类型 --> InterfaceTypeEnum
+     */
+    private Integer interfaceType;
 }
