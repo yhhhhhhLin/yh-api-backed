@@ -60,6 +60,8 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     @Resource
     private RouteServiceImpl routeServiceImpl;
 
+    String INTERFACE_TOKEN_HEADER = "interface_token";
+
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -90,6 +92,8 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String timeS = headers.getFirst("timeS");
         String accessKey = headers.getFirst("accessKey");
         String randomNum = headers.getFirst("randomNum");
+
+
         if (StrUtil.hasBlank(sign, timeS, accessKey, randomNum)) {
             log.info("缺少认证参数");
             response.setStatusCode(HttpStatus.FORBIDDEN);

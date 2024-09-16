@@ -22,6 +22,7 @@
         <module>api-pay</module>
         <module>scheduled-service</module>
         <module>api-template-generator</module>
+        <module>api-database</module>
     </modules>
 
     <properties>

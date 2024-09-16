@@ -35,6 +35,8 @@ public class RouteServiceImpl implements RouteService {
      */
     private final Map<String, Interfaceinfo> routes = new ConcurrentHashMap<>(256);
 
+    private final String DATABASE_URL = "yhapiBatabase";
+
 
     /**
      * 获取数据库里面的所有路由信息
@@ -52,7 +54,23 @@ public class RouteServiceImpl implements RouteService {
         for (Interfaceinfo interfaceinfo : interfaceinfos) {
             routes.put(String.valueOf(interfaceinfo.getUri()), interfaceinfo);
         }
+//        添加数据源的url
+        Interfaceinfo fixUrl = routes.get(DATABASE_URL);
+        if(fixUrl != null) {
+//            TODO 后续优化成 Map<Integer, Map<String, interface>> 存储或存储添加判断
+            log.error("数据源固定url被占用");
+        }
+        routes.put(DATABASE_URL, newInterface(DATABASE_URL));
+
         return routes;
+    }
+
+    private Interfaceinfo newInterface(String databaseUrl) {
+        Interfaceinfo interfaceinfo = new Interfaceinfo();
+        interfaceinfo.setUri(databaseUrl);
+//        TODO 目前为docker-compose 服务名称
+        interfaceinfo.setHost("http://DatabaseService");
+        return interfaceinfo;
     }
 
 

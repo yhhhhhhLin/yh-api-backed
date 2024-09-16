@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCodeEnum;
+import xyz.linyh.ducommon.common.InterfaceTypeEnum;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yapiclientsdk.exception.ClientErrorCode;
 import xyz.linyh.yapiclientsdk.exception.ClientException;
@@ -165,14 +166,23 @@ public class ApiServiceImpl implements ApiService {
 
     }
 
+    private final String INTERFACE_TYPE_HEADER = "interface_type";
+
+    private final String DATABASE_URL = "yhapiBatabase";
+
     public HashMap<String, String> addHeader(String sign, String accessKey, String uri, Integer interfaceTypeCode) {
         HashMap<String, String> headers = new HashMap<String, String>();
 //        1. 添加请求头
 //        1.1 添加时间戳
         String timeS = String.valueOf(System.currentTimeMillis() / 1000);
         headers.put("timeS", timeS);
-        headers.put("uri", uri);
-        headers.put("interfaceTypeCode", String.valueOf(interfaceTypeCode));
+//        如果接口类型是数据源接口，那么转发的地址改为固定的
+        if(InterfaceTypeEnum.DATABASE_INTERFACE.getCode().equals(interfaceTypeCode)){
+            headers.put("uri", DATABASE_URL);
+        }else {
+            headers.put("uri", uri);
+        }
+        headers.put(INTERFACE_TYPE_HEADER, String.valueOf(interfaceTypeCode));
 //        1.2 添加签名认证
         headers.put("sign", sign);
         headers.put("accessKey", accessKey);
