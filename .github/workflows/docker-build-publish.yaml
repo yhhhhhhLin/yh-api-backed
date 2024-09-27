@@ -3,7 +3,7 @@ name: Package Project And Push to Docker
 on:
   push:
     branches: [ "master" ]
-#
+# 拉取ubuntu任务
 jobs:
   build-and-publish:
 
