@@ -40,7 +40,7 @@ jobs:
 #          java-version: '17'
 #          distribution: 'adopt'
 #          cache: maven
-#
+# 仓库下载依赖
 #      - name: Install yh-api-backed dependencies
 #        run: |
 #          cd yh-api-backed
