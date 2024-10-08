@@ -3,7 +3,7 @@ name: Package Project And Push to Docker
 on:
   push:
     branches: [ "master" ]
-#
+# 拉取ubuntu任务
 jobs:
   build-and-publish:
 
@@ -40,7 +40,7 @@ jobs:
 #          java-version: '17'
 #          distribution: 'adopt'
 #          cache: maven
-#
+# 仓库下载依赖
 #      - name: Install yh-api-backed dependencies
 #        run: |
 #          cd yh-api-backed
