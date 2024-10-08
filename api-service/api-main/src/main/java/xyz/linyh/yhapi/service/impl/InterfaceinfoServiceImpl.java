@@ -23,22 +23,14 @@ import xyz.linyh.ducommon.constant.InterfaceInfoConstant;
 import xyz.linyh.ducommon.constant.RedisConstant;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.ducommon.utils.DatasourceApiTokenUtils;
-import xyz.linyh.ducommon.utils.JwtUtils;
-import xyz.linyh.ducommon.utils.TimeUtils;
 import xyz.linyh.model.apitoken.entitys.ApiTokenRel;
 import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
-import xyz.linyh.model.datasource.entitys.DscInfo;
-import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
 import xyz.linyh.yapiclientsdk.client.ApiClient;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
-import xyz.linyh.yhapi.datasource.DataSourceClient;
-import xyz.linyh.yhapi.factory.DataSourceClientFactory;
-import xyz.linyh.yhapi.factory.GenSqlFactory;
-import xyz.linyh.yhapi.helper.GenSql;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.*;
 
@@ -124,6 +116,19 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 .eq(Interfaceinfo::getMethod, method)
         );
         return interfaceinfo;
+    }
+
+    @Override
+    public Interfaceinfo getInterfaceInfoByURIAndUserId(String interfaceURI, Long userId) {
+        List<Interfaceinfo> interfaceInfos = lambdaQuery().eq(Interfaceinfo::getUri, interfaceURI)
+                .eq(Interfaceinfo::getUserId, userId)
+                .list();
+        if (interfaceInfos == null || interfaceInfos.size() >= 2) {
+            System.out.printf("查询不到对应用户接口或查询出来数量过多, interfaceInfos: {},url:{},userId:{}", interfaceInfos, interfaceURI, userId.toString());
+            return null;
+        }
+
+        return interfaceInfos.isEmpty() ? null : interfaceInfos.get(0);
     }
 
     /**

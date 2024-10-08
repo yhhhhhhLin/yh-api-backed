@@ -49,6 +49,14 @@ public interface DubboInterfaceinfoService{
      */
     Boolean updateGatewayCache();
 
+    /**
+     * 根据用户id和接口地址查询该用户对应的接口信息
+     * @param uri
+     * @param userId
+     * @return
+     */
+    Interfaceinfo queryInterfaceByURIAndUserId(String uri, Long userId);
+
 
 
 }

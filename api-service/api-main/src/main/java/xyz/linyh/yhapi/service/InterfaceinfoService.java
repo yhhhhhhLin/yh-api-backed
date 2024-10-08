@@ -32,6 +32,9 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
 
     Interfaceinfo getInterfaceInfoByURI(String interfaceURI, String method);
 
+
+    Interfaceinfo getInterfaceInfoByURIAndUserId(String interfaceURI, Long userId);
+
     /**
      * 刷新网关的接口缓存数据
      *

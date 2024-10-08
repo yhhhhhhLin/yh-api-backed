@@ -19,7 +19,7 @@ public class DscInterfaceController {
      */
     @PostMapping("/yhapiBatabase")
     public BaseResponse processDatasourceInterface(HttpServletRequest request){
-        dscInterfaceHelper.queryData(request);
+        String result = dscInterfaceHelper.queryData(request);
 
         return null;
     }

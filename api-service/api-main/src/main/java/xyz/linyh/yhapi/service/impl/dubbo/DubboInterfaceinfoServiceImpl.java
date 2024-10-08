@@ -77,5 +77,10 @@ public class DubboInterfaceinfoServiceImpl implements DubboInterfaceinfoService 
         interfaceinfoService.updateGatewayCache();
         return true;
     }
-    
+
+    @Override
+    public Interfaceinfo queryInterfaceByURIAndUserId(String uri, Long userId) {
+        return interfaceinfoService.getInterfaceInfoByURIAndUserId(uri, userId);
+    }
+
 }
