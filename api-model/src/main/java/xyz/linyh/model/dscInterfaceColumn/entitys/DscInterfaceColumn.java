@@ -42,7 +42,7 @@ public class DscInterfaceColumn implements Serializable {
     private String tableAlias;
 
     /**
-     * 
+     * 原先表的字段名称
      */
     private String columnName;
 
@@ -52,7 +52,7 @@ public class DscInterfaceColumn implements Serializable {
     private String columnComment;
 
     /**
-     * 字段别名 to_columnName t1_columnName
+     * 创建结果表的字段名称 t0_columnName t1_columnName
      */
     private String columnAlias;
 
