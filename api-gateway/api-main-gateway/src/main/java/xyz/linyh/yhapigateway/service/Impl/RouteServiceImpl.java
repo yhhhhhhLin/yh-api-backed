@@ -35,7 +35,10 @@ public class RouteServiceImpl implements RouteService {
      */
     private final Map<String, Interfaceinfo> routes = new ConcurrentHashMap<>(256);
 
-    private final String DATABASE_URL = "yhapiBatabase";
+    /**
+     * 自己后端处理数据源服务对应接口地址 TODO 抽出来
+     */
+    public final static String DATABASE_URL = "yhapiBatabase";
 
 
     /**
@@ -54,13 +57,13 @@ public class RouteServiceImpl implements RouteService {
         for (Interfaceinfo interfaceinfo : interfaceinfos) {
             routes.put(String.valueOf(interfaceinfo.getUri()), interfaceinfo);
         }
-//        添加数据源的url
-        Interfaceinfo fixUrl = routes.get(DATABASE_URL);
-        if(fixUrl != null) {
-//            TODO 后续优化成 Map<Integer, Map<String, interface>> 存储或存储添加判断
-            log.error("数据源固定url被占用");
-        }
-        routes.put(DATABASE_URL, newInterface(DATABASE_URL));
+////        添加数据源的url
+//        Interfaceinfo fixUrl = routes.get(DATABASE_URL);
+//        if(fixUrl != null) {
+////            TODO 后续优化成 Map<Integer, Map<String, interface>> 存储或存储添加判断
+//            log.error("数据源固定url被占用");
+//        }
+//        routes.put(DATABASE_URL, newInterface(DATABASE_URL));
 
         return routes;
     }

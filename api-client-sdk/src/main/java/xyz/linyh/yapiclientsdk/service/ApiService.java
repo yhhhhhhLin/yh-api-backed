@@ -12,7 +12,7 @@ public interface ApiService {
      * @param sign
      * @return
      */
-    String request(String baseUrl, String uri, String accessKey, String sign, InterfaceParams interfaceParams);
+    String request(String baseUrl, String uri, String accessKey, String sign,Integer interfaceTypeCode, InterfaceParams interfaceParams);
 
     /**
      * 发送没有携带请求参数的请求

@@ -226,7 +226,6 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
                 interfaceParams.setRequestBody(bodyParams);
             }
             interfaceParams.setRequestMethod(interfaceInfo.getMethod());
-            interfaceParams.setInterfaceType(interfaceInfo.getInterfaceType());
 //            发送请求 添加请求头
             try {
                 log.info("请求接口参数为:{}", interfaceParams);
@@ -285,7 +284,10 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
             apiTokenRel.setToken(datasourceToken);
             apiTokenRel.setUserId(interfaceInfo.getUserId());
             apiTokenRelService.save(apiTokenRel);
-            saveOrUpdateInterface(interfaceInfo);
+
+//            数据源api请求地址为自己docker-compose配置的服务地址
+            interfaceInfo.setHost("http://database-service");
+            this.saveOrUpdateInterface(interfaceInfo);
         }
 
 //        刷新网关的缓存接口数据

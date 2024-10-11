@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import xyz.linyh.ducommon.common.BaseResponse;
 import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.common.InterfaceTypeEnum;
+import xyz.linyh.ducommon.constant.HeaderNameConstant;
 import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yapiclientsdk.exception.ClientErrorCode;
 import xyz.linyh.yapiclientsdk.exception.ClientException;
@@ -34,7 +35,7 @@ public class ApiServiceImpl implements ApiService {
      * @param
      * @return
      */
-    public String request(String baseUrl, String uri, String accessKey, String sign, InterfaceParams interfaceParams) {
+    public String request(String baseUrl, String uri, String accessKey, String sign, Integer interfaceType, InterfaceParams interfaceParams) {
 
         if (StrUtil.isBlank(baseUrl)) {
             throw new ClientException(ClientErrorCode.PARAMS_ERROR, "baseUrl不能为空");
@@ -45,7 +46,7 @@ public class ApiServiceImpl implements ApiService {
             throw new ClientException(ClientErrorCode.PARAMS_ERROR, "interfaceParams不能为空");
         }
 
-        HashMap<String, String> headers = addHeader(sign, accessKey, uri, interfaceParams.getInterfaceType());
+        HashMap<String, String> headers = addHeader(sign, accessKey, uri, interfaceType);
 
 //        2. 发送到真实请求
 //        判断是get请求还是post请求 发送携带参数请求
@@ -166,8 +167,6 @@ public class ApiServiceImpl implements ApiService {
 
     }
 
-    private final String INTERFACE_TYPE_HEADER = "interface_type";
-
     private final String DATABASE_URL = "yhapiBatabase";
 
     public HashMap<String, String> addHeader(String sign, String accessKey, String uri, Integer interfaceTypeCode) {
@@ -182,7 +181,7 @@ public class ApiServiceImpl implements ApiService {
         }else {
             headers.put("uri", uri);
         }
-        headers.put(INTERFACE_TYPE_HEADER, String.valueOf(interfaceTypeCode));
+        headers.put(HeaderNameConstant.INTERFACE_TYPE_HEADER, String.valueOf(interfaceTypeCode));
 //        1.2 添加签名认证
         headers.put("sign", sign);
         headers.put("accessKey", accessKey);

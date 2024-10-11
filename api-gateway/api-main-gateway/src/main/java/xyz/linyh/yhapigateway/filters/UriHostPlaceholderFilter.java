@@ -10,7 +10,9 @@ import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.stereotype.Component;
 import xyz.linyh.ducommon.common.InterfaceTypeEnum;
+import xyz.linyh.ducommon.constant.HeaderNameConstant;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
+import xyz.linyh.yhapigateway.service.Impl.RouteServiceImpl;
 import xyz.linyh.yhapigateway.service.RouteService;
 
 import java.net.URI;
@@ -47,6 +49,7 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
         return new OrderedGatewayFilter((exchange, chain) -> {
             String routeId = exchange.getAttribute(GATEWAY_PREDICATE_MATCHED_PATH_ROUTE_ID_ATTR);
             String uri = exchange.getRequest().getHeaders().getFirst("uri");
+            String interfaceTypeCode = exchange.getRequest().getHeaders().getFirst(HeaderNameConstant.INTERFACE_TYPE_HEADER);
             String method = exchange.getRequest().getMethod().toString();
 
             if (uri == null) {
@@ -72,6 +75,12 @@ public class UriHostPlaceholderFilter extends AbstractGatewayFilterFactory<UriHo
 
 //            todo 可能还需要对地址格式进行判断
             URI newUrl = null;
+
+//            如果是数据源api，请求的实际地址为自己的后端uri
+            if(InterfaceTypeEnum.DATABASE_INTERFACE.getCode().equals(Integer.valueOf(interfaceTypeCode))){
+                uri = RouteServiceImpl.DATABASE_URL;
+            }
+
             String modUrl = host + uri;
             try {
                 String query = exchange.getRequest().getURI().getQuery();

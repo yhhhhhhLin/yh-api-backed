@@ -30,10 +30,10 @@ public class InterfaceParams {
      */
     private String requestMethod;
 
-    /**
-     * 接口类型 --> interfaceTypeEnum
-     */
-    private Integer interfaceType;
+//    /**
+//     * 接口类型 --> interfaceTypeEnum
+//     */
+//    private Integer interfaceType;
 
     /**
      * 请求uri

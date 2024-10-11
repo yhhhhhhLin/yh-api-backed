@@ -63,7 +63,7 @@ public class ApiClient {
 
         String sign = MyDigestUtils.getDigest(secretKey);
 
-        return apiService.request(baseUrl, uri, accessKey, sign, interfaceParams);
+        return apiService.request(baseUrl, uri, accessKey, sign,interfaceType, interfaceParams);
     }
 
     /**
