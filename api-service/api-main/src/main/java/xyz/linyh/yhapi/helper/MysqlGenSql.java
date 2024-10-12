@@ -20,6 +20,8 @@ public class MysqlGenSql extends GenSql {
 
     private String SELECT_INSERT_TABLE_SQL_TEMPLATE = "insert into %s %s";
 
+    private final String RENAME_TABLE_SQL_TEMPLATE = "rename %s to %s";
+
     @Override
     protected String createDropTableSql(String tableName) {
         return String.format(DROP_TABLE_SQL_TEMPLATE, tableName);
@@ -94,5 +96,10 @@ public class MysqlGenSql extends GenSql {
 //        select table t0.columnName1 columnAlas1, t0.columnName2 columnAlas2,uuid as pk, time as pt
 //        from srcTable
         return String.join(SELECT_INSERT_TABLE_SQL_TEMPLATE, tableName, selectSql);
+    }
+
+    @Override
+    public String renameTable(String srcTableName, String destTableName) {
+        return String.format(RENAME_TABLE_SQL_TEMPLATE, srcTableName, destTableName);
     }
 }

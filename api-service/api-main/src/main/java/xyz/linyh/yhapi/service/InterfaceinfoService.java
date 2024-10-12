@@ -109,6 +109,13 @@ public interface InterfaceinfoService extends IService<Interfaceinfo> {
 
     List<Interfaceinfo> listByInterfaceType(InterfaceTypeEnum interfaceTypeEnum);
 
+    /**
+     * 删除接口，需要根据接口类型执行不同的删除逻辑
+     * @param interfaceId
+     * @return
+     */
+    boolean removeInterfaceById(long interfaceId);
+
 
     /**
      * 刷新gateway中缓存的接口数据

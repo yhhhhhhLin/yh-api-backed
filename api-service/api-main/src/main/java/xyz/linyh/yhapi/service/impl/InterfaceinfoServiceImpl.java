@@ -26,6 +26,7 @@ import xyz.linyh.ducommon.utils.DatasourceApiTokenUtils;
 import xyz.linyh.model.apitoken.entitys.ApiTokenRel;
 import xyz.linyh.model.base.dtos.CheckNameDto;
 import xyz.linyh.model.datasource.dtos.AddDataSourceApiDto;
+import xyz.linyh.model.dscInterfaceColumn.entitys.DscInterfaceColumn;
 import xyz.linyh.model.interfaceinfo.dto.*;
 import xyz.linyh.model.interfaceinfo.entitys.Interfaceinfo;
 import xyz.linyh.model.user.entitys.User;
@@ -34,9 +35,7 @@ import xyz.linyh.yapiclientsdk.entitys.InterfaceParams;
 import xyz.linyh.yhapi.mapper.InterfaceinfoMapper;
 import xyz.linyh.yhapi.service.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author lin
@@ -430,6 +429,47 @@ public class InterfaceinfoServiceImpl extends ServiceImpl<InterfaceinfoMapper, I
         return lambdaQuery()
                 .eq(Interfaceinfo::getInterfaceType, interfaceTypeEnum)
                 .list();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean removeInterfaceById(long interfaceId) {
+
+        Interfaceinfo interfaceInfo = this.getById(interfaceId);
+        if (interfaceInfo == null) {
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "删除的接口id无效");
+        }
+
+        InterfaceTypeEnum interfaceTypeCode = InterfaceTypeEnum.getByInterfaceTypeCode(interfaceInfo.getInterfaceType());
+        switch (interfaceTypeCode) {
+            case DEFAULT_INTERFACE:
+                return this.removeById(interfaceId);
+            case DATABASE_INTERFACE:
+                return removeDataBaseApi(interfaceId, interfaceInfo.getDscId());
+            default:
+                throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "接口类型错误");
+        }
+    }
+
+    private boolean removeDataBaseApi(Long interfaceId, Long dscId) {
+//        1. 删除接口查询字段信息
+        List<DscInterfaceColumn> dscInterfaceColumns = dscInterfaceColumnService.listByInterfaceInfoIds(Collections.singletonList(interfaceId));
+        boolean removeColumns = dscInterfaceColumnService.removeBatchByInterfaceId(interfaceId);
+
+//        2. 删除调度信息,如果有创建表，对表名进行重命名为删除状态
+        String schemaName = dscInterfaceColumns.get(0).getSchemaName();
+        String tableName = dscInterfaceColumns.get(0).getTableName();
+        boolean removeDispatch = interfaceInfoDispatchInfoService.removeByInterfaceIdAndDscId(interfaceId, dscId, schemaName, tableName);
+
+//        3. 删除接口信息
+        boolean removeInterfaceInfo = this.removeById(interfaceId);
+
+        if (removeColumns && removeDispatch && removeInterfaceInfo) {
+            return true;
+        } else {
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "有某一个删除失败");
+        }
+
     }
 
 

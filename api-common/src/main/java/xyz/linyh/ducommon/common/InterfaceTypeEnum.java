@@ -22,4 +22,13 @@ public enum InterfaceTypeEnum{
     public String getName() {
         return name;
     }
+
+    public static InterfaceTypeEnum getByInterfaceTypeCode(Integer interfaceTypeCode) {
+        for (InterfaceTypeEnum typeEnum : InterfaceTypeEnum.values()) {
+            if (typeEnum.getCode().equals(interfaceTypeCode)) {
+                return typeEnum;
+            }
+        }
+        return null;
+    }
 }

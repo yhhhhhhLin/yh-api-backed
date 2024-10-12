@@ -75,6 +75,11 @@ public class InterfaceInfoUpdateRequest implements Serializable {
      */
     private Integer status;
 
+    /**
+     * 接口类型 -->interfaceTypeEnum
+     */
+    private Integer interfaceType;
+
 
     private static final long serialVersionUID = 1L;
 }

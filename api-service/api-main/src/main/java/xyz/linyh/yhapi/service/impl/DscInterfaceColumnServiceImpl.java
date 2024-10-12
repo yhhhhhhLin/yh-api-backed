@@ -39,6 +39,13 @@ public class DscInterfaceColumnServiceImpl extends ServiceImpl<DscInterfaceColum
         return saveBatch(dscInterfaceColumns);
     }
 
+    @Override
+    public boolean removeBatchByInterfaceId(Long interfaceId) {
+        return lambdaUpdate()
+                .eq(DscInterfaceColumn::getInterfaceInfoId, interfaceId)
+                .remove();
+    }
+
     private List<DscInterfaceColumn> convertToDscInterfaceColumns(List<ColumnBriefVO> searchColumns) {
         List<DscInterfaceColumn> dscInterfaceColumns = new ArrayList<>();
         searchColumns.forEach(columnBriefVO -> {

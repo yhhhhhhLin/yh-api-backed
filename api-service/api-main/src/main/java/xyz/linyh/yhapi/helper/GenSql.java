@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class GenSql {
 
-    private final String TABLE_NAME_FIX = "yh_api";
+    public static String TABLE_NAME_FIX = "yh_api";
 
     public String createSql(DscInfo dscInfo, List<DscInterfaceColumn> dscInterfaceColumns) {
         String schemaName = dscInfo.getSchemaName();
@@ -42,4 +42,6 @@ public abstract class GenSql {
     protected abstract String createCreateTableSql(String tableName, List<DscInterfaceColumn> columns);
 
     protected abstract String createInsertSql(String tableName, List<DscInterfaceColumn> columns);
+
+    public abstract String renameTable(String srcTableName, String destTableName);
 }

@@ -16,4 +16,6 @@ public interface DscInterfaceColumnService extends IService<DscInterfaceColumn> 
     List<DscInterfaceColumn> listByInterfaceInfoIds(List<Long> interfaceInfoIds);
 
     Boolean saveBatch(List<ColumnBriefVO> searchColumns);
+
+    boolean removeBatchByInterfaceId(Long interfaceId);
 }

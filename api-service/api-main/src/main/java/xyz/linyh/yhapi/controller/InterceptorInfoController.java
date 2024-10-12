@@ -117,7 +117,7 @@ public class InterceptorInfoController {
 
         validInterface(id, user, request);
 
-        boolean result = interfaceinfoService.removeById(id);
+        boolean result = interfaceinfoService.removeInterfaceById(id);
 //        todo
         interfaceinfoService.updateGatewayCache();
         return ResultUtils.success(result);

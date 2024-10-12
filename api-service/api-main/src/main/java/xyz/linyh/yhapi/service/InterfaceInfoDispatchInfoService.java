@@ -16,4 +16,11 @@ public interface InterfaceInfoDispatchInfoService extends IService<InterfaceInfo
     Boolean createDispatchInfo(Long interfaceId, DispatchInfoDto dispatchInfoDto);
 
     List<InterfaceInfoDispatchInfo> listByInterfaceInfoIds(List<Long> interfaceInfoIds);
+
+    /**
+     * 删除接口调度信息和对已经创建的表进行重命名为xxx_delete?
+     * @param interfaceId
+     * @return
+     */
+    boolean removeByInterfaceIdAndDscId(Long interfaceId, Long dscId, String schemaName, String tableName);
 }
