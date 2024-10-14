@@ -73,6 +73,17 @@ public class InterceptorInfoController {
     }
 
     /**
+     * TODO 增加数据源api，数据源api ?
+     * @param i4
+     * @param request
+     * @return
+     */
+    @PostMapping("/addDsc")
+    public BaseResponse<Long> addDscInterfaceInfo(@RequestBody InterfaceInfoAddRequest i4, HttpServletRequest request) {
+        return null;
+    }
+
+    /**
      * 更新接口数据（管理员和接口拥有者可用）
      *
      * @param interfaceInfoUpdateRequest 接口数据

@@ -1,11 +1,15 @@
 package xyz.linyh.yhapi.datasource;
 
+import xyz.linyh.ducommon.common.ErrorCodeEnum;
+import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.datasource.entitys.DscInfo;
 import xyz.linyh.model.datasource.vos.ColumnBriefVO;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MysqlDataSrouceClient implements DataSourceClient {
 
@@ -84,5 +88,74 @@ public class MysqlDataSrouceClient implements DataSourceClient {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+
+    @Override
+    public Map<String, Object> executeSqlReturn(DscInfo dscInfo, String sql) {
+        Map<String, Object> resultMap = new HashMap<>();
+        if (sql == null || sql.trim().isEmpty()) {
+            // 返回空的结果，避免执行空的SQL
+            return resultMap;
+        }
+
+        try (Connection connection = getConnection(dscInfo.getUrl(), dscInfo.getUsername(), dscInfo.getPassword());
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql.trim())) {
+
+            // 获取元数据
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            // 遍历结果集并填充Map
+            while (resultSet.next()) {
+                Map<String, Object> row = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnLabel(i), resultSet.getObject(i));
+                }
+                // 假设你需要将每一行的数据放到Map中，行号作为key
+                resultMap.put("row" + resultSet.getRow(), row);
+            }
+
+        } catch (SQLException e) {
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "SQL执行失败");
+        }
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, String> selectTableByNamePrefix(DscInfo dscInfo, String schemaName, String tableNameExp) {
+        Map<String, String> resultMap = new HashMap<>();
+
+        // 判断schemaName 或 tableNameExp 为空的情况
+        if (schemaName == null || schemaName.trim().isEmpty() || tableNameExp == null || tableNameExp.trim().isEmpty()) {
+            return resultMap;
+        }
+
+        // 生成 SQL 语句
+        String sql = String.format(
+                "SELECT table_name FROM information_schema.tables WHERE table_schema = '%s' AND table_name LIKE '%%%s%%'",
+                schemaName.trim(), tableNameExp.trim()
+        );
+
+        // 执行 SQL 语句
+        try (Connection connection = getConnection(dscInfo.getUrl(), dscInfo.getUsername(), dscInfo.getPassword());
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            // 将结果集中的表名添加到 Map
+            int index = 1;
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("table_name");
+                resultMap.put("table" + index, tableName);
+                index++;
+            }
+
+        } catch (SQLException e) {
+            throw new BusinessException(ErrorCodeEnum.PARAMS_ERROR, "查询表名失败");
+        }
+
+        return resultMap;
     }
 }
