@@ -1,5 +1,6 @@
 package xyz.linyh.yhapi.datasource;
 
+import org.springframework.transaction.annotation.Transactional;
 import xyz.linyh.ducommon.common.ErrorCodeEnum;
 import xyz.linyh.ducommon.exception.BusinessException;
 import xyz.linyh.model.datasource.entitys.DscInfo;
@@ -89,7 +90,6 @@ public class MysqlDataSrouceClient implements DataSourceClient {
             }
         }
     }
-
 
     @Override
     public Map<String, Object> executeSqlReturn(DscInfo dscInfo, String sql) {
